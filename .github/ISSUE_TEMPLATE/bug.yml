@@ -1,0 +1,66 @@
+name: Bug report
+description: Report reproducible incorrect behavior without including private user data.
+title: "[Bug] "
+labels:
+  - type:bug
+  - status:backlog
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Use synthetic data only.
+      placeholder: |
+        1. Start from...
+        2. Choose...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - P0 - immediate safety, security, or data-loss incident
+        - P1 - release blocker or critical user flow unavailable
+        - P2 - significant defect with a workaround
+        - P3 - minor defect or polish
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "iOS preview, Android development, web admin, local Supabase, staging"
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Logs or screenshots must not contain tokens, emails, health information, free text, or private images.
+  - type: textarea
+    id: regression
+    attributes:
+      label: Regression test
+      description: Describe the test that should prevent recurrence.
+    validations:
+      required: true

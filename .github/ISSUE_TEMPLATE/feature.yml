@@ -1,0 +1,80 @@
+name: Planned deliverable
+description: Track an independently testable product, engineering, content, or operations deliverable.
+title: "[Phase N] "
+labels:
+  - status:backlog
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Complete every required section. Do not place credentials, private data, health records, or unreleased security details in an issue.
+  - type: input
+    id: phase
+    attributes:
+      label: Phase
+      placeholder: "Phase 1: Expo and Design-System Setup"
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: State the user or project outcome, not only the implementation task.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Observable result one
+        - [ ] Observable result two
+    validations:
+      required: true
+  - type: textarea
+    id: testing
+    attributes:
+      label: Test and verification requirements
+      description: Include automated, manual, device, accessibility, security, and negative tests that apply.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and blockers
+      description: Link prerequisite issues and identify external account or approval gates. Use "None" if not applicable.
+    validations:
+      required: true
+  - type: dropdown
+    id: safety
+    attributes:
+      label: Health-safety impact
+      options:
+        - None
+        - Copy or emotional-safety review
+        - Clinical or dietitian review required
+    validations:
+      required: true
+  - type: textarea
+    id: privacy_security
+    attributes:
+      label: Privacy and security impact
+      description: Identify data, auth, authorization, Storage, telemetry, community, or secret-handling impact. Use "None" if not applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: Documentation impact
+      description: List documents that must change or explain why none are needed.
+    validations:
+      required: true
+  - type: checkboxes
+    id: readiness
+    attributes:
+      label: Ready checklist
+      options:
+        - label: This issue belongs to the active phase.
+          required: true
+        - label: The work is independently testable and does not mix unrelated scope.
+          required: true
