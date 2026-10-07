@@ -8,7 +8,7 @@ The application will be built with React Native, Expo, TypeScript, Supabase, and
 
 ## Project status
 
-The project is in **Phase 0: Repository and Product Foundation**. No application code has been scaffolded yet.
+Phase 0 is complete. The project is in **Phase 1: Expo and Design-System Setup**, starting with [issue #4](https://github.com/Csamuels1/BLOOM/issues/4). The starter app is a technical preview, not a working health product.
 
 - [Build status](docs/BUILD_STATUS.md)
 - [BLOOM MVP project board](https://github.com/users/Csamuels1/projects/1)
@@ -17,6 +17,25 @@ The project is in **Phase 0: Repository and Product Foundation**. No application
 - [Brand and copy guide](docs/BRAND_AND_COPY.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security baseline](docs/SECURITY_BASELINE.md)
+
+## Run the starter app
+
+Use Node.js `24.14.0` and npm `11.9.0` (see `.nvmrc`).
+
+```sh
+npm ci
+npm run start -- --go
+```
+
+Open with an SDK 57-compatible Expo Go app, or use an approved development build. Run `npm run web` for the browser preview. On Windows PowerShell, use `npm.cmd` / `npx.cmd` if execution policy blocks the `.ps1` launchers; no execution-policy change is needed.
+
+```sh
+npm run verify
+npm run doctor
+npm run export
+```
+
+See [development and build setup](docs/DEVELOPMENT.md) for platform requirements, EAS profiles, and outstanding verification gates. No backend credentials are required for this scaffold.
 
 ## Working agreement
 

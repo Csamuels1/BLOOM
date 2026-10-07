@@ -1,0 +1,37 @@
+# ADR 0005: Expo foundation toolchain
+
+Status: Proposed implementation for issue #4; native runtime and security verification remain open.
+
+## Decision
+
+Use Expo 57.0.27 (the npm stable `latest` tag verified on 2026-10-07), its supported React 19.2.3 / React Native 0.86.3 pair, and Expo Router. Native dependencies are selected with `expo install`, then pinned to exact resolved versions. Commit the npm lockfile and test direct-version pins.
+
+Use stable NativeWind 4.2.7 with Tailwind 3.4.19, its Babel preset and Metro wrapper. NativeWind's official installation guide explicitly supports SDK 57 in this release; v5 is a release candidate. Reanimated and Worklets use Expo's compatibility map, without adding a duplicate Babel plugin.
+
+Use React Native Testing Library 13.3.3 with react-test-renderer 19.2.3. The initially evaluated v14 renderer resolved a React 19.3 peer requirement, conflicting with the SDK's React 19.2.3. Router's own test stack uses the v13 line. Use SDK-compatible Jest Expo/Jest and keep test files outside the route tree.
+
+Use Node 24.14.0 and npm 11.9.0 locally and in CI. Keep mobile native folders generated and untracked. Configure EAS profiles without inventing account ownership, signing credentials, app identifiers, or a project ID.
+
+## Consequences
+
+### Targeted security overrides
+
+Pin `postcss-selector-parser` to 7.1.6 for its two installed consumers (Tailwind and postcss-nested), and pin `uuid` to 11.1.1 only under `xcode`. UUID 11 retains a CommonJS export and the `v4()` API used by Xcode; newer ESM-only majors are not substituted. Selector-parser 7 changed insertion behavior, so compilation of arbitrary utilities, state variants and nested selectors is regression-tested through the actual consumers. These are intentional cross-major transitive overrides, not evidence of blanket compatibility with every consumer API.
+
+Five Node-based regression checks validate resolved versions, UUID buffer bounds, Xcode identifier generation, Tailwind output, and nested selectors. Keep these overrides until upstream packages adopt patched compatible dependencies, then remove them only with the same checks. See [the audit record](../DEVELOPMENT.md#dependency-audit-status) for unresolved findings.
+
+### Scope and limits
+
+- Two minimal routes validate the foundation; product screens and design-system work remain separate issues.
+- No backend, personal data collection, telemetry SDK, health calculations, or production deployment is added.
+- Expo compatibility is not security approval. Outstanding dependency advisories are documented in [development setup](../DEVELOPMENT.md) and must be resolved or explicitly reviewed before gate closure.
+- Native build and device evidence is still required; a JS bundle is not an installable app.
+
+## Sources
+
+- [Expo project creation](https://docs.expo.dev/get-started/create-a-project/)
+- [Expo Router installation](https://docs.expo.dev/router/installation/)
+- [NativeWind stable installation](https://www.nativewind.dev/docs/getting-started/installation)
+- [Expo Jest setup](https://docs.expo.dev/develop/unit-testing/)
+- [EAS profiles](https://docs.expo.dev/build/eas-json/)
+- Exact package versions and Expo's local `bundledNativeModules.json` were checked during installation.

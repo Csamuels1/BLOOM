@@ -1,6 +1,6 @@
 name: Planned deliverable
 description: Track an independently testable product, engineering, content, or operations deliverable.
-title: "[Phase N] "
+title: '[Phase N] '
 labels:
   - status:backlog
 body:
@@ -12,7 +12,7 @@ body:
     id: phase
     attributes:
       label: Phase
-      placeholder: "Phase 1: Expo and Design-System Setup"
+      placeholder: 'Phase 1: Expo and Design-System Setup'
     validations:
       required: true
   - type: textarea

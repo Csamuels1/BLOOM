@@ -1,0 +1,98 @@
+name: iOS simulator smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-smoke:
+    # Standard runner minutes are free for this public repo. Reassess if private.
+    if: github.event.repository.private == false
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      CI: '1'
+      EXPO_NO_TELEMETRY: '1'
+      NODE_OPTIONS: --dns-result-order=ipv4first
+      MAESTRO_CLI_NO_ANALYTICS: 'true'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - run: npm install --global npm@11.9.0
+      - run: npm ci
+      - name: Install pinned Maestro with checksum verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.11.0/maestro.zip \
+            --output "$RUNNER_TEMP/maestro.zip"
+          echo "5384593cb4e7a106489e75a821d157dd43f4e438df6bc308b72e82c685e1283a  $RUNNER_TEMP/maestro.zip" | shasum -a 256 --check
+          unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/bloom-maestro"
+          echo "$RUNNER_TEMP/bloom-maestro/maestro/bin" >> "$GITHUB_PATH"
+      - name: Boot an available iPhone simulator
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          device=$(xcrun simctl list devices available --json | node scripts/select-ios-simulator.cjs)
+          echo "BLOOM_IOS_DEVICE=$device" >> "$GITHUB_ENV"
+          xcrun simctl boot "$device"
+          xcrun simctl bootstatus "$device" -b
+      - name: Start Metro and install SDK-compatible Expo Go
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/ios
+          npm run start -- --go --ios --localhost --port 8081 --max-workers 2 > test-results/ios/metro.log 2>&1 &
+          echo "$!" > test-results/ios/metro.pid
+          for attempt in {1..120}; do
+            if curl --fail --silent http://127.0.0.1:8081/status | grep -q 'packager-status:running' &&
+               xcrun simctl get_app_container "$BLOOM_IOS_DEVICE" host.exp.Exponent app >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 3
+          done
+          cat test-results/ios/metro.log
+          exit 1
+      - name: Run navigation and direct-link smoke tests
+        timeout-minutes: 8
+        run: maestro --device "$BLOOM_IOS_DEVICE" test --format junit --output test-results/ios/results.xml .maestro/ios-foundation.yml
+      - name: Collect diagnostic screenshot
+        if: always() && env.BLOOM_IOS_DEVICE != ''
+        run: |
+          mkdir -p test-results/ios
+          xcrun simctl io "$BLOOM_IOS_DEVICE" screenshot test-results/ios/final-screen.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-smoke-evidence
+          path: test-results/ios/
+          retention-days: 1
+      - name: Stop test resources
+        if: always()
+        shell: bash
+        run: |
+          if test -f test-results/ios/metro.pid; then
+            kill "$(cat test-results/ios/metro.pid)" || true
+          fi
+          if test -n "${BLOOM_IOS_DEVICE:-}"; then
+            xcrun simctl shutdown "$BLOOM_IOS_DEVICE" || true
+          fi
