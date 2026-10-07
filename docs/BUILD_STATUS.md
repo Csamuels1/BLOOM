@@ -27,13 +27,17 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [ ] Phase 13: Release Qualification
 - [ ] Phase 14: Store-Ready Release
 
+## Owner-approved iOS deferral
+
+On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
+
 ## Current phase: Phase 1
 
 - Active: [#4 Expo foundation and EAS profiles](https://github.com/Csamuels1/BLOOM/issues/4).
 - Next, sequentially: [#5 design system](https://github.com/Csamuels1/BLOOM/issues/5), [#6 approved brand assets](https://github.com/Csamuels1/BLOOM/issues/6), then [#7 exit gate](https://github.com/Csamuels1/BLOOM/issues/7).
-- Issue #4 remains open until its platform smoke tests and review workflow are complete. See [development setup](DEVELOPMENT.md).
+- Issue #4 remains open until its non-iOS acceptance and review workflow are complete; iOS verification is deferred—not passed. See [development setup](DEVELOPMENT.md).
 - Local scaffold verification: six app tests, type/lint/format checks, Expo compatibility/Doctor checks, all-platform exports, and Android Expo Go navigation passed. iOS runtime, browser interaction, signed builds, and the documented dependency-security review remain open. The initial Phase 1 checkpoint is published with approval; follow-up changes require new approval.
-- Security follow-up: selector-parser and UUID fixes pass five additional consumer-level tests. Four root advisories remain; `dependency-audit` fails until those findings are resolved. All 14 tests and application CI pass on [draft PR #66](https://github.com/Csamuels1/BLOOM/pull/66), commit `c622bf0`, committed and pushed with owner approval. Repository policy passed after retrying a GitHub HTTP 500. The hosted iOS simulator booted, but Maestro's driver timed out before app assertions; a timeout/diagnostics follow-up awaits commit approval. Browser interaction remains unverified.
+- Security follow-up: selector-parser and UUID fixes pass five consumer-level tests. Four root advisories remain; `dependency-audit` fails until resolved. All 14 tests and application/repository CI pass on [draft PR #66](https://github.com/Csamuels1/BLOOM/pull/66), most recently commit `6ded451`, published with owner approval. The iOS retry also timed out before app assertions; further iOS work is deferred to #58. Browser interaction remains unverified.
 
 ## Completed phase gate: Phase 0
 

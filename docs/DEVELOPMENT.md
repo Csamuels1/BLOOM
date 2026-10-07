@@ -66,13 +66,13 @@ There is no automatic EAS build, submission, update, production access, or crede
 
 ## Manual acceptance (issue #4 remains open until evidence is recorded)
 
-- [ ] iOS: cold launch, welcome screen, forward navigation, return, direct foundation link.
+- [ ] DEFERRED to Phase 13 #58, not passed: iOS cold launch, welcome screen, forward navigation, return, direct foundation link.
 - [x] Android: the same flows, plus system Back (Expo Go smoke test, not a signed native build).
 - [ ] Web: cold launch, forward/return navigation, refresh `/foundation`, keyboard focus/activation.
 - [ ] Large text and screen-reader link/header announcements; no clipped content on small screens.
 - [ ] Development and preview native build evidence once authorized accounts/identifiers are available.
 
-Record OS/device, build/client version, commands, date, results, and screenshot/log location. Automated Router tests and successful bundle exports are useful evidence but do not tick native runtime checks. Do not close issue #4 or start #5 while its required acceptance is outstanding.
+Record OS/device, build/client version, commands, date, results, and screenshot/log location. Automated Router tests and successful bundle exports are useful evidence but do not tick native runtime checks. Under [ADR-0006](adr/0006-defer-ios-qualification.md), iOS-specific portions of the accessibility and native-build checks are also deferred to #58. Do not close issue #4 or start #5 while required non-iOS acceptance is outstanding.
 
 ### Verification record: 2026-10-07
 
@@ -85,9 +85,11 @@ Record OS/device, build/client version, commands, date, results, and screenshot/
 - Android's initial system-UI stall and IPv6/IPv4 loopback mismatch were resolved before the passing smoke test. The test emulator and preview server were stopped afterward.
 - A fresh `npm ci` followed by `npm run verify` and `npm run doctor` passed. GitHub CI will run only after a separately approved commit/push/PR.
 
-### iOS simulator CI: initial run and pending retry
+### iOS simulator CI: failed retry, now deferred
 
-`.github/workflows/ios-smoke.yml` runs on pull requests using a standard `macos-15` runner, an available iPhone simulator, SDK-compatible Expo Go, and checksum-verified Maestro 2.11.0. `.maestro/ios-foundation.yml` exercises launch, forward/return navigation, and the direct foundation link. Available logs, screenshots, toolchain diagnostics, and JUnit results are retained for one day. Simulator selection has three local unit tests; both YAML files parse successfully. These checks do not establish that the remote workflow passes.
+`.github/workflows/ios-smoke.yml` is retained as manual-only under ADR-0006; restore pull-request runs in Phase 13. It uses a standard `macos-15` runner, an available iPhone simulator, SDK-compatible Expo Go, and checksum-verified Maestro 2.11.0. `.maestro/ios-foundation.yml` exercises launch, forward/return navigation, and the direct foundation link. Available logs, screenshots, toolchain diagnostics, and JUnit results are retained for one day. Simulator selection has three local unit tests; YAML parsing is not evidence that iOS runtime tests pass.
+
+[The retry on commit 6ded451](https://github.com/Csamuels1/BLOOM/actions/runs/37630102414) also failed before app assertions, despite a 300,000 ms driver timeout. Diagnostics recorded Xcode 16.4 with an iOS 26.2 simulator and a separate Expo Go open-URL timeout. The screenshot showed the simulator home screen, not BLOOM. No passing iOS test is claimed. The owner deferred investigation and all iOS-specific qualification to Phase 13; see #58. Application and repository checks passed on the same commit; dependency audit remains failing.
 
 [The first iOS run](https://github.com/Csamuels1/BLOOM/actions/runs/37627941962) booted the simulator and installed Expo Go, but Maestro's XCTest driver timed out before app assertions began. A proposed follow-up allows 300,000 ms for driver startup, a bounded ten-minute smoke step, and explicit debug output plus Xcode/runtime diagnostics. This is a mitigation to test, not a confirmed fix; persistent failure requires driver/toolchain investigation rather than repeated timeout increases. See the [Maestro timeout change](https://github.com/mobile-dev-inc/Maestro/blob/main/CHANGELOG.md) and [CLI debug-output reference](https://github.com/mobile-dev-inc/maestro-docs/blob/main/maestro-cli/maestro-cli-commands-and-options.md).
 

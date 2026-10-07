@@ -1,7 +1,7 @@
 name: iOS simulator smoke
 
 on:
-  pull_request:
+  # Owner-approved deferral: restore pull_request in Phase 13 (ADR-0006).
   workflow_dispatch:
 
 permissions:
