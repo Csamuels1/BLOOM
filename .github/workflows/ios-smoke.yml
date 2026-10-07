@@ -22,6 +22,8 @@ jobs:
       EXPO_NO_TELEMETRY: '1'
       NODE_OPTIONS: --dns-result-order=ipv4first
       MAESTRO_CLI_NO_ANALYTICS: 'true'
+      # Allow up to five minutes for XCTest startup on the hosted simulator.
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
     steps:
       - uses: actions/checkout@v7
         with:
@@ -73,8 +75,15 @@ jobs:
           cat test-results/ios/metro.log
           exit 1
       - name: Run navigation and direct-link smoke tests
-        timeout-minutes: 8
-        run: maestro --device "$BLOOM_IOS_DEVICE" test --format junit --output test-results/ios/results.xml .maestro/ios-foundation.yml
+        timeout-minutes: 10
+        run: maestro --device "$BLOOM_IOS_DEVICE" test --debug-output test-results/ios/maestro --format junit --output test-results/ios/results.xml .maestro/ios-foundation.yml
+      - name: Record simulator toolchain diagnostics
+        if: always()
+        run: |
+          mkdir -p test-results/ios
+          xcodebuild -version > test-results/ios/xcode-version.txt
+          xcrun simctl list devices booted --json > test-results/ios/booted-devices.json
+          xcrun simctl list runtimes --json > test-results/ios/runtimes.json
       - name: Collect diagnostic screenshot
         if: always() && env.BLOOM_IOS_DEVICE != ''
         run: |
