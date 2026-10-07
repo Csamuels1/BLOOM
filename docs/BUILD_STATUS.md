@@ -30,7 +30,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 ## Current phase gate: Phase 0
 
 - Active issue: [#1 Bootstrap repository governance and project tracking](https://github.com/Csamuels1/BLOOM/issues/1)
-- Blocked owner decision: [#2 Decide public repository license](https://github.com/Csamuels1/BLOOM/issues/2)
+- Owner decision recorded locally, awaiting commit and publication: [#2 Decide public repository license](https://github.com/Csamuels1/BLOOM/issues/2). Continue without an open-source license for now; repository visibility remains public.
 - Exit gate: [#3 Pass the Phase 0 exit gate](https://github.com/Csamuels1/BLOOM/issues/3)
 
 - [ ] Repository foundation files reviewed

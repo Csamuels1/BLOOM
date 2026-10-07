@@ -24,4 +24,4 @@ Every independently testable change is tracked by a GitHub issue and developed o
 
 ## License
 
-No open-source license has been granted. A licensing decision is tracked before public distribution.
+The owner confirmed on 2026-10-07 that BLOOM will continue without an open-source license for now ([decision #2](https://github.com/Csamuels1/BLOOM/issues/2)). The repository remains public; this decision does not make its contents private or grant an open-source license for reuse. Any future license or distribution terms require owner approval. Third-party dependencies retain their own licenses, which must be reviewed before distribution.
