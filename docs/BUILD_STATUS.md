@@ -39,7 +39,7 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 - Local scaffold verification: six app tests, type/lint/format checks, Expo compatibility/Doctor checks, all-platform exports, and Android Expo Go navigation passed. iOS runtime, browser interaction, signed builds, and the documented dependency-security review remain open. The initial Phase 1 checkpoint is published with approval; follow-up changes require new approval.
 - Security follow-up: selector-parser and UUID fixes pass five consumer-level tests. Four root advisories remain; `dependency-audit` fails until resolved. All 14 tests and application/repository CI pass on [draft PR #66](https://github.com/Csamuels1/BLOOM/pull/66), most recently commit `6ded451`, published with owner approval. The iOS retry also timed out before app assertions; further iOS work is deferred to #58. Browser interaction remains unverified.
 
-Issue #4 local security follow-up: the URI decoder advisory is addressed by a 0.5.0 override and a reproducible one-line caller patch, covered by five new tests (19 total). Three root advisories remain unresolved. The patch is not yet published or verified in CI; iOS remains deferred. No issue or phase has been closed by this work.
+Issue #4 security follow-up (2026-10-08): the URI decoder fix is published in `4dd7873` with passing application/repository CI. A local scoped coverage YAML upgrade now removes sprintf-js and adds four consumer regression tests (23 total). Only braces and node-forge remain as root advisories; security CI remains blocked. The YAML upgrade awaits publication/CI; iOS remains deferred. No issue or phase has been closed by this work.
 
 ## Completed phase gate: Phase 0
 

@@ -39,7 +39,7 @@ If necessary, run the SDK's `adb reverse tcp:8081 tcp:8081` for the test device.
 | `npm run export`             | Android, iOS and static web bundles                              |
 | `npm audit`                  | Dependency advisories; review separately from Expo compatibility |
 
-`npm run verify` combines types, lint, formatting, seven app tests, twelve Node toolchain regression tests, and dependency compatibility. Application CI additionally runs Expo Doctor and exports all platforms. A separate `dependency-audit` job runs `npm run audit:dependencies` and fails for moderate-or-higher findings; it currently cannot pass. CI requires no signing credentials and does not build native binaries or deploy. Require `application-checks` and `dependency-audit` alongside `repository-policy` in branch protection before the Phase 1 gate closes. No protection settings have been changed by this local work.
+`npm run verify` combines types, lint, formatting, seven app tests, sixteen Node toolchain regression tests, and dependency compatibility. Application CI additionally runs Expo Doctor and exports all platforms. A separate `dependency-audit` job runs `npm run audit:dependencies` and fails for moderate-or-higher findings; it currently cannot pass. CI requires no signing credentials and does not build native binaries or deploy. Require `application-checks` and `dependency-audit` alongside `repository-policy` in branch protection before the Phase 1 gate closes. No protection settings have been changed by this local work.
 
 Application installs must include development dependencies and run postinstall: pinned patch-package applies `patches/query-string+7.1.3.patch` to bridge the security-fixed decoder's ESM default into its CommonJS consumer. A failed patch aborts installation. Do not use `--ignore-scripts` for builds or tests; the audit-only CI job may use it because it does not execute application code. See [ADR-0005](adr/0005-expo-foundation-toolchain.md#uri-decoder-compatibility-patch).
 
@@ -100,6 +100,16 @@ Record OS/device, build/client version, commands, date, results, and screenshot/
 Standard GitHub-hosted runner usage is free for public repositories ([GitHub runner documentation](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)); this job is disabled if the repository becomes private. Artifact storage remains subject to the account's normal quota. No paid runner, Apple signing, EAS project, or production application registration is configured. Commit and push still require separate owner approvals, and opening a PR requires approval before triggering this proposed run. Fix any actual runner failures before checking off iOS acceptance. Expo Go smoke coverage does not replace later development/preview native builds or physical-device accessibility testing.
 
 ## Dependency audit status
+
+### Current follow-up: 2026-10-08
+
+The URI decoder fix is published in `4dd7873`; application/repository CI passed. A new local override scopes js-yaml 4.3.2 to the NYC configuration loader and removes its argparse 1/sprintf-js chain. A clean install confirms sprintf-js is absent. The current audit lists only two root advisories, braces and node-forge (56 propagated high-severity entries, zero moderate). It still exits nonzero; no suppression or waiver is added. Registry counts may change independently of the lockfile.
+
+Four new regression checks cover actual dependency resolution/lockfile absence, NYC YAML inheritance and key normalization, CLI help/stdin conversion, and malformed/JavaScript-specific tag rejection. This is a tooling-only change; iOS runtime work remains deferred. The scoped upgrade and regression fixtures require commit/push approval and remote CI validation. See [ADR-0005](adr/0005-expo-foundation-toolchain.md#coverage-yaml-dependency-override) for schema compatibility limits.
+
+The latest published braces 3.0.3 and node-forge 1.4.0 are still affected. Neither advisory lists a fixed release. Do not invent a patched version, force an Expo downgrade, or silently accept the findings. Further remediation requires a compatible dependency replacement, a reviewed maintained patch, or a separately approved risk decision; no such exception is currently authorized.
+
+### Earlier audit evidence
 
 The initial 2026-10-07 audit reported 71 affected dependency entries from six underlying advisories. Two targeted overrides now resolve the selector-parser and UUID advisories. The revised audit reports 62 affected entries (54 high, 8 moderate) from four underlying advisories. npm propagates severity through parent packages, so the affected-package counts are not counts of distinct vulnerabilities. This is still a failing security audit, not a production-ready baseline.
 

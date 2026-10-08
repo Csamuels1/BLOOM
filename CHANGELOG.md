@@ -8,6 +8,8 @@ The format follows Keep a Changelog principles. Releases use semantic versioning
 
 ### Added
 
+- Issue #4: scoped coverage YAML upgrade removes sprintf-js from the dependency tree; four regression tests cover loader and CLI compatibility. Braces and node-forge advisories remain unresolved.
+
 - Issue #4: locally integrated security-fixed URI decoder with a fail-fast install patch and five regression tests; three other root advisories remain unresolved.
 
 - Phase 0 repository governance and product documentation.

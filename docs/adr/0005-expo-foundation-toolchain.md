@@ -26,6 +26,12 @@ Override `decode-uri-component` to the upstream security-fixed 0.5.0 release. Ro
 
 Test actual Router dependency resolution, query round-trips, Unicode/spaces/arrays, malformed sequences, and bounded processing of long malformed input. This introduces maintenance work: remove both the override and patch together only after Router's upstream chain adopts a compatible fixed decoder and the same tests pass. Keep install scripts and development dependencies enabled for application builds; `npm ci --ignore-scripts` is permitted only in the audit job, which does not execute the app.
 
+### Coverage YAML dependency override
+
+Scope `js-yaml` 4.3.2 to `@istanbuljs/load-nyc-config` 1.1.0. Its YAML loader calls `load()`, which exists in v4; the upgraded package uses argparse 2 and removes the sprintf-js dependency. Do not force argparse 2 into the v3 CLI, whose deprecated API differs. No application YAML parser is replaced by this scoped override.
+
+The [v3-to-v4 migration](https://raw.githubusercontent.com/nodeca/js-yaml/4.1.0/migrate_v3_to_v4.md) changes schema behavior: JavaScript-specific tags are no longer accepted and numeric-looking strings should be quoted. BLOOM does not depend on those legacy tags. Regression checks exercise actual NYC YAML inheritance/key normalization, the upgraded CLI, malformed/unsafe YAML rejection, and absence of sprintf-js from the lockfile. Remove the override when the parent adopts a compatible maintained dependency and the same tests pass.
+
 ### Scope and limits
 
 - Two minimal routes validate the foundation; product screens and design-system work remain separate issues.
