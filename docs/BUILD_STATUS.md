@@ -41,6 +41,8 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 
 Issue #4 security follow-up (2026-10-08): the URI decoder fix is published in `4dd7873` with passing application/repository CI. A local scoped coverage YAML upgrade now removes sprintf-js and adds four consumer regression tests (23 total). Only braces and node-forge remain as root advisories; security CI remains blocked. The YAML upgrade awaits publication/CI; iOS remains deferred. No issue or phase has been closed by this work.
 
+Latest issue #4 checkpoint: `352f78a` published the sprintf removal with passing application/repository checks. Local braces/node-forge mitigations add six regression tests (29 total), with their limitations in [SECURITY_PATCHES.md](SECURITY_PATCHES.md). Security audit still fails and review is required; no waiver is approved. Android retesting hit a persistent emulator system dialog and browser discovery found no connected browser. Runtime/accessibility acceptance remains open; iOS remains deferred.
+
 ## Completed phase gate: Phase 0
 
 - Completed bootstrap: [#1](https://github.com/Csamuels1/BLOOM/issues/1), delivered in commit `d9630e4`.

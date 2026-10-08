@@ -39,7 +39,7 @@ If necessary, run the SDK's `adb reverse tcp:8081 tcp:8081` for the test device.
 | `npm run export`             | Android, iOS and static web bundles                              |
 | `npm audit`                  | Dependency advisories; review separately from Expo compatibility |
 
-`npm run verify` combines types, lint, formatting, seven app tests, sixteen Node toolchain regression tests, and dependency compatibility. Application CI additionally runs Expo Doctor and exports all platforms. A separate `dependency-audit` job runs `npm run audit:dependencies` and fails for moderate-or-higher findings; it currently cannot pass. CI requires no signing credentials and does not build native binaries or deploy. Require `application-checks` and `dependency-audit` alongside `repository-policy` in branch protection before the Phase 1 gate closes. No protection settings have been changed by this local work.
+`npm run verify` combines types, lint, formatting, seven app tests, twenty-two Node toolchain regression tests, and dependency compatibility. Application CI additionally runs Expo Doctor and exports all platforms. A separate `dependency-audit` job runs `npm run audit:dependencies` and fails for moderate-or-higher findings; it currently cannot pass. CI requires no signing credentials and does not build native binaries or deploy. Require `application-checks` and `dependency-audit` alongside `repository-policy` in branch protection before the Phase 1 gate closes. No protection settings have been changed by this local work.
 
 Application installs must include development dependencies and run postinstall: pinned patch-package applies `patches/query-string+7.1.3.patch` to bridge the security-fixed decoder's ESM default into its CommonJS consumer. A failed patch aborts installation. Do not use `--ignore-scripts` for builds or tests; the audit-only CI job may use it because it does not execute application code. See [ADR-0005](adr/0005-expo-foundation-toolchain.md#uri-decoder-compatibility-patch).
 
@@ -76,7 +76,17 @@ There is no automatic EAS build, submission, update, production access, or crede
 
 Record OS/device, build/client version, commands, date, results, and screenshot/log location. Automated Router tests and successful bundle exports are useful evidence but do not tick native runtime checks. Under [ADR-0006](adr/0006-defer-ios-qualification.md), iOS-specific portions of the accessibility and native-build checks are also deferred to #58. Do not close issue #4 or start #5 while required non-iOS acceptance is outstanding.
 
-### Verification record: 2026-10-07
+### Follow-up verification: 2026-10-08
+
+- Clean `npm ci` reapplied the URI decoder, braces, and node-forge patches. All 29 tests and 21 Expo Doctor checks passed, including six new mitigation regressions.
+- Android, iOS, and static web bundle exports passed after the changes; no new signed native build or iOS runtime check was performed.
+- Both navigation Pressables now have explicit accessible names. Router tests exercise link roles/names and screen headings, not just visible text.
+- Android 14 Pixel emulator / Expo Go 57.0.9: the patched app bundled and the welcome screen rendered, but a persistent Android "Process system isn't responding" dialog prevented reliable interaction checks. This attempt does not count as a passing navigation, large-text, small-screen or TalkBack test. The original font-scale setting was read but not changed. Diagnostic screenshot: `C:/tmp/bloom-runtime.png` (local only).
+- Browser skill recovery found no connected browser. Web keyboard/navigation/refresh checks remain blocked, not passed. HTTP/bundle results are not substitutes for browser interaction.
+- iOS runtime work remains deferred to #58. Native builds still require authorized account/project setup.
+- The preview server was stopped. The normal emulator shutdown stalled, so only the identified test-emulator process started for this run was stopped; no device data was wiped and the font-scale setting was never changed.
+
+### Earlier verification: 2026-10-07
 
 - TypeScript, ESLint, formatting, six Jest tests, Expo dependency check, and all 21 Expo Doctor checks passed locally.
 - iOS, Android, and static web production bundle exports passed; native binaries have not been built.
@@ -102,6 +112,8 @@ Standard GitHub-hosted runner usage is free for public repositories ([GitHub run
 ## Dependency audit status
 
 ### Current follow-up: 2026-10-08
+
+The coverage YAML fix is now published in `352f78a` with passing application/repository CI. Version-specific local mitigations for the two remaining findings are recorded in [temporary dependency mitigations](SECURITY_PATCHES.md): bounded braces nesting and the proposed upstream node-forge nested element-count check. Regression tests pass, but these are not released fixes or an independent security approval. npm audit still flags the original versions, and the audit job remains unchanged and failing. Do not describe this work as a clean audit or a completed issue.
 
 The URI decoder fix is published in `4dd7873`; application/repository CI passed. A new local override scopes js-yaml 4.3.2 to the NYC configuration loader and removes its argparse 1/sprintf-js chain. A clean install confirms sprintf-js is absent. The current audit lists only two root advisories, braces and node-forge (56 propagated high-severity entries, zero moderate). It still exits nonzero; no suppression or waiver is added. Registry counts may change independently of the lockfile.
 

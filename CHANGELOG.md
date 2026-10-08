@@ -8,6 +8,9 @@ The format follows Keep a Changelog principles. Releases use semantic versioning
 
 ### Added
 
+- Issue #4: tested local braces depth bounds and proposed upstream node-forge DigestAlgorithm validation backport; security review and raw audit findings remain open.
+- Issue #4: explicit navigation accessibility labels, role-based tests, and honest runtime-check blocker records.
+
 - Issue #4: scoped coverage YAML upgrade removes sprintf-js from the dependency tree; four regression tests cover loader and CLI compatibility. Braces and node-forge advisories remain unresolved.
 
 - Issue #4: locally integrated security-fixed URI decoder with a fail-fast install patch and five regression tests; three other root advisories remain unresolved.

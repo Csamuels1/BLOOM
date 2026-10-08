@@ -18,10 +18,11 @@ describe('foundation navigation', () => {
 
     expect(screen.getByRole('header', { name: copy.name })).toBeOnTheScreen();
     expect(screen.getByText(copy.notice)).toBeOnTheScreen();
-    fireEvent.press(screen.getByText(copy.explore));
+    fireEvent.press(screen.getByRole('link', { name: copy.explore }));
     expect(await screen.findByText(copy.title)).toBeOnTheScreen();
     expect(router.getPathname()).toBe('/foundation');
-    fireEvent.press(screen.getByText(copy.back));
+    expect(screen.getByRole('header', { name: copy.title })).toBeOnTheScreen();
+    fireEvent.press(screen.getByRole('link', { name: copy.back }));
     expect(await screen.findByText(copy.name)).toBeOnTheScreen();
     expect(router.getPathname()).toBe('/');
   });

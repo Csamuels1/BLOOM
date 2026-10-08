@@ -19,6 +19,7 @@ export default function FoundationScreen() {
           <Link href="/" replace asChild>
             <Pressable
               accessibilityRole="link"
+              accessibilityLabel={copy.back}
               className="min-h-[48px] justify-center rounded-xl bg-[#3B2A35] p-4 active:opacity-80"
             >
               <Text className="text-center text-lg text-[#FDF8F3]">
