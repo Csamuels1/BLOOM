@@ -78,6 +78,8 @@ Record OS/device, build/client version, commands, date, results, and screenshot/
 
 ### Follow-up verification: 2026-10-08
 
+- Published checkpoint `77599b9`: [application CI](https://github.com/Csamuels1/BLOOM/actions/runs/37737257027) passed 29 tests, Doctor, and all-platform exports; [repository policy](https://github.com/Csamuels1/BLOOM/actions/runs/37737256802) passed. Dependency audit remains failing for braces and node-forge; local mitigations are not an upstream fix or security approval.
+- Subsequent Android retry used a cold boot without loading or saving snapshots, with no device-data wipe. Dismissing the Android system dialogs temporarily recovered Expo Go and the welcome screen with its explicit link label. Metro returned `packager-status:running` on IPv4 loopback and the device reverse mapping was present, but Expo Go reported a CLI connection error. After force-stop/relaunch it stalled at the BLOOM splash screen; UI automation returned a null root. Local diagnostic screenshot: `C:/tmp/bloom-retry.png`. No new navigation, large-text, small-screen, or TalkBack pass is claimed, and font scale was not changed. The source of the relaunch failure remains unresolved.
 - Clean `npm ci` reapplied the URI decoder, braces, and node-forge patches. All 29 tests and 21 Expo Doctor checks passed, including six new mitigation regressions.
 - Android, iOS, and static web bundle exports passed after the changes; no new signed native build or iOS runtime check was performed.
 - Both navigation Pressables now have explicit accessible names. Router tests exercise link roles/names and screen headings, not just visible text.
