@@ -8,6 +8,8 @@ The format follows Keep a Changelog principles. Releases use semantic versioning
 
 ### Added
 
+- Issue #4: locally integrated security-fixed URI decoder with a fail-fast install patch and five regression tests; three other root advisories remain unresolved.
+
 - Phase 0 repository governance and product documentation.
 - Issue #4: Expo Router starter, exact-version dependency lockfile, NativeWind integration, development/preview/simulator/production build profiles, and foundation test tooling (verification in progress).
 - Issue #4: tested security overrides for selector-parser and Xcode's UUID dependency, five toolchain regression tests, and a blocking dependency-audit CI job. Four upstream advisories remain unresolved.

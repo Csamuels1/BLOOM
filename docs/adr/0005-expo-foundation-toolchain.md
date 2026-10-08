@@ -20,6 +20,12 @@ Pin `postcss-selector-parser` to 7.1.6 for its two installed consumers (Tailwind
 
 Five Node-based regression checks validate resolved versions, UUID buffer bounds, Xcode identifier generation, Tailwind output, and nested selectors. Keep these overrides until upstream packages adopt patched compatible dependencies, then remove them only with the same checks. See [the audit record](../DEVELOPMENT.md#dependency-audit-status) for unresolved findings.
 
+### URI decoder compatibility patch
+
+Override `decode-uri-component` to the upstream security-fixed 0.5.0 release. Router's only installed consumer, `query-string` 7.1.3, expects a callable CommonJS export; the new decoder exposes an ESM default. Retain query-string's public API and adapt only its import with the version-specific `patches/query-string+7.1.3.patch`. Apply it with pinned patch-package 8.0.1 during postinstall and fail installation if the patch no longer applies. Node 24 can require this synchronous ESM module, Metro transforms it for the app, and Jest explicitly transforms the decoder without replacing it with a mock.
+
+Test actual Router dependency resolution, query round-trips, Unicode/spaces/arrays, malformed sequences, and bounded processing of long malformed input. This introduces maintenance work: remove both the override and patch together only after Router's upstream chain adopts a compatible fixed decoder and the same tests pass. Keep install scripts and development dependencies enabled for application builds; `npm ci --ignore-scripts` is permitted only in the audit job, which does not execute the app.
+
 ### Scope and limits
 
 - Two minimal routes validate the foundation; product screens and design-system work remain separate issues.
