@@ -1,0 +1,27 @@
+appId: host.exp.Exponent
+name: BLOOM iOS foundation
+---
+- openLink: exp://127.0.0.1:8081
+- tapOn:
+    text: Open
+    optional: true
+- tapOn:
+    text: Continue
+    optional: true
+- tapOn:
+    text: Close
+    optional: true
+- extendedWaitUntil:
+    visible: Your body, your pace.
+    timeout: 120000
+- assertVisible: This is an early app preview. Your personal plan is not available yet.
+- tapOn: Explore the app foundation
+- assertVisible: A gentle beginning
+- tapOn: Back to welcome
+- assertVisible: Your body, your pace.
+- openLink: exp://127.0.0.1:8081/--/foundation
+- extendedWaitUntil:
+    visible: A gentle beginning
+    timeout: 30000
+- tapOn: Back to welcome
+- assertVisible: Your body, your pace.

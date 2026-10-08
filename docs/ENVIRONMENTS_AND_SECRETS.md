@@ -2,11 +2,11 @@
 
 ## Environments
 
-| Environment | Purpose | Data |
-| --- | --- | --- |
-| Local | Developer and automated database work | Synthetic only |
-| Staging | Integrated preview, sandbox billing, and release candidates | Synthetic or consented test accounts only |
-| Production | Public store release | Real user data |
+| Environment | Purpose                                                     | Data                                      |
+| ----------- | ----------------------------------------------------------- | ----------------------------------------- |
+| Local       | Developer and automated database work                       | Synthetic only                            |
+| Staging     | Integrated preview, sandbox billing, and release candidates | Synthetic or consented test accounts only |
+| Production  | Public store release                                        | Real user data                            |
 
 Each environment uses separate Supabase projects, RevenueCat configuration, EAS environment values, crash-reporting configuration, and store products where supported.
 

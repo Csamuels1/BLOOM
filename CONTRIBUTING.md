@@ -49,4 +49,4 @@ Review in this order:
 
 ## Local validation
 
-Phase 0 documentation changes run Markdown and repository-policy checks. Phase 1 will replace this section with the exact package-manager commands for formatting, linting, type checking, unit tests, Expo validation, and E2E tests.
+Run `npm ci`, `npm run verify`, `npm run doctor`, and `npm run export`. The verification command checks TypeScript, ESLint, formatting, Jest tests, and Expo dependency compatibility. Repository-policy checks remain in CI. See [development setup](docs/DEVELOPMENT.md) for device smoke tests and EAS prerequisites. A bundle export does not replace a device test.
