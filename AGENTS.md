@@ -16,6 +16,7 @@ These instructions apply to the entire repository.
 - Work through the milestones in `docs/BUILD_STATUS.md` in order.
 - Work on only one phase at a time.
 - Do not start the next phase until the current phase exit gate is complete and tested.
+- Owner-approved exception (2026-10-07): iOS-specific verification, builds, and fixes from Phases 1–12 are deferred to Phase 13, not waived or passed. Before closing each earlier gate, record its deferred iOS acceptance in issue #58 and label the phase "iOS verification deferred—not passed." All non-iOS gates still apply. Restore automatic iOS checks and complete the accumulated acceptance before closing Phase 13. See ADR-0006.
 - Every change must map to a GitHub issue with acceptance criteria, tests, dependencies, and documentation impact.
 - Use one branch per issue: `type/issue-N-short-description`.
 - Open pull requests against `main` and include `Closes #N`.

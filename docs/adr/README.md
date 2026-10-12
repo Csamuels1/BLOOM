@@ -15,3 +15,5 @@ Architecture Decision Records capture decisions that materially affect implement
 - [ADR-0002: Sequential issue and phase delivery](0002-sequential-delivery.md)
 - [ADR-0003: Safety and privacy boundaries](0003-safety-privacy-boundaries.md)
 - [ADR-0004: Regional content and recommendation strategy](0004-regional-content-strategy.md)
+- [ADR-0005: Expo foundation toolchain](0005-expo-foundation-toolchain.md)
+- [ADR-0006: Defer iOS qualification to Phase 13](0006-defer-ios-qualification.md)

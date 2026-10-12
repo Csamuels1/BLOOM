@@ -6,16 +6,16 @@ Warm, grounded, patient, non-judgmental, and quietly confident. BLOOM should fee
 
 ## Visual tokens
 
-| Token | Value | Purpose |
-| --- | --- | --- |
-| Primary Terracotta | `#C97C5D` | Primary actions and warmth |
-| Secondary Sage | `#8A9A5B` | Growth and positive states |
-| Background Ivory | `#FDF8F3` | Default app background |
-| Text Plum | `#3B2A35` | Primary text |
-| Accent Gold | `#D4A373` | Highlights and gentle celebrations |
-| Blush | `#E8B4B8` | Soft emphasis |
-| Muted Sage | `#C8D0B8` | Cards and subtle surfaces |
-| Caution Amber | `#D98E4A` | Genuine safety notices only |
+| Token              | Value     | Purpose                            |
+| ------------------ | --------- | ---------------------------------- |
+| Primary Terracotta | `#C97C5D` | Primary actions and warmth         |
+| Secondary Sage     | `#8A9A5B` | Growth and positive states         |
+| Background Ivory   | `#FDF8F3` | Default app background             |
+| Text Plum          | `#3B2A35` | Primary text                       |
+| Accent Gold        | `#D4A373` | Highlights and gentle celebrations |
+| Blush              | `#E8B4B8` | Soft emphasis                      |
+| Muted Sage         | `#C8D0B8` | Cards and subtle surfaces          |
+| Caution Amber      | `#D98E4A` | Genuine safety notices only        |
 
 Pure white is not a default background. Red is not used for calories, weight, missed logs, or ordinary errors.
 

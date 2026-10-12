@@ -10,13 +10,13 @@ Closes #
 
 ## Verification
 
-| Check | Command or method | Result |
-| --- | --- | --- |
-| Automated | | |
-| Manual | | |
-| iOS | | |
-| Android | | |
-| Web admin, if applicable | | |
+| Check                    | Command or method | Result |
+| ------------------------ | ----------------- | ------ |
+| Automated                |                   |        |
+| Manual                   |                   |        |
+| iOS                      |                   |        |
+| Android                  |                   |        |
+| Web admin, if applicable |                   |        |
 
 ## Review impact
 

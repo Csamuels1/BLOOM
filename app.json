@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "BLOOM",
+    "slug": "bloom",
+    "version": "0.1.0",
+    "scheme": "bloom",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router", "expo-status-bar", "expo-font"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
