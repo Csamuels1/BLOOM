@@ -6,7 +6,7 @@ Issue #4 supplies the Expo application foundation, not authentication or a healt
 
 ## Reproducible local setup
 
-- Node.js 24.14.0, npm 11.9.0; install with `npm ci` using the committed lockfile.
+- Node.js 24.14.0, npm 11.9.0, and exact Expo SDK 57.0.28-compatible package pins; install with `npm ci` using the committed lockfile.
 - In PowerShell use `npm.cmd` and `npx.cmd` if script execution is disabled.
 - `npm run start -- --go`: Expo Go preview (SDK 57-compatible client required).
 - `npm run start -- --dev-client`: an already installed development build.
