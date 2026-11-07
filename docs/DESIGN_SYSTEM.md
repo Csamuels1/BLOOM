@@ -21,9 +21,12 @@ against drift. **Do not hardcode brand hex values in components — import token
 - `minTouchTarget` — 48dp, meeting platform accessibility guidance.
 - `typography` — display 32, page title 24, section title 18, body 15,
   caption 13, each with line height and weight.
-- `fontFamilies` — Fraunces (display) and Manrope (body). **Font files are added
-  and loaded in the brand-assets work (#6);** until then components render the
-  correct sizes/weights with system fonts.
+- `fontFamilies` — Fraunces (display) and Manrope (body). The loading pipeline
+  is wired (`src/design/fonts.ts` + `_layout.tsx`); the approved font files are
+  supplied by the owner in the brand-assets work (#6, see
+  [../assets/brand/README.md](../assets/brand/README.md)). Until the files are
+  added, the font map is empty, so components render the correct sizes/weights
+  with system fonts and nothing breaks.
 
 ## Components (`src/components`)
 
