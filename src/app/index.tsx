@@ -1,32 +1,47 @@
 import { Link } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Body, Display, Typography } from '@/components';
 import { foundationCopy as copy } from '@/content/foundation';
+import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 
 export default function WelcomeScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-[#FDF8F3]">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View className="mx-auto w-full max-w-xl flex-1 justify-center gap-6 p-6">
-          <Text
-            accessibilityRole="header"
-            className="text-4xl font-semibold text-[#3B2A35]"
-          >
-            {copy.name}
-          </Text>
-          <Text className="text-2xl text-[#3B2A35]">{copy.tagline}</Text>
-          <Text className="text-lg text-[#3B2A35]">{copy.introduction}</Text>
-          <Text className="text-base text-[#3B2A35]">{copy.notice}</Text>
-          <Link href="/foundation" asChild>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            gap: spacing.xl,
+            padding: spacing.xl,
+            maxWidth: 560,
+            width: '100%',
+            alignSelf: 'center',
+          }}
+        >
+          <Display>{copy.name}</Display>
+          <Typography variant="pageTitle">{copy.tagline}</Typography>
+          <Body>{copy.introduction}</Body>
+          <Body>{copy.notice}</Body>
+          <Link href="/foundation" replace={false} asChild>
             <Pressable
               accessibilityRole="link"
               accessibilityLabel={copy.explore}
-              className="min-h-[48px] justify-center rounded-xl bg-[#3B2A35] p-4 active:opacity-80"
+              style={({ pressed }) => ({
+                minHeight: minTouchTarget,
+                justifyContent: 'center',
+                paddingHorizontal: spacing.xl,
+                paddingVertical: spacing.md,
+                borderRadius: radii.button,
+                backgroundColor: colors.plum,
+                opacity: pressed ? 0.85 : 1,
+              })}
             >
-              <Text className="text-center text-lg text-[#FDF8F3]">
+              <Body color="ivory" style={{ textAlign: 'center' }}>
                 {copy.explore}
-              </Text>
+              </Body>
             </Pressable>
           </Link>
         </View>
