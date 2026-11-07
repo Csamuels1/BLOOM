@@ -1,0 +1,6 @@
+extends: ./nyc-base.yml
+check-coverage: true
+branches: 80
+reporter:
+  - text
+  - json
