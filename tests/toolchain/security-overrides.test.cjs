@@ -8,14 +8,12 @@ const xcodeRequire = createRequire(require.resolve('xcode'));
 const tailwindRequire = createRequire(require.resolve('tailwindcss'));
 const nestedRequire = createRequire(tailwindRequire.resolve('postcss-nested'));
 
-test('Xcode resolves the patched CommonJS UUID implementation', () => {
-  assert.equal(xcodeRequire('uuid/package.json').version, '11.1.1');
-  const uuid = xcodeRequire('uuid');
-  assert.equal(uuid.validate(uuid.v4()), true);
-  assert.throws(
-    () => uuid.v5('bloom', uuid.v5.DNS, new Uint8Array(1)),
-    RangeError,
-  );
+test('Xcode no longer depends on the vulnerable uuid package', () => {
+  // xcode@4 switched to Node's built-in crypto.randomUUID, so the former
+  // xcode-scoped uuid@11.1.1 override (ADR-0005) is removed. Guard that no
+  // uuid dependency reappears under xcode.
+  assert.equal(xcodeRequire('xcode/package.json').dependencies.uuid, undefined);
+  assert.throws(() => xcodeRequire.resolve('uuid'), /Cannot find module/);
 });
 
 test('Xcode still generates unique 24-character project identifiers', () => {

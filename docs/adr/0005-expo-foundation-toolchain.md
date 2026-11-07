@@ -16,7 +16,9 @@ Use Node 24.14.0 and npm 11.9.0 locally and in CI. Keep mobile native folders ge
 
 ### Targeted security overrides
 
-Pin `postcss-selector-parser` to 7.1.6 for its two installed consumers (Tailwind and postcss-nested), and pin `uuid` to 11.1.1 only under `xcode`. UUID 11 retains a CommonJS export and the `v4()` API used by Xcode; newer ESM-only majors are not substituted. Selector-parser 7 changed insertion behavior, so compilation of arbitrary utilities, state variants and nested selectors is regression-tested through the actual consumers. These are intentional cross-major transitive overrides, not evidence of blanket compatibility with every consumer API.
+Pin `postcss-selector-parser` to 7.1.6 for its two installed consumers (Tailwind and postcss-nested). Selector-parser 7 changed insertion behavior, so compilation of arbitrary utilities, state variants and nested selectors is regression-tested through the actual consumers. This is an intentional cross-major transitive override, not evidence of blanket compatibility with every consumer API.
+
+Update (2026-11-07): the former xcode-scoped `uuid` 11.1.1 override was removed. Aligning Expo SDK 57 to its current patch releases brought `xcode@4.0.0`, which uses Node's built-in `crypto.randomUUID()` and no longer depends on `uuid`, so the advisory and the override are gone. A regression test guards that no `uuid` dependency reappears under `xcode`.
 
 Five Node-based regression checks validate resolved versions, UUID buffer bounds, Xcode identifier generation, Tailwind output, and nested selectors. Keep these overrides until upstream packages adopt patched compatible dependencies, then remove them only with the same checks. See [the audit record](../DEVELOPMENT.md#dependency-audit-status) for unresolved findings.
 

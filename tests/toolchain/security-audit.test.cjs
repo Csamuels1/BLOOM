@@ -36,7 +36,7 @@ test('collectAdvisories extracts GHSA ids from npm audit JSON', () => {
 
 test('evaluate passes when every advisory is allowlisted', () => {
   const allowed = [...ALLOWLIST.keys()][0];
-  const advisories = collectAdvisories(advisory(allowed, 'node-forge', 'high'));
+  const advisories = collectAdvisories(advisory(allowed, 'glob', 'moderate'));
   const { unexpected } = evaluate(advisories, ALLOWLIST);
   assert.deepEqual(unexpected, []);
 });

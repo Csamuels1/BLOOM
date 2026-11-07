@@ -42,58 +42,6 @@ const ALLOWLIST = new Map([
     'GHSA-g3hv-75wg-m249',
     'minimatch (Expo CLI / build tooling); not in app bundle.',
   ],
-  [
-    'GHSA-86w9-cpqp-85rv',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-4642-5mcj-2rqw',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-6wvx-3r32-xmcg',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-525v-9gp9-w22h',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-7wch-p9px-956x',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-h6cr-wjv9-3cpp',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-4487-j8r4-4g2f',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-5cwg-6vw7-rj6p',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-jc66-7q78-782g',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-8hrf-8g6f-7xwp',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-hqq3-7jhf-c5jx',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-5x38-2vff-x55p',
-    'node-forge (@expo/code-signing, build tooling); patched via patches/node-forge.',
-  ],
-  [
-    'GHSA-mrhx-c7xc-m3w5',
-    'zod: shipped zod is pinned to 4.6.7 (fixed). Remaining instance is @expo/cli nested zod@3.25.76, build tooling only.',
-  ],
 ]);
 
 function runAudit() {

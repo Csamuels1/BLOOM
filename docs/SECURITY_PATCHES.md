@@ -4,7 +4,7 @@ Status: owner-approved audit allowlist for build-time Expo tooling (2026-11-07).
 
 ## Audit allowlist decision (2026-11-07)
 
-Every advisory that reaches the shipped application bundle has been resolved. The only remaining user-facing dependency advisory, `zod` ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)), is fixed by pinning the app's `zod` to `4.6.7`. The remaining 17 `npm audit` advisories all originate in the **Expo CLI / build toolchain** (`@expo/cli`, `@expo/code-signing-certificates`, `tailwindcss` build chain) and are not part of the bundle shipped to users; several are additionally mitigated by `patches/` and package.json `overrides`.
+Every advisory that reaches the shipped application bundle has been resolved. The only user-facing dependency advisory, `zod` ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)), is fixed by pinning the app's `zod` to `4.6.7`. After aligning Expo SDK 57 to its current patch releases (which brought `node-forge` 1.4.3 with an upstream canonical-DigestInfo fix and cleared the nested `zod@3.25.76`), 4 `npm audit` advisories remain. All originate in the **Expo CLI / build toolchain** (`@expo/cli`, `@expo/code-signing-certificates`, `tailwindcss` build chain) and are not part of the bundle shipped to users; the `decode-uri-component` finding is additionally mitigated by package.json `overrides` and `patches/query-string`.
 
 Because these advisories cannot be cleared without upstream Expo releases, the owner approved replacing the previously raw, always-failing `npm audit` gate with an **explicit allowlist gate**:
 
@@ -13,7 +13,7 @@ Because these advisories cannot be cleared without upstream Expo releases, the o
 - Each allowlisted advisory is enumerated with justification in the script and must be mirrored here. The gate reports allowlisted advisories that are no longer present so stale entries are pruned.
 - The allowlist records accepted **build-time** risk only. It does not authorize production signing, a release, or any external gate, and it does not cover advisories on shipped runtime dependencies.
 
-Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f), `deepmerge` (GHSA-gcqx-w48m-w2h4), `glob` (GHSA-3g3m-2fjr-6pw4), `minimatch` (GHSA-g3hv-75wg-m249), `node-forge` (GHSA-86w9-cpqp-85rv, GHSA-4642-5mcj-2rqw, GHSA-6wvx-3r32-xmcg, GHSA-525v-9gp9-w22h, GHSA-7wch-p9px-956x, GHSA-h6cr-wjv9-3cpp, GHSA-4487-j8r4-4g2f, GHSA-5cwg-6vw7-rj6p, GHSA-jc66-7q78-782g, GHSA-8hrf-8g6f-7xwp, GHSA-hqq3-7jhf-c5jx, GHSA-5x38-2vff-x55p), and the build-tooling `zod@3.25.76` instance (GHSA-mrhx-c7xc-m3w5).
+Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f), `deepmerge` (GHSA-gcqx-w48m-w2h4), `glob` (GHSA-3g3m-2fjr-6pw4), and `minimatch` (GHSA-g3hv-75wg-m249).
 
 Prefer upstream fixed releases once available, removing each patch and allowlist entry only after equivalent regression tests pass.
 
@@ -25,14 +25,12 @@ Prefer upstream fixed releases once available, removing each patch and allowlist
 - Tests exercise ordinary nesting, ranges and escaped text, excessive balanced/unbalanced braces and parentheses below the existing input-length cap, and direct deep/cyclic child ASTs.
 - Compatibility limit: extreme nesting that previously sometimes worked is now deliberately rejected. This is a local input limit, not an upstream approved change or a general defense against every resource-exhaustion input. Callers must handle invalid-pattern errors; build configuration remains trusted.
 
-## node-forge 1.4.0
+## node-forge (patch removed on 2026-11-07; fixed upstream in 1.4.3)
 
-- Advisory: [GHSA-86w9-cpqp-85rv](https://github.com/advisories/GHSA-86w9-cpqp-85rv).
-- Local patch: `patches/node-forge+1.4.0.patch`.
-- Backport the nested DigestAlgorithm element-count check proposed in [upstream PR #1152](https://github.com/digitalbazaar/forge/pull/1152). The upstream proposal was not a released fix when inspected on 2026-10-08.
-- Require exactly the OID plus the optional NULL recognized by the validator. Retain the outer DigestInfo check.
-- Tests use ephemeral synthetic RSA keys and validly signed test structures to exercise the verification/parser boundary: valid SHA-256 with present/absent NULL succeeds; extra nested elements with/without NULL and extra outer elements are rejected; a mismatched digest fails.
-- These are parser regression tests, not a comprehensive cryptographic review or proof against all signature-forgery techniques. Independent security review and real signing qualification remain required.
+- Advisory: [GHSA-86w9-cpqp-85rv](https://github.com/advisories/GHSA-86w9-cpqp-85rv) and related node-forge advisories.
+- The former `patches/node-forge+1.4.0.patch` backported the nested DigestAlgorithm element-count check from [upstream PR #1152](https://github.com/digitalbazaar/forge/pull/1152) while no released fix existed.
+- Aligning Expo SDK 57 to its current patch releases brought `node-forge` 1.4.3, whose RSASSA-PKCS1-v1_5 verifier now re-encodes DigestInfo canonically (with and without NULL parameters) and compares bytes — a stricter superset of the patch. The local patch no longer applied and was removed.
+- The synthetic-RSA regression tests in `tests/toolchain/pending-security-patches.test.cjs` are retained and pass against unpatched 1.4.3 (valid SHA-256 with present/absent NULL succeeds; extra nested/outer elements and mismatched digests are rejected). They remain regression guards, not a comprehensive cryptographic review; independent security review and real signing qualification remain required.
 
 ## Patch lifecycle
 

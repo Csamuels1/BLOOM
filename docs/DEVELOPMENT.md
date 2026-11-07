@@ -129,14 +129,14 @@ The initial 2026-10-07 audit reported 71 affected dependency entries from six un
 
 Later on 2026-10-07, a local follow-up upgrades the URI decoder to the upstream fixed 0.5.0 release with a one-line query-string compatibility patch. The latest audit returned 59 affected entries (54 high, 5 moderate) from three root advisories: braces, node-forge, and sprintf-js. Counts can vary as registry advisory metadata changes; root findings and actual resolved versions, not a lower total alone, determine remediation. The pinned patch tool adds development dependencies but no new root advisory appeared in this audit. The decoder finding is removed; the security gate is still failing. This follow-up requires commit/push approval and CI validation.
 
-| Root dependency         | Advisory                                                                 | Area requiring review                                     |
-| ----------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------- |
-| braces                  | [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) | Build/test glob parsing                                   |
-| decode-uri-component    | [GHSA-vcc3-ghjq-m6fr](https://github.com/advisories/GHSA-vcc3-ghjq-m6fr) | Fixed locally with 0.5.0 override and tested caller patch |
-| node-forge              | [GHSA-86w9-cpqp-85rv](https://github.com/advisories/GHSA-86w9-cpqp-85rv) | Expo certificate tooling                                  |
-| postcss-selector-parser | [GHSA-rj75-hqrm-r3gf](https://github.com/advisories/GHSA-rj75-hqrm-r3gf) | Fixed with 7.1.6 override; consumer regressions pass      |
-| sprintf-js              | [GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c) | Test coverage tooling                                     |
-| uuid                    | [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq) | Fixed with Xcode-scoped 11.1.1 override; regressions pass |
+| Root dependency         | Advisory                                                                 | Area requiring review                                                                   |
+| ----------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| braces                  | [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) | Build/test glob parsing                                                                 |
+| decode-uri-component    | [GHSA-vcc3-ghjq-m6fr](https://github.com/advisories/GHSA-vcc3-ghjq-m6fr) | Fixed locally with 0.5.0 override and tested caller patch                               |
+| node-forge              | [GHSA-86w9-cpqp-85rv](https://github.com/advisories/GHSA-86w9-cpqp-85rv) | Fixed upstream in node-forge 1.4.3 (Expo SDK 57 align); patch removed, regressions pass |
+| postcss-selector-parser | [GHSA-rj75-hqrm-r3gf](https://github.com/advisories/GHSA-rj75-hqrm-r3gf) | Fixed with 7.1.6 override; consumer regressions pass                                    |
+| sprintf-js              | [GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c) | Test coverage tooling                                                                   |
+| uuid                    | [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq) | Gone: xcode@4.0.0 uses crypto.randomUUID; override removed, regression guards           |
 
 Track resolution under #4 and the #7 Phase 1 gate: review upstream fixes and compatibility, add regression tests for any override, and rerun clean installation, Doctor, bundles and runtime checks. Do not use `npm audit fix --force`: suggested changes include incompatible major upgrades and even an Expo downgrade. Do not suppress audit results or interpret development-only exposure as permission to waive release review.
 
