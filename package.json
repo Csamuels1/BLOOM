@@ -19,7 +19,7 @@
     "format": "prettier --write .",
     "test": "jest --runInBand",
     "test:toolchain": "node --test tests/toolchain/*.test.cjs",
-    "audit:dependencies": "npm audit --audit-level=moderate",
+    "audit:dependencies": "node scripts/security-audit.cjs",
     "doctor": "expo-doctor",
     "check:dependencies": "expo install --check",
     "export": "expo export --platform all",
@@ -57,7 +57,7 @@
     "react-native-svg": "15.15.4",
     "react-native-web": "0.21.3",
     "react-native-worklets": "0.10.1",
-    "zod": "4.6.5",
+    "zod": "4.6.7",
     "zustand": "5.0.15"
   },
   "devDependencies": {
