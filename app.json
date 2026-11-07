@@ -6,6 +6,7 @@
     "scheme": "bloom",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "backgroundColor": "#FDF8F3",
     "ios": {
       "supportsTablet": true
     },
