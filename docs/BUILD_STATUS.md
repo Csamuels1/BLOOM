@@ -12,8 +12,8 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 ## Phase progress
 
 - [x] Phase 0: Repository and Product Foundation
-- [~] Phase 1: Expo and Design-System Setup
-- [ ] Phase 2: Supabase Authentication
+- [x] Phase 1: Expo and Design-System Setup (iOS verification deferred—not passed, #58)
+- [~] Phase 2: Supabase Authentication
 - [ ] Phase 3: Onboarding UI
 - [ ] Phase 4: Supabase Schema and Profile Persistence
 - [ ] Phase 5: Home with Mock Meals
@@ -31,17 +31,29 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 1
+## Current phase: Phase 2
 
-- Done and merged: [#4 Expo foundation and EAS profiles](https://github.com/Csamuels1/BLOOM/issues/4) via [PR #66](https://github.com/Csamuels1/BLOOM/pull/66); [#5 design system](https://github.com/Csamuels1/BLOOM/issues/5) via [PR #67](https://github.com/Csamuels1/BLOOM/pull/67). iOS verification is deferred—not passed (carried to #58 per ADR-0006).
-- Active: [#6 approved brand assets](https://github.com/Csamuels1/BLOOM/issues/6) — original assets created and wired in; **owner approval pending**.
-- Next: [#7 exit gate](https://github.com/Csamuels1/BLOOM/issues/7).
+- Phase 1 closed on 2026-11-08 (iOS verification deferred—not passed, #58).
+- Active: [Phase 2 — Supabase Authentication](https://github.com/Csamuels1/BLOOM/milestone/3), exit gate [#11](https://github.com/Csamuels1/BLOOM/issues/11). Not started.
 
-Issue #4 resolution (2026-11-07, merged in PR #66): the shipped `zod` advisory is fixed (4.6.7); the dependency audit now runs an owner-approved allowlist gate ([ADR-0007](adr/0007-dependency-audit-allowlist.md)) that fails on any non-allowlisted advisory. Aligning Expo SDK 57 to current patch releases cleared `check:dependencies`, retired the node-forge patch (fixed upstream in 1.4.3) and the obsolete xcode→uuid override (xcode@4.0.0 uses `crypto.randomUUID`), leaving 4 allowlisted build-time advisories. CI on `main` is green (Application and Repository checks); iOS remains deferred to #58.
+## Completed phase gate: Phase 1
 
-Issue #5 resolution (2026-11-07, merged in PR #67): added `src/design/tokens.ts` (brand palette, spacing, radii, type scale, 48dp touch target, reduced-motion hook) mirrored in `tailwind.config.js` with a drift-guard test; reusable accessible components (`Typography` family, `Button`, `Pill`, `Card`, `SafetyNotice`) in `src/components`; and a design-system preview wired into the welcome/foundation screens. CI on `main` green; iOS device-visual verification deferred to #58. See [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
+Phase 1 (Expo and Design-System Setup) closed on 2026-11-08 with all issues complete and the non-iOS exit gate passed. iOS verification is deferred—not passed (recorded in #58 per ADR-0006).
 
-Issue #6 progress (2026-11-07): the pipeline scaffold landed in PR #68. A follow-up (2026-11-08) created the original brand assets and wired them in: an original geometric blossom mark (terracotta/blush/gold on Ivory) and "BLOOM" Fraunces wordmark, rasterized to `icon`/`adaptive-icon`/`splash`/`favicon` PNGs (`assets/images/`) and configured in `app.json` (icon, Android adaptive icon, web favicon, `expo-splash-screen` plugin). OFL-licensed Fraunces/Manrope font files were added (`assets/fonts/`, with OFL licenses) and are loaded via `src/design/fonts.ts`; `Typography` maps each variant to a weight-specific face. Reproducible generator at `scripts/generate-brand-assets.cjs` (SVG sources in `assets/brand/`). Local: verify, Doctor 21/21, all-platform export pass. **Remaining to close #6: recorded owner approval of the brand assets** (a `v1.0.0` release gate); iOS device preview deferred to #58.
+- Completed [#4 Expo foundation and EAS profiles](https://github.com/Csamuels1/BLOOM/issues/4) (PR #66): fixed the shipped `zod` advisory (4.6.7); replaced the always-failing audit with an owner-approved allowlist gate ([ADR-0007](adr/0007-dependency-audit-allowlist.md)); aligned Expo SDK 57 patch releases so `check:dependencies` passes; retired the node-forge patch (fixed upstream in 1.4.3) and the obsolete xcode→uuid override.
+- Completed [#5 design system](https://github.com/Csamuels1/BLOOM/issues/5) (PR #67): `src/design/tokens.ts` mirrored in `tailwind.config.js` (drift-guarded), reusable accessible components (`Typography`, `Button`, `Pill`, `Card`, `SafetyNotice`), reduced-motion hook. See [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md).
+- Completed [#6 brand assets](https://github.com/Csamuels1/BLOOM/issues/6) (PRs #68, #69): original blossom mark + Fraunces wordmark, icon/adaptive/splash/favicon, OFL Fraunces/Manrope fonts loaded and applied per-variant. Owner approval recorded 2026-11-08.
+- Completed exit gate [#7](https://github.com/Csamuels1/BLOOM/issues/7).
+
+Phase 1 exit-gate checklist:
+
+- [x] All Phase 1 issues complete (#4, #5, #6)
+- [x] Clean install (`npm ci`) succeeds with patches applied
+- [x] Green verification from clean install: type, lint, format, 31 Jest tests, 27 toolchain tests, `check:dependencies`
+- [x] Dependency audit gate passes (4 allowlisted build-time advisories)
+- [x] `expo-doctor` 21/21 and all-platform `expo export` pass
+- [x] Approved brand assets linked (#6 owner approval) and Android/web evidence (bundle export); iOS verification deferred—not passed (#58)
+- [x] CI green on `main` (Application and Repository checks)
 
 ## Completed phase gate: Phase 0
 
