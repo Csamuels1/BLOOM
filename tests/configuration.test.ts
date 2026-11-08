@@ -15,7 +15,11 @@ describe('reproducible foundation configuration', () => {
   it('uses Router with static Metro web output and light appearance', () => {
     expect(manifest.main).toBe('expo-router/entry');
     expect(app.expo.plugins).toContain('expo-router');
-    expect(app.expo.web).toEqual({ bundler: 'metro', output: 'static' });
+    expect(app.expo.web).toEqual({
+      bundler: 'metro',
+      output: 'static',
+      favicon: './assets/images/favicon.png',
+    });
     expect(app.expo.userInterfaceStyle).toBe('light');
   });
 

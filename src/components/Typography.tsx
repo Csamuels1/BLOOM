@@ -8,6 +8,20 @@ import {
   type TypographyVariant,
 } from '@/design/tokens';
 
+/**
+ * Maps each variant to a loaded brand face (see src/design/fonts.ts). Each face
+ * already carries its weight, so components set fontFamily rather than
+ * fontWeight (which would risk faux-bold). Falls back to system fonts if a face
+ * has not loaded.
+ */
+const FONT_FAMILY: Record<TypographyVariant, string> = {
+  display: 'Fraunces',
+  pageTitle: 'Fraunces',
+  sectionTitle: 'Manrope-SemiBold',
+  body: 'Manrope',
+  caption: 'Manrope-Medium',
+};
+
 export interface TypographyProps extends TextProps {
   /** Type scale entry. Defaults to `body`. */
   variant?: TypographyVariant;
@@ -27,9 +41,9 @@ export function Typography({
 }: TypographyProps) {
   const scale = typography[variant];
   const resolved: TextStyle = {
+    fontFamily: FONT_FAMILY[variant],
     fontSize: scale.fontSize,
     lineHeight: scale.lineHeight,
-    fontWeight: scale.weight,
     color: colors[color],
   };
 
