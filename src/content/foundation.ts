@@ -10,7 +10,7 @@ export const foundationCopy = {
   title: 'A gentle beginning',
   detail:
     'We are building BLOOM step by step. This preview checks that navigation and the app foundation work together.',
-  back: 'Back to welcome',
+  back: 'Back',
   previewHeading: 'Building blocks',
   previewBody:
     'These are the reusable pieces we will use to build your screens, with care for every reader.',
