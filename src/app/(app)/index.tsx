@@ -2,11 +2,20 @@ import { Link } from 'expo-router';
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Body, Display, Typography } from '@/components';
-import { foundationCopy as copy } from '@/content/foundation';
+import { Body, Button, PageTitle } from '@/components';
+import { homeCopy as copy } from '@/content/home';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
+import { useAuthStore } from '@/features/auth';
+import { getSupabaseClient } from '@/lib/supabase';
 
-export default function WelcomeScreen() {
+/**
+ * Authenticated home (issue #9). Only reachable while signed in; proves the
+ * protected group renders and that sign-out returns to the auth group via the
+ * same session-driven guard.
+ */
+export default function HomeScreen() {
+  const signOut = useAuthStore((state) => state.signOut);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -21,14 +30,13 @@ export default function WelcomeScreen() {
             alignSelf: 'center',
           }}
         >
-          <Display>{copy.name}</Display>
-          <Typography variant="pageTitle">{copy.tagline}</Typography>
-          <Body>{copy.introduction}</Body>
-          <Body>{copy.notice}</Body>
-          <Link href="/foundation" replace={false} asChild>
+          <PageTitle>{copy.title}</PageTitle>
+          <Body>{copy.body}</Body>
+
+          <Link href="/foundation" asChild>
             <Pressable
               accessibilityRole="link"
-              accessibilityLabel={copy.explore}
+              accessibilityLabel={copy.exploreFoundation}
               style={({ pressed }) => ({
                 minHeight: minTouchTarget,
                 justifyContent: 'center',
@@ -40,10 +48,18 @@ export default function WelcomeScreen() {
               })}
             >
               <Body color="ivory" style={{ textAlign: 'center' }}>
-                {copy.explore}
+                {copy.exploreFoundation}
               </Body>
             </Pressable>
           </Link>
+
+          <Button
+            label={copy.signOut}
+            variant="secondary"
+            onPress={() => {
+              void signOut(getSupabaseClient());
+            }}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
