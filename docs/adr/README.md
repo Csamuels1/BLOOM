@@ -18,3 +18,4 @@ Architecture Decision Records capture decisions that materially affect implement
 - [ADR-0005: Expo foundation toolchain](0005-expo-foundation-toolchain.md)
 - [ADR-0006: Defer iOS qualification to Phase 13](0006-defer-ios-qualification.md)
 - [ADR-0007: Dependency-audit allowlist for build-time Expo tooling](0007-dependency-audit-allowlist.md)
+- [ADR-0008: Supabase environment strategy](0008-supabase-environment-strategy.md)

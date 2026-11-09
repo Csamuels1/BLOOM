@@ -34,7 +34,9 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 ## Current phase: Phase 2
 
 - Phase 1 closed on 2026-11-08 (iOS verification deferred—not passed, #58).
-- Active: [Phase 2 — Supabase Authentication](https://github.com/Csamuels1/BLOOM/milestone/3), exit gate [#11](https://github.com/Csamuels1/BLOOM/issues/11). Not started.
+- Active: [#8 Initialize Supabase environments](https://github.com/Csamuels1/BLOOM/issues/8). Then [#9 auth client + protected routing](https://github.com/Csamuels1/BLOOM/issues/9), [#10 registration + recovery](https://github.com/Csamuels1/BLOOM/issues/10), [#11 exit gate](https://github.com/Csamuels1/BLOOM/issues/11).
+
+Issue #8 progress (2026-11-09): per [ADR-0008](adr/0008-supabase-environment-strategy.md) the owner starts with one live Supabase cloud project (dev/staging); a production project is created before launch. Added `src/config/env.ts` (zod-validated public `EXPO_PUBLIC_*` config; fails fast when unset) with tests, a gitignored `.env` scaffold, and Supabase setup steps in [DEVELOPMENT.md](DEVELOPMENT.md). Only the publishable (anon) key is held by the client; the service-role key is never read client-side. The Supabase client and protected routing follow in #9.
 
 ## Completed phase gate: Phase 1
 

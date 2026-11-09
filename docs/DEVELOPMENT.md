@@ -146,3 +146,29 @@ Remaining investigation, 2026-10-07:
 - The decoder's ESM-only 0.5.0 release is now integrated by changing query-string's decoder import to `.default`, without changing query-string's public exports. Four Node tests exercise the actual Router dependency chain, normal and malformed query handling, and long malformed inputs in a child process with a ten-second timeout. An additional Jest test verifies ESM transformation without mocking the decoder. These tests do not replace pending Android/web runtime acceptance; iOS remains deferred under ADR-0006.
 - `npm run audit:dependencies` returns nonzero until remaining findings are resolved. A passing `verify` or Expo Doctor does not override this failure. No security exception has been approved.
 - Five override regression checks pass via `npm run test:toolchain`; both actual consumer paths resolve patched packages. Runtime smoke evidence from before these tooling-only overrides remains recorded above; production exports are rerun after the changes.
+
+## Supabase environment setup (Phase 2)
+
+BLOOM uses Supabase. Per [ADR-0008](adr/0008-supabase-environment-strategy.md),
+development targets one real cloud project now (dev/staging); a separate
+production project is created before launch. Only `EXPO_PUBLIC_*` values are read
+by the client, via `src/config/env.ts`.
+
+**Create the dev project (owner):**
+
+1. At supabase.com, create a project (e.g. `bloom-dev`), choose a region, and
+   save the database password in a password manager.
+2. In **Project Settings → API**, copy the **Project URL** and the
+   **anon / publishable** key.
+3. Copy `.env.example` to `.env` and set:
+   - `EXPO_PUBLIC_SUPABASE_URL` = the Project URL
+   - `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` = the anon/publishable key
+   - `EXPO_PUBLIC_APP_ENV` = `staging` for the shared cloud project
+
+`.env` is gitignored. Never put the **service-role** (secret) key in `.env`, the
+client, logs, screenshots, issues, or PRs — it stays in Supabase only. For
+builds, set the same `EXPO_PUBLIC_*` values as EAS environment values.
+
+**CLI (later):** database migrations, RLS policies, and generated types are
+created in Phase 4 with the Supabase CLI (`npx supabase ...`) linked to the
+project; no local Docker stack is required by ADR-0008.
