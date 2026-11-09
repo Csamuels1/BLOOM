@@ -101,7 +101,7 @@ Record OS/device, build/client version, commands, date, results, and screenshot/
 
 ### iOS simulator CI: failed retry, now deferred
 
-`.github/workflows/ios-smoke.yml` is retained as manual-only under ADR-0006; restore pull-request runs in Phase 13. It uses a standard `macos-15` runner, an available iPhone simulator, SDK-compatible Expo Go, and checksum-verified Maestro 2.11.0. `.maestro/ios-foundation.yml` exercises launch, forward/return navigation, and the direct foundation link. Available logs, screenshots, toolchain diagnostics, and JUnit results are retained for one day. Simulator selection has three local unit tests; YAML parsing is not evidence that iOS runtime tests pass.
+`.github/workflows/ios-smoke.yml` is retained as manual-only under ADR-0006; restore pull-request runs in Phase 13. It uses a standard `macos-15` runner, an available iPhone simulator, SDK-compatible Expo Go, and checksum-verified Maestro 2.11.0. `.maestro/ios-auth.yml` exercises the signed-out surface: the sign-in entry, the protected-route deep-link guard, navigation to registration, and the 18+ eligibility gate blocking account creation. A full verified sign-up and the authenticated area need a seeded account and mailbox and are carried in the Phase 13 iOS gate (#58). Available logs, screenshots, toolchain diagnostics, and JUnit results are retained for one day. Simulator selection has three local unit tests; YAML parsing is not evidence that iOS runtime tests pass.
 
 [The retry on commit 6ded451](https://github.com/Csamuels1/BLOOM/actions/runs/37630102414) also failed before app assertions, despite a 300,000 ms driver timeout. Diagnostics recorded Xcode 16.4 with an iOS 26.2 simulator and a separate Expo Go open-URL timeout. The screenshot showed the simulator home screen, not BLOOM. No passing iOS test is claimed. The owner deferred investigation and all iOS-specific qualification to Phase 13; see #58. Application and repository checks passed on the same commit; dependency audit remains failing.
 
@@ -172,3 +172,27 @@ builds, set the same `EXPO_PUBLIC_*` values as EAS environment values.
 **CLI (later):** database migrations, RLS policies, and generated types are
 created in Phase 4 with the Supabase CLI (`npx supabase ...`) linked to the
 project; no local Docker stack is required by ADR-0008.
+
+### Email auth configuration (Phase 2, issue #10, owner)
+
+The email registration and recovery flows need these set in the Supabase
+dashboard for the dev/staging project:
+
+1. **Authentication → Providers → Email**: enable email, keep **Confirm email**
+   on (users verify before their first session).
+2. **Authentication → URL Configuration → Redirect URLs**: allow-list the app's
+   deep links so verification and password-reset emails return to the app:
+   - `bloom://sign-in`
+   - `bloom://update-password`
+
+   In Expo Go during development these resolve as `exp://…/--/sign-in` and
+   `exp://…/--/update-password`; add those too if you test the email round-trip
+   in Expo Go. The client builds them from the `bloom` scheme via
+   `src/features/auth/redirect.ts`.
+
+3. **Authentication → Email Templates**: the default confirmation and recovery
+   templates work; health-copy review is not required for these transactional
+   emails, but keep the wording plain and non-judgmental.
+
+The flows fail safe without this: unverified accounts cannot sign in, and the
+client surfaces neutral, non-enumerating messages (`src/features/auth`).

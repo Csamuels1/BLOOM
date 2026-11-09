@@ -4,6 +4,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+// Deterministic deep-link builder so auth redirect helpers resolve under Jest
+// without a native linking module (issue #10).
+jest.mock('expo-linking', () => ({
+  ...jest.requireActual('expo-linking'),
+  createURL: (path) => `bloom://${String(path).replace(/^\/+/, '')}`,
+}));
+
 // Treat brand fonts as loaded in tests so the font-gated root layout renders.
 // At runtime useBrandFonts resolves once the real faces load; in unit tests we
 // assert component behavior, not font loading.

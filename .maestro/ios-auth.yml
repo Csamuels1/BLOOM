@@ -1,0 +1,41 @@
+appId: host.exp.Exponent
+name: BLOOM iOS auth
+# Exercises the unauthenticated surface: the sign-in entry, navigation to
+# registration, and the 18+ eligibility gate blocking account creation. A full
+# verified sign-up is not driven here (it needs a seeded account and a mailbox);
+# authenticated-area E2E is carried in the Phase 13 iOS gate (#58).
+---
+- openLink: exp://127.0.0.1:8081
+- tapOn:
+    text: Open
+    optional: true
+- tapOn:
+    text: Continue
+    optional: true
+- tapOn:
+    text: Close
+    optional: true
+# Signed out, the app lands on sign-in.
+- extendedWaitUntil:
+    visible: Your body, your pace.
+    timeout: 120000
+- assertVisible: Sign in
+# A deep link to a protected route must not reach it while signed out.
+- openLink: exp://127.0.0.1:8081/--/foundation
+- extendedWaitUntil:
+    visible: Sign in
+    timeout: 30000
+- assertNotVisible: A gentle beginning
+# Go to registration.
+- tapOn: Create an account
+- assertVisible: Create your account
+- assertVisible: I confirm I am 18 or older.
+# Attempt to create without confirming 18+ — creation is blocked with a notice.
+- tapOn:
+    id: email
+    optional: true
+- tapOn: Create account
+- assertVisible: Please confirm you are 18 or older to continue.
+# Return to sign-in.
+- tapOn: Already have an account? Sign in
+- assertVisible: Your body, your pace.
