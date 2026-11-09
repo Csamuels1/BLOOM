@@ -58,9 +58,15 @@ jobs:
 
       - name: Validate Markdown links
         uses: lycheeverse/lychee-action@v2
+        env:
+          # Authenticate github.com requests so link checks are not rate-limited
+          # (unauthenticated bursts return rotating 504s on valid links). See #73.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           args: >-
             --no-progress
+            --max-retries 3
+            --retry-wait-time 10
             --exclude '^https://github.com/Csamuels1/BLOOM/security/advisories/new$'
             './**/*.md'
           fail: true
