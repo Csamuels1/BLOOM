@@ -7,13 +7,17 @@ import { onboardingCopy as copy } from '@/content/onboarding';
 import { colors, minTouchTarget, spacing } from '@/design/tokens';
 
 import { useOnboardingStore } from './onboardingStore';
+import { CycleStep } from './screens/CycleStep';
+import { DietaryAllergensStep } from './screens/DietaryAllergensStep';
 import { FeedingStep } from './screens/FeedingStep';
 import { GoalStep } from './screens/GoalStep';
-import { PlaceholderStep } from './screens/PlaceholderStep';
 import { PostpartumMonthsStep } from './screens/PostpartumMonthsStep';
 import { PostpartumStep } from './screens/PostpartumStep';
 import { PregnancyBoundaryStep } from './screens/PregnancyBoundaryStep';
 import { PregnancyStep } from './screens/PregnancyStep';
+import { PreviewStep } from './screens/PreviewStep';
+import { RegionUnitsStep } from './screens/RegionUnitsStep';
+import { StatsStep } from './screens/StatsStep';
 import { WelcomeStep } from './screens/WelcomeStep';
 import {
   isOptionalStep,
@@ -28,7 +32,8 @@ import {
  * store, so this is a single route rather than one route per step. Steps whose
  * screens are not built yet fall back to a placeholder (#14, #15).
  */
-const STEP_COMPONENTS: Partial<Record<OnboardingStepId, ComponentType>> = {
+// A full record: TypeScript enforces that every onboarding step has a screen.
+const STEP_COMPONENTS: Record<OnboardingStepId, ComponentType> = {
   welcome: WelcomeStep,
   goal: GoalStep,
   pregnancy: PregnancyStep,
@@ -36,6 +41,11 @@ const STEP_COMPONENTS: Partial<Record<OnboardingStepId, ComponentType>> = {
   postpartum: PostpartumStep,
   'postpartum-months': PostpartumMonthsStep,
   feeding: FeedingStep,
+  stats: StatsStep,
+  'region-units': RegionUnitsStep,
+  'dietary-allergens': DietaryAllergensStep,
+  cycle: CycleStep,
+  preview: PreviewStep,
 };
 
 export function OnboardingFlow() {
@@ -44,7 +54,7 @@ export function OnboardingFlow() {
   const back = useOnboardingStore((state) => state.back);
   const skip = useOnboardingStore((state) => state.skip);
 
-  const StepComponent = STEP_COMPONENTS[currentStepId] ?? PlaceholderStep;
+  const StepComponent = STEP_COMPONENTS[currentStepId];
   const visible = visibleStepIds(draft);
   const position = visible.indexOf(currentStepId) + 1;
   const canGoBack = prevStepId(currentStepId, draft) !== null;
