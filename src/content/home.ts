@@ -4,6 +4,7 @@
 export const homeCopy = {
   title: 'Welcome back',
   body: 'You are signed in. This is your private space; real features arrive in the next phases.',
+  startOnboarding: 'Set up your space',
   exploreFoundation: 'Explore the app foundation',
   signOut: 'Sign out',
 } as const;
