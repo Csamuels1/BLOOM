@@ -7,10 +7,20 @@ import { onboardingCopy as copy } from '@/content/onboarding';
 import { colors, minTouchTarget, spacing } from '@/design/tokens';
 
 import { useOnboardingStore } from './onboardingStore';
+import { FeedingStep } from './screens/FeedingStep';
 import { GoalStep } from './screens/GoalStep';
 import { PlaceholderStep } from './screens/PlaceholderStep';
+import { PostpartumMonthsStep } from './screens/PostpartumMonthsStep';
+import { PostpartumStep } from './screens/PostpartumStep';
+import { PregnancyBoundaryStep } from './screens/PregnancyBoundaryStep';
+import { PregnancyStep } from './screens/PregnancyStep';
 import { WelcomeStep } from './screens/WelcomeStep';
-import { prevStepId, visibleStepIds, type OnboardingStepId } from './steps';
+import {
+  isOptionalStep,
+  prevStepId,
+  visibleStepIds,
+  type OnboardingStepId,
+} from './steps';
 
 /**
  * Store-driven onboarding host (issue #13). Renders the component for the
@@ -21,17 +31,24 @@ import { prevStepId, visibleStepIds, type OnboardingStepId } from './steps';
 const STEP_COMPONENTS: Partial<Record<OnboardingStepId, ComponentType>> = {
   welcome: WelcomeStep,
   goal: GoalStep,
+  pregnancy: PregnancyStep,
+  'pregnancy-boundary': PregnancyBoundaryStep,
+  postpartum: PostpartumStep,
+  'postpartum-months': PostpartumMonthsStep,
+  feeding: FeedingStep,
 };
 
 export function OnboardingFlow() {
   const currentStepId = useOnboardingStore((state) => state.currentStepId);
   const draft = useOnboardingStore((state) => state.draft);
   const back = useOnboardingStore((state) => state.back);
+  const skip = useOnboardingStore((state) => state.skip);
 
   const StepComponent = STEP_COMPONENTS[currentStepId] ?? PlaceholderStep;
   const visible = visibleStepIds(draft);
   const position = visible.indexOf(currentStepId) + 1;
   const canGoBack = prevStepId(currentStepId, draft) !== null;
+  const canSkip = isOptionalStep(currentStepId);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
@@ -59,6 +76,19 @@ export function OnboardingFlow() {
           <View />
         )}
         <Caption>{copy.stepProgress(position, visible.length)}</Caption>
+        {canSkip ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={copy.skip}
+            onPress={() => skip()}
+            hitSlop={8}
+            style={{ minHeight: minTouchTarget, justifyContent: 'center' }}
+          >
+            <Body color="terracotta">{copy.skip}</Body>
+          </Pressable>
+        ) : (
+          <View />
+        )}
       </View>
 
       <ScrollView
