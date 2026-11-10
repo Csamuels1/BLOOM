@@ -34,7 +34,9 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 ## Current phase: Phase 3
 
 - Phase 2 closed on 2026-11-10 (iOS verification deferred—not passed, #58).
-- Next: Onboarding UI — [#12](https://github.com/Csamuels1/BLOOM/issues/12) through the [#16 exit gate](https://github.com/Csamuels1/BLOOM/issues/16).
+- Active: [#12 onboarding framework](https://github.com/Csamuels1/BLOOM/issues/12). Then screens [#13](https://github.com/Csamuels1/BLOOM/issues/13), [#14](https://github.com/Csamuels1/BLOOM/issues/14), [#15](https://github.com/Csamuels1/BLOOM/issues/15) and the [#16 exit gate](https://github.com/Csamuels1/BLOOM/issues/16).
+
+Issue #12 progress (2026-11-10): typed, resumable onboarding framework in `src/features/onboarding`. The flow is defined data-first in `steps.ts` (ordered steps with conditional `available(draft)` predicates) so navigation is unit-tested without UI; a current pregnancy terminates at the care boundary and no weight-oriented step is reachable (no pregnancy weight-target plan, per PRODUCT_BRIEF). `schema.ts` is the typed zod draft (goal, pregnancy/postpartum/feeding, stats, region as a two-letter country code — never precise location, units, dietary/allergens, optional cycle). `onboardingStore.ts` is a Zustand store persisted to AsyncStorage (resume after interruption) with `patch`/`next`/`back`/`skip` (optional-only)/`goTo`/`reset`; **no backend writes** this phase (profile persistence is Phase 4). `useOnboardingForm.ts` binds React Hook Form + zod validation to the store. Screens that render each step arrive in #13–#15. 93 Jest tests (schema, conditional navigation, store persistence/resume, RHF integration).
 
 ## Completed phase gate: Phase 2
 
