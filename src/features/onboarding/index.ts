@@ -26,3 +26,4 @@ export {
 } from './steps';
 export { useOnboardingStore, ONBOARDING_STORAGE_KEY } from './onboardingStore';
 export { useOnboardingForm } from './useOnboardingForm';
+export { OnboardingFlow } from './OnboardingFlow';

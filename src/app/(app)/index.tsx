@@ -33,6 +33,26 @@ export default function HomeScreen() {
           <PageTitle>{copy.title}</PageTitle>
           <Body>{copy.body}</Body>
 
+          <Link href="/onboarding" asChild>
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel={copy.startOnboarding}
+              style={({ pressed }) => ({
+                minHeight: minTouchTarget,
+                justifyContent: 'center',
+                paddingHorizontal: spacing.xl,
+                paddingVertical: spacing.md,
+                borderRadius: radii.button,
+                backgroundColor: colors.terracotta,
+                opacity: pressed ? 0.85 : 1,
+              })}
+            >
+              <Body color="ivory" style={{ textAlign: 'center' }}>
+                {copy.startOnboarding}
+              </Body>
+            </Pressable>
+          </Link>
+
           <Link href="/foundation" asChild>
             <Pressable
               accessibilityRole="link"
