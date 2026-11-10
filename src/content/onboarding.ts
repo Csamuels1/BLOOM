@@ -68,7 +68,60 @@ export const onboardingCopy = {
   feedingNotFeeding: 'Not feeding a baby',
   feedingPreferNot: 'Prefer not to say',
 
-  // Interim placeholder for steps still being built (#15)
-  placeholderHeading: 'More to come',
-  placeholderBody: 'This part of setup is on its way in an upcoming update.',
+  // Stats — height (#15)
+  statsHeading: 'A couple of basics',
+  statsIntro:
+    'We use this to personalize gentle suggestions. Nothing here is used to judge you.',
+  heightLabel: 'Height in centimetres',
+  heightPlaceholder: 'e.g. 165',
+  heightImperial: (feet: number, inches: number) =>
+    `About ${feet} ft ${inches} in`,
+  errHeightRange: 'Please enter a height between 120 and 230 cm.',
+
+  // Region and units (#15)
+  regionHeading: 'Where are you based?',
+  regionIntro:
+    'We use your region for food suggestions — never your exact location. You can change this.',
+  countryNigeria: 'Nigeria',
+  countryUnitedStates: 'United States',
+  unitsLabel: 'Units',
+  unitMetric: 'Metric (kg, cm)',
+  unitImperial: 'Imperial (lb, in)',
+
+  // Dietary and allergens (#15)
+  dietaryHeading: 'Anything we should keep in mind?',
+  dietaryIntro: 'All optional. Choose any that fit — or none at all.',
+  dietaryLabel: 'Eating preferences',
+  dietaryVegetarian: 'Vegetarian',
+  dietaryVegan: 'Vegan',
+  dietaryPescatarian: 'Pescatarian',
+  dietaryHalal: 'Halal',
+  dietaryLowDairy: 'Low dairy',
+  allergensLabel: 'Allergens to avoid',
+  allergenPeanut: 'Peanut',
+  allergenTreeNut: 'Tree nuts',
+  allergenMilk: 'Milk',
+  allergenEgg: 'Egg',
+  allergenSoy: 'Soy',
+  allergenWheat: 'Wheat',
+  allergenFish: 'Fish',
+  allergenShellfish: 'Shellfish',
+  allergenDisclaimer:
+    'Allergen tags help us filter suggestions, but always check ingredient labels yourself and talk with a professional about serious allergies. BLOOM is not medical advice.',
+
+  // Cycle (#15, optional)
+  cycleHeading: 'Would you like gentle cycle context?',
+  cycleIntro:
+    'Optional. Cycle context can help explain normal fluctuations. You can turn it on later instead.',
+  cycleYes: 'Yes, include cycle context',
+  cycleNo: 'Not now',
+
+  // Preview / finish (#15)
+  previewHeading: 'You are all set',
+  previewIntro: 'Here is what we noted. You can change any of it later.',
+  previewGoalLabel: 'Goal',
+  previewRegionLabel: 'Region',
+  previewUnitsLabel: 'Units',
+  previewNotSet: 'Not set',
+  previewFinish: 'Finish setup',
 } as const;

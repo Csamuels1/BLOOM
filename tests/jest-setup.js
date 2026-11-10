@@ -4,6 +4,12 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+// Default device locale for onboarding region/units (issue #15). Tests that
+// need a different locale override this with jest.mock in-file.
+jest.mock('expo-localization', () => ({
+  getLocales: () => [{ regionCode: 'NG', measurementSystem: 'metric' }],
+}));
+
 // Deterministic deep-link builder so auth redirect helpers resolve under Jest
 // without a native linking module (issue #10).
 jest.mock('expo-linking', () => ({
