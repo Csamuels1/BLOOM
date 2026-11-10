@@ -14,8 +14,8 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 0: Repository and Product Foundation
 - [x] Phase 1: Expo and Design-System Setup (iOS verification deferred—not passed, #58)
 - [x] Phase 2: Supabase Authentication (iOS verification deferred—not passed, #58)
-- [~] Phase 3: Onboarding UI
-- [ ] Phase 4: Supabase Schema and Profile Persistence
+- [x] Phase 3: Onboarding UI (iOS verification deferred—not passed, #58)
+- [~] Phase 4: Supabase Schema and Profile Persistence
 - [ ] Phase 5: Home with Mock Meals
 - [ ] Phase 6: Weight Logging and Progress
 - [ ] Phase 7: Real Meal Recommendations
@@ -31,18 +31,32 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 3
+## Current phase: Phase 4
 
-- Phase 2 closed on 2026-11-10 (iOS verification deferred—not passed, #58).
-- Done: [#12 framework](https://github.com/Csamuels1/BLOOM/issues/12) (PR #77), [#13 welcome + goal](https://github.com/Csamuels1/BLOOM/issues/13) (PR #78), [#14 pregnancy/postpartum/feeding](https://github.com/Csamuels1/BLOOM/issues/14) (PR #79). Active: [#15 stats/region/dietary/cycle](https://github.com/Csamuels1/BLOOM/issues/15). Then the [#16 exit gate](https://github.com/Csamuels1/BLOOM/issues/16).
+- Phase 3 closed on 2026-11-10 (iOS verification deferred—not passed, #58).
+- Next: Supabase schema and profile persistence — [#17](https://github.com/Csamuels1/BLOOM/issues/17) through the [#21 exit gate](https://github.com/Csamuels1/BLOOM/issues/21). This is where the onboarding draft first persists to the backend (RLS-protected), with versioned migrations and generated types.
 
-Issue #12 progress (2026-11-10): typed, resumable onboarding framework in `src/features/onboarding`. The flow is defined data-first in `steps.ts` (ordered steps with conditional `available(draft)` predicates) so navigation is unit-tested without UI; a current pregnancy terminates at the care boundary and no weight-oriented step is reachable (no pregnancy weight-target plan, per PRODUCT_BRIEF). `schema.ts` is the typed zod draft (goal, pregnancy/postpartum/feeding, stats, region as a two-letter country code — never precise location, units, dietary/allergens, optional cycle). `onboardingStore.ts` is a Zustand store persisted to AsyncStorage (resume after interruption) with `patch`/`next`/`back`/`skip` (optional-only)/`goTo`/`reset`; **no backend writes** this phase (profile persistence is Phase 4). `useOnboardingForm.ts` binds React Hook Form + zod validation to the store. Screens that render each step arrive in #13–#15. 93 Jest tests (schema, conditional navigation, store persistence/resume, RHF integration).
+## Completed phase gate: Phase 3
 
-Issue #13 progress (2026-11-10): welcome and goal-selection screens. A store-driven host (`OnboardingFlow`, one route at `(app)/onboarding`) renders the current step's component and the shared chrome (Back + "Step X of Y"); navigation stays in the store, not the router. `WelcomeStep` shows the approved brand and tagline; `GoalStep` offers three equal, gently-worded choices (gentle loss / maintain / healthy gain) as an accessible radio group with no BMI chart or scale imagery. Added a reusable accessible `ChoiceCard` (radio/checkbox semantics) and `onboardingCopy` (voice-reviewed, in the prohibited-language test). The authenticated home links to onboarding; unbuilt steps show a neutral placeholder until #14/#15. 103 Jest tests (welcome, goal, host navigation added).
+Phase 3 (Onboarding UI) closed on 2026-11-10 with all issues complete and the non-iOS exit gate passed ([#16](https://github.com/Csamuels1/BLOOM/issues/16)). iOS verification is deferred—not passed (recorded in #58 per ADR-0006).
 
-Issue #14 progress (2026-11-10): pregnancy, postpartum, and feeding context — the safety-critical steps. A pregnancy question routes a pregnant user to `PregnancyBoundaryStep`, a gentle terminus that directs to qualified care (doctor/midwife/antenatal) and offers **no weight or calorie target** and no path forward into the plan (only Back to change the answer); it records `pregnancyBoundaryAcknowledged`. Non-pregnant users continue to postpartum status (postpartum / not right now / **prefer not to say**), where only a postpartum answer reveals the months stepper (0–24, conditional), then the optional feeding step. Feeding and cycle are skippable via a host Skip affordance (optional steps only). Added a shared `ChoiceStep` (radio group + gated Continue) reused by the choice steps. Voice reviewed; prefer-not-to-say is first-class. 115 Jest tests (pregnancy + boundary, conditional postpartum/months, optional feeding + skip).
+- [#12 framework](https://github.com/Csamuels1/BLOOM/issues/12) (PR #77): typed, resumable onboarding engine — data-first step flow with conditional navigation, a zod draft, an AsyncStorage-persisted Zustand store, and a React Hook Form binding. No backend writes.
+- [#13 welcome + goal](https://github.com/Csamuels1/BLOOM/issues/13) (PR #78): store-driven host at `(app)/onboarding`, brand/tagline welcome, three equal goal cards (no BMI/scale), reusable `ChoiceCard`.
+- [#14 pregnancy/postpartum/feeding](https://github.com/Csamuels1/BLOOM/issues/14) (PR #79): a pregnant user routes to a care boundary with no target plan; conditional postpartum months; optional feeding; prefer-not-to-say first-class.
+- [#15 stats/region/dietary/cycle](https://github.com/Csamuels1/BLOOM/issues/15) (PR #80): height validation, locale-defaulted region/units (no GPS, `expo-localization`), dietary/allergen multi-select with disclaimer, optional cycle, draft preview.
+- [#16 plan reveal + gate](https://github.com/Csamuels1/BLOOM/issues/16): a gentle, narrative-led plan reveal — a calorie **range** (illustrative, professionally-reviewed guidance is Phase 7/11), three mock regional meals, and a finish CTA. All local, no backend on any path.
 
-Issue #15 progress (2026-11-10): the remaining onboarding steps — stats, region/units, dietary/allergens, optional cycle, and the plan preview — completing the local flow. `StatsStep` validates height (120–230 cm, canonical) with an imperial read-out; `RegionUnitsStep` defaults country and units from the **OS locale only (no GPS)** via a new `localeDefaults()` helper (`expo-localization` 57.0.2, exact-pinned, config plugin added) and both are overridable, storing a two-letter country code; `DietaryAllergensStep` is optional multi-select with an allergen disclaimer (allergen tags filter suggestions, never medical advice — ADR-0003); `CycleStep` is optional (host Skip); `PreviewStep` summarizes the draft and finishes by returning to the app (persisting to a profile is Phase 4). The step registry is now exhaustive (`Record<OnboardingStepId, …>`, compile-time enforced), so the interim placeholder is removed. 127 Jest tests; all-platform export (android/ios/web) and expo-doctor 21/21 pass with the new native dependency.
+Phase 3 exit-gate checklist (from a clean `npm ci` install):
+
+- [x] Every Phase 3 issue complete (#12–#15 closed; #16 plan reveal built)
+- [x] Green `verify`: type, lint, format, 132 Jest tests, 27 toolchain tests, `check:dependencies`
+- [x] Dependency audit gate passes (4 allowlisted build-time advisories)
+- [x] `expo-doctor` 21/21 and all-platform `expo export` (android/ios/web, 18 routes)
+- [x] Complete onboarding E2E passes without backend access (`complete-flow` host walkthrough welcome→finish); prohibited-copy scan green (`copy.test`)
+- [x] Narrative-led, range-based plan reveal with three mock meals and a CTA
+- [x] iOS runtime/device onboarding E2E deferred—not passed (#58)
+
+The onboarding draft is local-only in Phase 3; persisting it to an RLS-protected profile is Phase 4.
 
 ## Completed phase gate: Phase 2
 

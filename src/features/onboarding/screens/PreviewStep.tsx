@@ -1,7 +1,16 @@
 import { router } from 'expo-router';
 import { View } from 'react-native';
 
-import { Body, Button, Caption, PageTitle } from '@/components';
+import {
+  Body,
+  Button,
+  Card,
+  Caption,
+  Display,
+  PageTitle,
+  SafetyNotice,
+  SectionTitle,
+} from '@/components';
 import { onboardingCopy as copy } from '@/content/onboarding';
 import { spacing } from '@/design/tokens';
 
@@ -34,17 +43,25 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
 }
 
 /**
- * Plan preview / finish (issue #15). Summarizes the draft and completes
- * onboarding by returning to the app. The draft stays on-device; persisting it
- * to a profile is Phase 4.
+ * Plan reveal and onboarding finish (issue #16). Narrative-led and gentle:
+ * words first, then a sample calorie *range* (illustrative only — never a
+ * per-user calculation; real guidance is professionally reviewed, Phase 7/11),
+ * three mock regional meals, and a CTA. Entirely local — no backend access on
+ * any path. Persisting the draft to a profile is Phase 4.
  */
 export function PreviewStep() {
   const draft = useOnboardingStore((state) => state.draft);
 
+  const meals =
+    draft.countryCode === 'NG'
+      ? [copy.mealNigeria1, copy.mealNigeria2, copy.mealNigeria3]
+      : [copy.mealGeneral1, copy.mealGeneral2, copy.mealGeneral3];
+
   return (
     <View style={{ gap: spacing.lg }}>
-      <PageTitle>{copy.previewHeading}</PageTitle>
-      <Body>{copy.previewIntro}</Body>
+      <PageTitle>{copy.planHeading}</PageTitle>
+      {/* Narrative leads — a number is never the first thing shown. */}
+      <Body>{copy.planNarrative}</Body>
 
       <SummaryRow
         label={copy.previewGoalLabel}
@@ -65,7 +82,22 @@ export function PreviewStep() {
         }
       />
 
-      <Button label={copy.previewFinish} onPress={() => router.replace('/')} />
+      <Card>
+        <Caption>{copy.planRangeLabel}</Caption>
+        <Display>{copy.planRange}</Display>
+      </Card>
+      <SafetyNotice title={copy.planRangeLabel} message={copy.planRangeNote} />
+
+      <SectionTitle>{copy.planMealsLabel}</SectionTitle>
+      <View style={{ gap: spacing.md }}>
+        {meals.map((meal) => (
+          <Card key={meal}>
+            <Body>{meal}</Body>
+          </Card>
+        ))}
+      </View>
+
+      <Button label={copy.planCta} onPress={() => router.replace('/')} />
     </View>
   );
 }
