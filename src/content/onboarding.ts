@@ -124,4 +124,24 @@ export const onboardingCopy = {
   previewUnitsLabel: 'Units',
   previewNotSet: 'Not set',
   previewFinish: 'Finish setup',
+
+  // Plan reveal (#16) — gentle, narrative, range-based. Not medical advice;
+  // illustrative only, never computed from personal data in this phase.
+  planHeading: 'A gentle place to begin',
+  planNarrative:
+    'Small, steady steps matter more than any single number. Here is a soft starting picture — think of it as a gentle guide, not a target to chase.',
+  planRangeLabel: 'A sample daily range',
+  planRange: '1,800–2,200 kcal',
+  planRangeNote:
+    'This is a general example, shown as a range on purpose. Your personalized guidance will be prepared and reviewed by qualified professionals before launch — it is never a strict rule.',
+  planMealsLabel: 'A few meal ideas to explore',
+  planCta: 'Start exploring BLOOM',
+
+  // Illustrative mock meals (#16). Real, reviewed regional catalogs are Phase 7.
+  mealNigeria1: 'Jollof rice with grilled chicken and sautéed greens',
+  mealNigeria2: 'Moi moi with a side of pap and fruit',
+  mealNigeria3: 'Yam and vegetable sauce with smoked fish',
+  mealGeneral1: 'Oatmeal with berries, yoghurt, and a spoon of nut butter',
+  mealGeneral2: 'Grilled chicken salad with beans and olive oil',
+  mealGeneral3: 'Baked fish with brown rice and steamed vegetables',
 } as const;
