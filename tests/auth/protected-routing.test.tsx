@@ -42,7 +42,7 @@ describe('protected routing', () => {
     setAuth('unauthenticated');
     renderRouter(routes, { initialUrl: '/' });
 
-    expect(await screen.findByText(authCopy.signInBody)).toBeOnTheScreen();
+    expect(await screen.findByText(authCopy.signInIntro)).toBeOnTheScreen();
     expect(screen.queryByText(homeCopy.body)).toBeNull();
   });
 
@@ -50,13 +50,13 @@ describe('protected routing', () => {
     setAuth('unauthenticated');
     renderRouter(routes, { initialUrl: '/' });
 
-    await screen.findByText(authCopy.signInBody);
+    await screen.findByText(authCopy.signInIntro);
     act(() => router.navigate('/foundation'));
 
     // The (app) group is not in the tree while signed out, so the protected
     // screen never renders — the guard is not just hiding UI.
     expect(screen.queryByText(foundationCopy.title)).toBeNull();
-    expect(screen.getByText(authCopy.signInBody)).toBeOnTheScreen();
+    expect(screen.getByText(authCopy.signInIntro)).toBeOnTheScreen();
   });
 
   it('shows the protected home to signed-in users', async () => {
@@ -64,7 +64,7 @@ describe('protected routing', () => {
     renderRouter(routes, { initialUrl: '/' });
 
     expect(await screen.findByText(homeCopy.body)).toBeOnTheScreen();
-    expect(screen.queryByText(authCopy.signInBody)).toBeNull();
+    expect(screen.queryByText(authCopy.signInIntro)).toBeNull();
   });
 
   it('keeps signed-in users out of the auth group', async () => {
@@ -74,7 +74,7 @@ describe('protected routing', () => {
     await screen.findByText(homeCopy.body);
     act(() => router.navigate('/sign-in'));
 
-    expect(screen.queryByText(authCopy.signInBody)).toBeNull();
+    expect(screen.queryByText(authCopy.signInIntro)).toBeNull();
     expect(screen.getByText(homeCopy.body)).toBeOnTheScreen();
   });
 
