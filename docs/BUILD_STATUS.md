@@ -13,8 +13,8 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 - [x] Phase 0: Repository and Product Foundation
 - [x] Phase 1: Expo and Design-System Setup (iOS verification deferred—not passed, #58)
-- [~] Phase 2: Supabase Authentication
-- [ ] Phase 3: Onboarding UI
+- [x] Phase 2: Supabase Authentication (iOS verification deferred—not passed, #58)
+- [~] Phase 3: Onboarding UI
 - [ ] Phase 4: Supabase Schema and Profile Persistence
 - [ ] Phase 5: Home with Mock Meals
 - [ ] Phase 6: Weight Logging and Progress
@@ -31,16 +31,31 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 2
+## Current phase: Phase 3
 
-- Phase 1 closed on 2026-11-08 (iOS verification deferred—not passed, #58).
-- Done: [#8 environments](https://github.com/Csamuels1/BLOOM/issues/8) (PR #71), [#9 auth client + protected routing](https://github.com/Csamuels1/BLOOM/issues/9) (PR #72). Active: [#10 registration + recovery](https://github.com/Csamuels1/BLOOM/issues/10). Then [#11 exit gate](https://github.com/Csamuels1/BLOOM/issues/11).
+- Phase 2 closed on 2026-11-10 (iOS verification deferred—not passed, #58).
+- Next: Onboarding UI — [#12](https://github.com/Csamuels1/BLOOM/issues/12) through the [#16 exit gate](https://github.com/Csamuels1/BLOOM/issues/16).
 
-Issue #8 complete (2026-11-09, PR #71): per [ADR-0008](adr/0008-supabase-environment-strategy.md) the owner starts with one live Supabase cloud project (dev/staging); a production project is created before launch. Added `src/config/env.ts` (zod-validated public `EXPO_PUBLIC_*` config; fails fast when unset) with tests, a gitignored `.env` scaffold, and Supabase setup steps in [DEVELOPMENT.md](DEVELOPMENT.md). Only the publishable (anon) key is held by the client; the service-role key is never read client-side. Live connectivity to the owner's project verified (`auth/v1/health` 200).
+## Completed phase gate: Phase 2
 
-Issue #9 progress (2026-11-09): persistent Supabase auth client and protected routing. Added `src/lib/supabase.ts` (lazy client holding only the publishable key; AsyncStorage session persistence, `autoRefreshToken`, `persistSession`, `detectSessionInUrl: false`, and an AppState-driven start/stop of token auto-refresh), a `src/features/auth` store (`onAuthStateChange`-driven: restore, refresh, expiry, sign-out) with an `AuthProvider`, and session-gated routing. Routes moved into `(auth)` (sign-in placeholder) and `(app)` (home + foundation demo) groups; the root navigator uses `Stack.Protected` so a protected route is absent from the navigation tree when signed out — it cannot be reached by UI state or deep link. The email registration and recovery forms follow in #10. Covered by auth-store and protected-routing unit tests (restoration, refresh, expiry, sign-out, guard bypass).
+Phase 2 (Supabase Authentication) closed on 2026-11-10 with all issues complete and the non-iOS exit gate passed ([#11](https://github.com/Csamuels1/BLOOM/issues/11)). iOS verification is deferred—not passed (recorded in #58 per ADR-0006).
 
-Issue #10 progress (2026-11-09): adult email registration and account-recovery flows. The `(auth)` group now holds real screens — sign-in, register, verify, forgot-password — plus a `(recovery)` group with set-new-password; the root navigator's guard is three-way (`recovering` → `(recovery)`, else authenticated → `(app)`, else `(auth)`), driven by the store's new `recovering` flag (set on `PASSWORD_RECOVERY`). Added a thin `authService` (sign-up/in, resend, reset request, update password) returning neutral discriminated results, an `authErrors` classifier that collapses wrong-password and unknown-account into one `invalid` reason (no account enumeration; `SECURITY_BASELINE.md`), zod `schemas`, and accessible `TextField`/`Checkbox` components. Registration requires an 18+ confirmation (`z.boolean().refine`) before creation; email verification is required (Supabase confirm-email on); reset request is always neutral ("if an account exists…"). Deep-link redirects (`bloom://sign-in`, `bloom://update-password`) must be allow-listed in the Supabase dashboard — see DEVELOPMENT.md. 72 Jest tests (auth-service, registration-flow, sign-in-flow, protected-routing, auth-store). `.maestro/ios-auth.yml` replaces the stale foundation flow; iOS/mobile E2E execution deferred—not passed (#58).
+- Completed [#8 Supabase environments](https://github.com/Csamuels1/BLOOM/issues/8) (PR #71): zod-validated public `EXPO_PUBLIC_*` config with a fail-fast loader; live project connectivity verified.
+- Completed [#9 auth client + protected routing](https://github.com/Csamuels1/BLOOM/issues/9) (PR #72): lazy Supabase client (publishable key only, AsyncStorage session, foreground auto-refresh), an `onAuthStateChange`-driven store, and `Stack.Protected` route groups that keep protected routes out of the navigation tree when signed out.
+- Completed [#10 registration + recovery](https://github.com/Csamuels1/BLOOM/issues/10) (PR #75): accessible sign-in, 18+-gated registration, email verification, password reset/update, and sign-out, with neutral non-enumerating errors.
+- CI reliability: [#73](https://github.com/Csamuels1/BLOOM/issues/73) (PR #74) authenticated and hardened the markdown link check.
+
+Phase 2 exit-gate checklist (from a clean `npm ci` install):
+
+- [x] Every Phase 2 issue complete (#8, #9, #10 closed)
+- [x] Green `verify`: type, lint, format, 72 Jest tests, 27 toolchain tests, `check:dependencies` ("up to date")
+- [x] Dependency audit gate passes (4 allowlisted build-time Expo advisories)
+- [x] `expo-doctor` 21/21 and all-platform `expo export` succeed (android/ios/web bundles, 16 routes)
+- [x] Automated auth tests pass (auth-store, auth-service, registration-flow, sign-in-flow, protected-routing)
+- [x] Android/web auth flows exercised via unit/integration tests and bundle export; iOS runtime verification deferred—not passed (#58)
+- [x] CI green on `main` (Application and Repository checks)
+
+The owner allow-listed the `bloom://sign-in` and `bloom://update-password` redirect URLs in the Supabase dashboard (DEVELOPMENT.md) so verification and reset emails return to the app.
 
 ## Completed phase gate: Phase 1
 
