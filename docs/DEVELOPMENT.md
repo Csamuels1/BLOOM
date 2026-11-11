@@ -230,3 +230,25 @@ npx supabase start -x gotrue,realtime,storage-api,imgproxy,kong,inbucket,edge-ru
 
 The database container alone is enough to apply migrations, run pgTAP, and
 generate types.
+
+### Reconstruction and advisors (Phase 4 exit gate, #21)
+
+The gate proves the backend can be rebuilt from migrations and accessed safely:
+
+1. **Rebuild:** `npm run db:reset` replays every migration onto an empty DB and
+   loads `supabase/seed.sql`. The seed is deterministic development catalog data
+   only (meals, support resources) kept as unreviewed drafts — not active, not
+   verified — so no content is ever served as approved (AGENTS.md safety). It
+   holds no user data, PII, or secrets.
+2. **Types match:** `npm run db:types` then confirm no diff against the committed
+   `src/types/database.ts` (ignoring Prettier formatting).
+3. **Advisors:** run the Supabase security and performance advisors against the
+   reconstructed schema (the dashboard advisors, or the equivalent catalog
+   queries). The invariants are also encoded as pgTAP in
+   `supabase/tests/0005_advisors.test.sql`, so `npm run test:db` fails if a later
+   migration regresses one: every public table has RLS and a policy; every public
+   function pins a non-mutable `search_path`; every foreign key has a covering
+   index; every RLS policy wraps `auth.*()` in `(select …)` to avoid per-row
+   re-evaluation.
+4. **Policy matrix:** `npm run test:db` runs the full RLS/Storage authorization
+   matrix across owner / other-user / moderator roles.
