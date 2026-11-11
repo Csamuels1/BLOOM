@@ -196,3 +196,37 @@ dashboard for the dev/staging project:
 
 The flows fail safe without this: unverified accounts cannot sign in, and the
 client surfaces neutral, non-enumerating messages (`src/features/auth`).
+
+## Local database and migrations (Phase 4)
+
+Schema changes are versioned migrations under `supabase/migrations`, verified
+against a local Postgres before any cloud change. The Supabase CLI is pinned as
+a devDep (`supabase` 3.1.0); Docker Desktop is required.
+
+Scripts:
+
+- `npm run db:start` — boot the local stack (`supabase start`).
+- `npm run db:reset` — recreate the DB and re-apply all migrations + seed.
+- `npm run test:db` — run the pgTAP tests in `supabase/tests` (`supabase test db`).
+- `npm run db:types` — regenerate `src/types/database.ts` from the local DB.
+- `npm run db:stop` — stop the local stack.
+
+New migration: `npx supabase migration new <name>`, edit the SQL, then
+`db:reset` (or `npx supabase migration up`) and `test:db`.
+
+**Live project:** migrations are developed and verified locally. Applying them to
+the owner's Supabase project (`npx supabase db push`) is a backend deploy and
+requires explicit owner approval (AGENTS.md); it is done at the Phase 4 gate.
+Never commit the service-role key; `supabase/config.toml` holds only local,
+well-known development values.
+
+**Flaky Docker image pulls:** if `supabase start` fails to resolve
+`registry-1.docker.io` (intermittent Docker Desktop DNS), retry, or boot a
+minimal stack and let images cache across retries, e.g.:
+
+```
+npx supabase start -x gotrue,realtime,storage-api,imgproxy,kong,inbucket,edge-runtime,logflare,vector,postgres-meta,studio,supavisor
+```
+
+The database container alone is enough to apply migrations, run pgTAP, and
+generate types.
