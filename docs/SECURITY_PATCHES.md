@@ -57,3 +57,23 @@ individually (AGENTS.md Supabase standards).
 
 `persist_onboarding` and `export_current_user` are `SECURITY INVOKER` (RLS
 applies) and also force identity from `auth.uid()`.
+
+## Database advisor hardening (Phase 4 exit gate, #21)
+
+Running the Supabase security and performance advisors against the reconstructed
+schema surfaced two findings, fixed in migration
+`20261111155704_phase4_advisor_hardening.sql`:
+
+- **`function_search_path_mutable`** — `public.is_moderator()` and
+  `public.set_updated_at()` inherited the caller's `search_path`. For
+  `is_moderator` (used inside RLS policies to gate staff access) a mutable
+  `search_path` is a privilege-escalation surface. Both now pin
+  `search_path = ''`; their bodies reference only schema-qualified objects
+  (`auth.jwt()`) or `pg_catalog` built-ins (`now()`), so resolution is
+  unchanged. The account-lifecycle functions already pinned `search_path`.
+- **`unindexed_foreign_keys`** — the `reviewed_by` / `moderator_id` staff
+  foreign keys gained covering indexes.
+
+The RLS-enabled and `auth_rls_initplan` advisors were already clean (policies
+use `(select auth.uid())`). All five invariants are now encoded as catalog
+assertions in `supabase/tests/0005_advisors.test.sql` to prevent regression.
