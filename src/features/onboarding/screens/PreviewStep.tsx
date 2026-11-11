@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -13,6 +14,8 @@ import {
 } from '@/components';
 import { onboardingCopy as copy } from '@/content/onboarding';
 import { spacing } from '@/design/tokens';
+import { persistOnboarding, useProfileStore } from '@/features/profile';
+import { getSupabaseClient } from '@/lib/supabase';
 
 import { useOnboardingStore } from '../onboardingStore';
 import type { Goal, UnitSystem } from '../schema';
@@ -51,6 +54,26 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
  */
 export function PreviewStep() {
   const draft = useOnboardingStore((state) => state.draft);
+  const reset = useOnboardingStore((state) => state.reset);
+  const setProfile = useProfileStore((state) => state.setProfile);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const onFinish = async () => {
+    setBusy(true);
+    setError(null);
+    // The first real backend write: persist the draft to the RLS-protected
+    // profile before leaving onboarding.
+    const result = await persistOnboarding(getSupabaseClient(), draft);
+    setBusy(false);
+    if (!result.ok) {
+      setError(copy.planSaveError);
+      return;
+    }
+    setProfile(result.profile);
+    reset();
+    router.replace('/');
+  };
 
   const meals =
     draft.countryCode === 'NG'
@@ -97,7 +120,18 @@ export function PreviewStep() {
         ))}
       </View>
 
-      <Button label={copy.planCta} onPress={() => router.replace('/')} />
+      {error ? (
+        <Body color="terracotta" accessibilityLiveRegion="polite" role="alert">
+          {error}
+        </Body>
+      ) : null}
+
+      <Button
+        label={copy.planCta}
+        onPress={onFinish}
+        loading={busy}
+        disabled={busy}
+      />
     </View>
   );
 }

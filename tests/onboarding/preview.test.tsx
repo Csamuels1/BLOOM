@@ -1,14 +1,31 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 
 import { onboardingCopy as copy } from '@/content/onboarding';
 import { useOnboardingStore } from '@/features/onboarding/onboardingStore';
 import { PreviewStep } from '@/features/onboarding/screens/PreviewStep';
 import type { OnboardingDraft } from '@/features/onboarding/schema';
+import { persistOnboarding } from '@/features/profile';
 
 const mockReplace = jest.fn();
 jest.mock('expo-router', () => ({
   router: { replace: (...args: unknown[]) => mockReplace(...args) },
 }));
+
+jest.mock('@/lib/supabase', () => ({ getSupabaseClient: () => ({}) }));
+jest.mock('@/features/profile', () => ({
+  persistOnboarding: jest.fn().mockResolvedValue({ ok: true, profile: {} }),
+  useProfileStore: (selector: (s: { setProfile: () => void }) => unknown) =>
+    selector({ setProfile: () => {} }),
+}));
+
+const mockedPersist = persistOnboarding as jest.MockedFunction<
+  typeof persistOnboarding
+>;
 
 function setDraft(draft: OnboardingDraft) {
   useOnboardingStore.setState({
@@ -20,6 +37,8 @@ function setDraft(draft: OnboardingDraft) {
 
 beforeEach(() => {
   mockReplace.mockClear();
+  mockedPersist.mockClear();
+  mockedPersist.mockResolvedValue({ ok: true, profile: {} as never });
   setDraft({
     isPregnant: false,
     goal: 'maintenance',
@@ -69,9 +88,20 @@ describe('PreviewStep plan reveal (#16)', () => {
     expect(screen.getByText(copy.unitMetric)).toBeOnTheScreen();
   });
 
-  it('finishes by returning to the app (no backend access)', () => {
+  it('persists onboarding to the profile, then returns to the app', async () => {
     render(<PreviewStep />);
     fireEvent.press(screen.getByRole('button', { name: copy.planCta }));
-    expect(mockReplace).toHaveBeenCalledWith('/');
+
+    await waitFor(() => expect(mockedPersist).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/'));
+  });
+
+  it('shows an error and stays if the save fails', async () => {
+    mockedPersist.mockResolvedValue({ ok: false, error: 'x' });
+    render(<PreviewStep />);
+    fireEvent.press(screen.getByRole('button', { name: copy.planCta }));
+
+    expect(await screen.findByText(copy.planSaveError)).toBeOnTheScreen();
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });

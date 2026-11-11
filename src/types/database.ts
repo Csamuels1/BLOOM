@@ -490,7 +490,38 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      delete_current_user: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      export_current_user: { Args: Record<PropertyKey, never>; Returns: Json };
+      is_moderator: { Args: Record<PropertyKey, never>; Returns: boolean };
+      persist_onboarding: {
+        Args: { p: Json };
+        Returns: {
+          age_confirmed: boolean;
+          allergens: string[];
+          country_code: string | null;
+          created_at: string;
+          dietary_preferences: string[];
+          feeding_context: string | null;
+          goal: string;
+          height_cm: number | null;
+          id: string;
+          onboarding_completed_at: string | null;
+          postpartum_months: number | null;
+          postpartum_status: string | null;
+          track_cycle: boolean;
+          unit_system: string;
+          updated_at: string;
+        };
+        SetofOptions: {
+          from: '*';
+          to: 'profiles';
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
     };
     Enums: {
       [_ in never]: never;
