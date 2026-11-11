@@ -40,3 +40,20 @@ Prefer upstream fixed releases once available, removing each patch and allowlist
 4. Recheck upstream releases and replace the local mitigations when a compatible published fix is verified.
 
 The URI decoder compatibility patch and scoped coverage YAML override remain documented in ADR-0005; neither is reverted by this work.
+
+## Security-definer database functions (Phase 4)
+
+`SECURITY DEFINER` functions run with the definer's privileges and are reviewed
+individually (AGENTS.md Supabase standards).
+
+- `public.delete_current_user()` (migration `20261111135613_...`): lets an
+  authenticated user delete their own account. It is **scoped strictly to
+  `auth.uid()`** — it never takes a target id — so a caller can only ever delete
+  themselves. It sets an empty `search_path`, is revoked from `public`/`anon`,
+  and is granted only to `authenticated`. It deletes the `auth.users` row, which
+  cascades to all owned rows and invalidates sessions. Private Storage objects
+  are removed client-side via the Storage API beforehand (direct deletes from
+  `storage.objects` are blocked by a Storage trigger).
+
+`persist_onboarding` and `export_current_user` are `SECURITY INVOKER` (RLS
+applies) and also force identity from `auth.uid()`.

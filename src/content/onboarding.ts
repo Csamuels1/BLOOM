@@ -136,6 +136,8 @@ export const onboardingCopy = {
     'This is a general example, shown as a range on purpose. Your personalized guidance will be prepared and reviewed by qualified professionals before launch — it is never a strict rule.',
   planMealsLabel: 'A few meal ideas to explore',
   planCta: 'Start exploring BLOOM',
+  planSaveError:
+    'We could not save your setup. Please check your connection and try again.',
 
   // Illustrative mock meals (#16). Real, reviewed regional catalogs are Phase 7.
   mealNigeria1: 'Jollof rice with grilled chicken and sautéed greens',

@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { onboardingCopy as copy } from '@/content/onboarding';
@@ -8,6 +13,13 @@ import { useOnboardingStore } from '@/features/onboarding/onboardingStore';
 const mockReplace = jest.fn();
 jest.mock('expo-router', () => ({
   router: { replace: (...args: unknown[]) => mockReplace(...args) },
+}));
+
+jest.mock('@/lib/supabase', () => ({ getSupabaseClient: () => ({}) }));
+jest.mock('@/features/profile', () => ({
+  persistOnboarding: jest.fn().mockResolvedValue({ ok: true, profile: {} }),
+  useProfileStore: (selector: (s: { setProfile: () => void }) => unknown) =>
+    selector({ setProfile: () => {} }),
 }));
 
 function renderFlow() {
@@ -38,7 +50,7 @@ const pressRadio = (name: string) =>
   fireEvent.press(screen.getByRole('radio', { name }));
 
 describe('complete onboarding flow (no backend)', () => {
-  it('walks a non-pregnant user from welcome to the plan reveal and finishes', () => {
+  it('walks a non-pregnant user from welcome to the plan reveal and finishes', async () => {
     renderFlow();
 
     // Welcome -> goal
@@ -68,16 +80,16 @@ describe('complete onboarding flow (no backend)', () => {
     // Region defaulted to the mocked NG locale, so meals are Nigerian.
     expect(screen.getByText(copy.mealNigeria1)).toBeOnTheScreen();
 
-    pressButton(copy.planCta);
-    expect(mockReplace).toHaveBeenCalledWith('/');
-
-    // The whole walkthrough collected data locally only.
-    const { draft } = useOnboardingStore.getState();
-    expect(draft).toMatchObject({
+    // The whole walkthrough collected the data locally before any save.
+    expect(useOnboardingStore.getState().draft).toMatchObject({
       goal: 'maintenance',
       isPregnant: false,
       postpartumStatus: 'not_postpartum',
       heightCm: 165,
     });
+
+    // Finish persists to the profile (mocked) and returns to the app.
+    pressButton(copy.planCta);
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/'));
   });
 });

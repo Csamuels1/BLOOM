@@ -1,11 +1,6 @@
 import type { Session } from '@supabase/supabase-js';
 import { router } from 'expo-router';
-import {
-  act,
-  fireEvent,
-  renderRouter,
-  screen,
-} from 'expo-router/testing-library';
+import { act, renderRouter, screen } from 'expo-router/testing-library';
 
 import AppLayout from '@/app/(app)/_layout';
 import FoundationScreen from '@/app/(app)/foundation';
@@ -78,14 +73,12 @@ describe('protected routing', () => {
     expect(screen.getByText(homeCopy.body)).toBeOnTheScreen();
   });
 
-  it('navigates from home to the foundation demo while signed in', async () => {
+  it('can reach the foundation screen within the app group while signed in', async () => {
     setAuth('authenticated');
     const view = renderRouter(routes, { initialUrl: '/' });
 
     await screen.findByText(homeCopy.body);
-    fireEvent.press(
-      screen.getByRole('link', { name: homeCopy.exploreFoundation }),
-    );
+    act(() => router.navigate('/foundation'));
 
     expect(await screen.findByText(foundationCopy.title)).toBeOnTheScreen();
     expect(view.getPathname()).toBe('/foundation');

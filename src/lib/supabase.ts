@@ -5,6 +5,10 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import { getEnv } from '@/config/env';
+import type { Database } from '@/types/database';
+
+/** The app's Supabase client, typed against the generated database schema. */
+export type AppSupabaseClient = SupabaseClient<Database>;
 
 /**
  * Supabase client for the app (issue #9).
@@ -16,12 +20,12 @@ import { getEnv } from '@/config/env';
  * The client holds only the public publishable (anon) key and persists the
  * session in AsyncStorage. The service-role key is never read here.
  */
-let client: SupabaseClient | undefined;
+let client: AppSupabaseClient | undefined;
 
-export function getSupabaseClient(): SupabaseClient {
+export function getSupabaseClient(): AppSupabaseClient {
   if (!client) {
     const { supabaseUrl, supabasePublishableKey } = getEnv();
-    client = createClient(supabaseUrl, supabasePublishableKey, {
+    client = createClient<Database>(supabaseUrl, supabasePublishableKey, {
       auth: {
         storage: AsyncStorage,
         // Refresh the access token before it expires while the app is active.
