@@ -398,7 +398,10 @@ deno_version = 2
 # secret_key = "env(SECRET_VALUE)"
 
 [analytics]
-enabled = true
+# Disabled for local dev: the logflare/vector analytics images are hosted on
+# docker.io and fail to pull reliably in some networks, which blocks the whole
+# local stack. Local analytics are not needed for schema/migration work.
+enabled = false
 port = 54327
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"
