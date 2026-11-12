@@ -52,6 +52,7 @@ export const photosCopy = {
 
   // A quiet reassurance about privacy.
   privacyNote: 'These photos stay private to you and are never shared.',
+  entryCta: 'Open private photos',
 } as const;
 
 export default photosCopy;

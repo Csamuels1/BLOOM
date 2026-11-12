@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { photosCopy } from '@/content/photos';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
 import { useProfileStore } from '@/features/profile';
@@ -94,6 +95,14 @@ describe('TodayScreen — overview', () => {
 
     fireEvent.press(screen.getByRole('button', { name: copy.quickLogWeight }));
     expect(router.navigate).toHaveBeenCalledWith('/weight-log');
+  });
+
+  it('opens private progress photos from the Today entry', () => {
+    setLoaded(null);
+    render(<TodayScreen />);
+
+    fireEvent.press(screen.getByRole('button', { name: photosCopy.entryCta }));
+    expect(router.navigate).toHaveBeenCalledWith('/progress-photos');
   });
 
   it('shows an honest "coming soon" note for meal logging (still Phase 6+)', () => {
