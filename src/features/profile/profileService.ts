@@ -31,11 +31,21 @@ export async function persistOnboarding(
   return { ok: true, profile: data };
 }
 
-/** Load the caller's profile, or null if onboarding has not been saved. */
+/**
+ * Load the caller's profile, or null if onboarding has not been saved. Throws on
+ * a real query error (e.g. offline) so callers can distinguish a failed load
+ * from an empty one and offer a retry.
+ */
 export async function loadProfile(
   client: AppSupabaseClient,
 ): Promise<Profile | null> {
-  const { data } = await client.from('profiles').select('*').maybeSingle();
+  const { data, error } = await client
+    .from('profiles')
+    .select('*')
+    .maybeSingle();
+  if (error) {
+    throw new Error(error.message);
+  }
   return data ?? null;
 }
 
