@@ -215,10 +215,15 @@ New migration: `npx supabase migration new <name>`, edit the SQL, then
 `db:reset` (or `npx supabase migration up`) and `test:db`.
 
 **Live project:** migrations are developed and verified locally. Applying them to
-the owner's Supabase project (`npx supabase db push`) is a backend deploy and
-requires explicit owner approval (AGENTS.md); it is done at the Phase 4 gate.
-Never commit the service-role key; `supabase/config.toml` holds only local,
-well-known development values.
+the owner's Supabase project is a backend deploy and requires explicit owner
+approval (AGENTS.md). The one-time push was done on 2026-11-12 (Phase 4
+migrations → `bloom-dev`). To apply new migrations later, from the project
+directory: `npx supabase login`, `npx supabase link --project-ref <ref>`, then
+**`npx supabase db push --remote`** — this CLI defaults `db push` to the local
+stack, so `--remote` is required to target the cloud project (a plain
+`db push` is a safe no-op against local). The link step prompts for the project
+database password; never commit it or the service-role key. `supabase/config.toml`
+holds only local, well-known development values.
 
 **Flaky Docker image pulls:** if `supabase start` fails to resolve
 `registry-1.docker.io` (intermittent Docker Desktop DNS), retry, or boot a
