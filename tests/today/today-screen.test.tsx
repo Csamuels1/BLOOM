@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
 import { photosCopy } from '@/content/photos';
+import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
 import { useProfileStore } from '@/features/profile';
@@ -103,6 +104,16 @@ describe('TodayScreen — overview', () => {
 
     fireEvent.press(screen.getByRole('button', { name: photosCopy.entryCta }));
     expect(router.navigate).toHaveBeenCalledWith('/progress-photos');
+  });
+
+  it('opens the progress view from the bigger-picture card', () => {
+    setLoaded(null);
+    render(<TodayScreen />);
+
+    fireEvent.press(
+      screen.getByRole('button', { name: progressCopy.seeProgress }),
+    );
+    expect(router.navigate).toHaveBeenCalledWith('/progress');
   });
 
   it('shows an honest "coming soon" note for meal logging (still Phase 6+)', () => {
