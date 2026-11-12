@@ -12,6 +12,7 @@ import {
   SectionTitle,
 } from '@/components';
 import { photosCopy } from '@/content/photos';
+import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
 import { colors, radii, spacing } from '@/design/tokens';
@@ -134,6 +135,11 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
           <TrendBaseline />
           <Body>{copy.trendBody}</Body>
           <Caption color="sage">{copy.trendPending}</Caption>
+          <Button
+            label={progressCopy.seeProgress}
+            variant="secondary"
+            onPress={() => router.navigate('/progress')}
+          />
         </View>
       </FadeInView>
 
