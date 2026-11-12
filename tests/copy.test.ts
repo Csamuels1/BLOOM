@@ -4,6 +4,7 @@ import { homeCopy } from '@/content/home';
 import { onboardingCopy } from '@/content/onboarding';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy } from '@/content/today';
+import { weightCopy } from '@/content/weight';
 
 const prohibited = [
   'you failed',
@@ -25,6 +26,7 @@ const copyModules = {
   onboardingCopy,
   todayCopy,
   subscriptionCopy,
+  weightCopy,
 };
 
 describe('voice-sensitive copy', () => {
