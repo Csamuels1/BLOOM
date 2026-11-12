@@ -2,6 +2,7 @@ import { authCopy } from '@/content/auth';
 import { foundationCopy } from '@/content/foundation';
 import { homeCopy } from '@/content/home';
 import { onboardingCopy } from '@/content/onboarding';
+import { todayCopy } from '@/content/today';
 
 const prohibited = [
   'you failed',
@@ -21,6 +22,7 @@ const copyModules = {
   authCopy,
   homeCopy,
   onboardingCopy,
+  todayCopy,
 };
 
 describe('voice-sensitive copy', () => {

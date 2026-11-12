@@ -16,7 +16,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 2: Supabase Authentication (iOS verification deferred—not passed, #58)
 - [x] Phase 3: Onboarding UI (iOS verification deferred—not passed, #58)
 - [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push pending owner approval)
-- [ ] Phase 5: Home with Mock Meals
+- [~] Phase 5: Home with Mock Meals
 - [ ] Phase 6: Weight Logging and Progress
 - [ ] Phase 7: Real Meal Recommendations
 - [ ] Phase 8: Cycle and Postpartum Context
@@ -31,7 +31,14 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 4
+## Current phase: Phase 5
+
+- Phase 4 closed on 2026-11-11 (non-iOS gate passed; the one-time live `supabase db push` remains pending owner approval, to be done when a phase first reads/writes the cloud DB).
+- Active: [#22 Today screen with mock meals](https://github.com/Csamuels1/BLOOM/issues/22). Then [#23 loading/empty/error states](https://github.com/Csamuels1/BLOOM/issues/23) and the [#24 exit gate](https://github.com/Csamuels1/BLOOM/issues/24).
+
+Issue #22 progress (2026-11-12): the branded **Today** screen — the daily overview shown before real recommendations exist. New `src/features/today`: a typed mock meal catalog (`mockMeals.ts`, region-aware via the profile's `country_code` — Nigerian vs general), an expandable `MealCard` (tap to reveal ingredients + a quick "note this meal" action), a reduce-motion-aware entrance (`FadeInView`), and `TodayScreen` composing a header, a gentle "bigger picture" trend card (an honest empty-state baseline — no fabricated data), a quick-log entry point (logging itself is Phase 6, so it shows an honest "coming soon" note rather than a fake result), and three meal ideas. Voice/safety: the dish leads, **calories are a small secondary approximate range — never the headline — and day-to-day weight changes are explicitly framed as not the story** (weeks, not days). The home route now leads with the Today overview and keeps the #20 account actions (export/delete/sign out) in a de-emphasized section below. All motion is core `Animated` + `LayoutAnimation`, suppressed under reduce-motion (no new dependencies). New copy is covered by the prohibited-language test. Verified: `npm run verify` green (**150 Jest** + 27 toolchain), expo-doctor 21/21, web export builds.
+
+## Phase 4 (closed 2026-11-11)
 
 - Phase 3 closed on 2026-11-10 (iOS verification deferred—not passed, #58).
 - Done: [#17 profile schema](https://github.com/Csamuels1/BLOOM/issues/17) (PR #82), [#18 product schema](https://github.com/Csamuels1/BLOOM/issues/18) (PR #83), [#19 RLS + Storage policies](https://github.com/Csamuels1/BLOOM/issues/19) (PR #84), [#20 onboarding persistence + export/deletion](https://github.com/Csamuels1/BLOOM/issues/20) (PR #85), [#21 database exit gate](https://github.com/Csamuels1/BLOOM/issues/21).
