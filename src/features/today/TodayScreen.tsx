@@ -11,6 +11,7 @@ import {
   PageTitle,
   SectionTitle,
 } from '@/components';
+import { photosCopy } from '@/content/photos';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
 import { colors, radii, spacing } from '@/design/tokens';
@@ -219,6 +220,28 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
       {/* Free allowances are clear; Pro is an open door, never a locked gate. */}
       <FadeInView delay={330}>
         <ProAffordance />
+      </FadeInView>
+
+      {/* Private, optional progress photos — personal keepsakes, never shared. */}
+      <FadeInView delay={410}>
+        <View
+          style={{
+            backgroundColor: colors.ivory,
+            borderRadius: radii.card,
+            borderWidth: 1,
+            borderColor: colors.mutedSage,
+            padding: spacing.lg,
+            gap: spacing.sm,
+          }}
+        >
+          <SectionTitle>{photosCopy.title}</SectionTitle>
+          <Body>{photosCopy.privacyNote}</Body>
+          <Button
+            label={photosCopy.entryCta}
+            variant="secondary"
+            onPress={() => router.navigate('/progress-photos')}
+          />
+        </View>
       </FadeInView>
     </View>
   );
