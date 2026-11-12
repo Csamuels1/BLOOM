@@ -88,12 +88,20 @@ describe('TodayScreen — overview', () => {
     expect(screen.getByText(first.ingredients)).toBeOnTheScreen();
   });
 
-  it('shows an honest "coming soon" note when quick-log is used', () => {
+  it('opens the weight log from the quick-log weight action', () => {
+    setLoaded(null);
+    render(<TodayScreen />);
+
+    fireEvent.press(screen.getByRole('button', { name: copy.quickLogWeight }));
+    expect(router.navigate).toHaveBeenCalledWith('/weight-log');
+  });
+
+  it('shows an honest "coming soon" note for meal logging (still Phase 6+)', () => {
     setLoaded(null);
     render(<TodayScreen />);
 
     expect(screen.queryByText(copy.quickLogComingSoon)).toBeNull();
-    fireEvent.press(screen.getByRole('button', { name: copy.quickLogWeight }));
+    fireEvent.press(screen.getByRole('button', { name: copy.quickLogMeal }));
     expect(screen.getByText(copy.quickLogComingSoon)).toBeOnTheScreen();
   });
 });

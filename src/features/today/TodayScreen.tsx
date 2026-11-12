@@ -146,7 +146,7 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
             <Button
               label={copy.quickLogWeight}
               variant="secondary"
-              onPress={noteLogging}
+              onPress={() => router.navigate('/weight-log')}
             />
           </View>
           <View style={{ flexGrow: 1, flexBasis: 140 }}>
