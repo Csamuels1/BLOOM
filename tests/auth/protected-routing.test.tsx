@@ -10,8 +10,21 @@ import SignInScreen from '@/app/(auth)/sign-in';
 import { RootNavigator } from '@/app/_layout';
 import { authCopy } from '@/content/auth';
 import { foundationCopy } from '@/content/foundation';
-import { homeCopy } from '@/content/home';
+import { todayCopy } from '@/content/today';
 import { useAuthStore } from '@/features/auth';
+
+// The home screen loads the profile on mount (for region-aware meals). Keep the
+// routing test offline with a stub client whose profile read resolves empty.
+jest.mock('@/lib/supabase', () => ({
+  getSupabaseClient: () => ({
+    from: () => ({
+      select: () => ({
+        maybeSingle: async () => ({ data: null, error: null }),
+      }),
+    }),
+    auth: { signOut: async () => ({ error: null }) },
+  }),
+}));
 
 const routes = {
   _layout: RootNavigator,
@@ -38,7 +51,7 @@ describe('protected routing', () => {
     renderRouter(routes, { initialUrl: '/' });
 
     expect(await screen.findByText(authCopy.signInIntro)).toBeOnTheScreen();
-    expect(screen.queryByText(homeCopy.body)).toBeNull();
+    expect(screen.queryByText(todayCopy.intro)).toBeNull();
   });
 
   it('cannot reach a protected route by navigating to it while signed out', async () => {
@@ -58,7 +71,7 @@ describe('protected routing', () => {
     setAuth('authenticated');
     renderRouter(routes, { initialUrl: '/' });
 
-    expect(await screen.findByText(homeCopy.body)).toBeOnTheScreen();
+    expect(await screen.findByText(todayCopy.intro)).toBeOnTheScreen();
     expect(screen.queryByText(authCopy.signInIntro)).toBeNull();
   });
 
@@ -66,18 +79,18 @@ describe('protected routing', () => {
     setAuth('authenticated');
     renderRouter(routes, { initialUrl: '/' });
 
-    await screen.findByText(homeCopy.body);
+    await screen.findByText(todayCopy.intro);
     act(() => router.navigate('/sign-in'));
 
     expect(screen.queryByText(authCopy.signInIntro)).toBeNull();
-    expect(screen.getByText(homeCopy.body)).toBeOnTheScreen();
+    expect(screen.getByText(todayCopy.intro)).toBeOnTheScreen();
   });
 
   it('can reach the foundation screen within the app group while signed in', async () => {
     setAuth('authenticated');
     const view = renderRouter(routes, { initialUrl: '/' });
 
-    await screen.findByText(homeCopy.body);
+    await screen.findByText(todayCopy.intro);
     act(() => router.navigate('/foundation'));
 
     expect(await screen.findByText(foundationCopy.title)).toBeOnTheScreen();
