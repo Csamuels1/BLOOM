@@ -16,7 +16,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 2: Supabase Authentication (iOS verification deferred—not passed, #58)
 - [x] Phase 3: Onboarding UI (iOS verification deferred—not passed, #58)
 - [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push pending owner approval)
-- [~] Phase 5: Home with Mock Meals
+- [x] Phase 5: Home with Mock Meals (iOS verification deferred—not passed, #58)
 - [ ] Phase 6: Weight Logging and Progress
 - [ ] Phase 7: Real Meal Recommendations
 - [ ] Phase 8: Cycle and Postpartum Context
@@ -31,10 +31,16 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 5
+## Current phase: Phase 6
 
-- Phase 4 closed on 2026-11-11 (non-iOS gate passed; the one-time live `supabase db push` remains pending owner approval, to be done when a phase first reads/writes the cloud DB).
-- Done: [#22 Today screen with mock meals](https://github.com/Csamuels1/BLOOM/issues/22) (PR #95), [#23 loading/empty/error + Free/Pro affordances](https://github.com/Csamuels1/BLOOM/issues/23). Then the [#24 exit gate](https://github.com/Csamuels1/BLOOM/issues/24).
+- Phase 5 closed on 2026-11-12 (non-iOS gate passed, #24; iOS verification deferred—not passed, #58). The one-time live `supabase db push` from Phase 4 remains pending owner approval.
+- Next: Phase 6 — Weight Logging and Progress (milestone 7).
+
+Issue #24 progress (2026-11-12): the Phase 5 exit gate. All Phase 5 issues are complete ([#22](https://github.com/Csamuels1/BLOOM/issues/22) Today screen, [#23](https://github.com/Csamuels1/BLOOM/issues/23) resilient states + Free/Pro affordances). Full verification tier green on a clean run: `npm run verify` (**164 Jest** + 27 toolchain, type-check, lint, format, dependency audit), **expo-doctor 21/21**, and an **all-platform `expo export`** (android/ios/web + server render, 19 routes, exit 0 — platform layouts build). Accessibility acceptance (non-iOS): headers expose `role="header"`; all controls are labeled buttons meeting the 48dp touch target; the expandable meal cards expose `accessibilityState.expanded` with a hint; loading announces via a `progressbar` region, and the error/coming-soon notices via polite live regions; skeletons are hidden from assistive tech; all motion (entrance, chevron, skeleton pulse) is suppressed under reduce-motion; text honors dynamic type up to the capped multiplier. iOS runtime/device interaction and VoiceOver acceptance are deferred—not passed, recorded in [#58](https://github.com/Csamuels1/BLOOM/issues/58) per ADR-0006.
+
+## Phase 5 (closed 2026-11-12)
+
+- Done: [#22 Today screen with mock meals](https://github.com/Csamuels1/BLOOM/issues/22) (PR #95), [#23 loading/empty/error + Free/Pro affordances](https://github.com/Csamuels1/BLOOM/issues/23) (PR #98), [#24 exit gate](https://github.com/Csamuels1/BLOOM/issues/24).
 
 Issue #23 progress (2026-11-12): made the Home screen resilient and clear. Three reusable design-system state components — `Skeleton`, `EmptyState`, `ErrorState` (gentle, accessible; ordinary errors never use the safety-reserved amber) — plus a `MealCardSkeleton`. The Today meals area now reflects the profile load: **skeletons while loading, a calm setup nudge (EmptyState) when onboarding is unfinished, and a retryable error (ErrorState) when the load fails** — and in every state the mock ideas still render (general fallback) so **no initiated action or content is lost**. The profile store gained an `error` status and a safe retry (`loadProfile` now throws on a real query error; the store catches and surfaces it; the home passes an `onRetryProfile`). A lightweight `src/features/subscription` (presentation-only; real entitlements are Phase 10) adds a tier placeholder and a **pressure-free Pro affordance** — Free allowances are labeled clearly and Pro is an open door that is honest it is not purchasable yet. New copy is covered by the prohibited-language test. Verified: `npm run verify` green (**164 Jest** + 27 toolchain).
 
