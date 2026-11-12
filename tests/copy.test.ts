@@ -2,6 +2,7 @@ import { authCopy } from '@/content/auth';
 import { foundationCopy } from '@/content/foundation';
 import { homeCopy } from '@/content/home';
 import { onboardingCopy } from '@/content/onboarding';
+import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy } from '@/content/today';
 
 const prohibited = [
@@ -23,6 +24,7 @@ const copyModules = {
   homeCopy,
   onboardingCopy,
   todayCopy,
+  subscriptionCopy,
 };
 
 describe('voice-sensitive copy', () => {

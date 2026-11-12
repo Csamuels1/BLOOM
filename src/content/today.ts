@@ -38,6 +38,16 @@ export const todayCopy = {
   mealLog: 'Note this meal',
   mealExpandHint: 'Shows ingredients and a quick note action.',
 
+  // Presentation states (#23) — gentle, accessible, nothing lost.
+  loadingLabel: 'Loading your day…',
+  errorTitle: 'We could not load your setup',
+  errorBody:
+    'Your personalization did not load. You can still explore the ideas below.',
+  errorRetry: 'Try again',
+  setupTitle: 'Personalize your day',
+  setupBody: 'Finish setting up your space to see ideas tailored to you.',
+  setupCta: 'Set up your space',
+
   // Account section (de-emphasized, below the overview).
   accountTitle: 'Your account',
 } as const;

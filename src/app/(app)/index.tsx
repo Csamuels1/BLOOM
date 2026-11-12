@@ -81,7 +81,9 @@ export default function HomeScreen() {
             alignSelf: 'center',
           }}
         >
-          <TodayScreen />
+          <TodayScreen
+            onRetryProfile={() => void loadProfile(getSupabaseClient())}
+          />
 
           {/* De-emphasized account area — the daily overview comes first. */}
           <View style={{ gap: spacing.md }}>

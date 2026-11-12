@@ -4,12 +4,12 @@ import type { AppSupabaseClient } from '@/lib/supabase';
 
 import { loadProfile, type Profile } from './profileService';
 
-type ProfileStatus = 'idle' | 'loading' | 'loaded';
+type ProfileStatus = 'idle' | 'loading' | 'loaded' | 'error';
 
 interface ProfileState {
   profile: Profile | null;
   status: ProfileStatus;
-  /** Load the caller's profile from the backend. */
+  /** Load the caller's profile from the backend. Safe to call again to retry. */
   load: (client: AppSupabaseClient) => Promise<void>;
   setProfile: (profile: Profile | null) => void;
   /** Clear on sign-out/deletion. */
@@ -21,10 +21,15 @@ export const useProfileStore = create<ProfileState>((set) => ({
   status: 'idle',
   load: async (client) => {
     set({ status: 'loading' });
-    const profile = await loadProfile(client);
-    set({ profile, status: 'loaded' });
+    try {
+      const profile = await loadProfile(client);
+      set({ profile, status: 'loaded' });
+    } catch {
+      // Keep any previously loaded profile; surface a retryable error state.
+      set({ status: 'error' });
+    }
   },
-  setProfile: (profile) => set({ profile }),
+  setProfile: (profile) => set({ profile, status: 'loaded' }),
   clear: () => set({ profile: null, status: 'idle' }),
 }));
 
