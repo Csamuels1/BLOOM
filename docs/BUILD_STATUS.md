@@ -17,7 +17,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 3: Onboarding UI (iOS verification deferred—not passed, #58)
 - [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push pending owner approval)
 - [x] Phase 5: Home with Mock Meals (iOS verification deferred—not passed, #58)
-- [ ] Phase 6: Weight Logging and Progress
+- [x] Phase 6: Weight Logging and Progress (non-iOS gate passed 2026-11-12, #28; iOS verification deferred—not passed, #58)
 - [ ] Phase 7: Real Meal Recommendations
 - [ ] Phase 8: Cycle and Postpartum Context
 - [ ] Phase 9: Community and Moderation
@@ -31,10 +31,17 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 6
+## Current phase: Phase 7
 
-- Phase 5 closed on 2026-11-12 (non-iOS gate passed, #24; iOS verification deferred—not passed, #58). The one-time live `supabase db push` from Phase 4 remains pending owner approval — becomes relevant for real-device function now that Phase 6 reads/writes the cloud DB.
-- Delivery note: Phase 6 is the first run of the parallel-delivery model (ADR-0009). Workers built #25 and #27 in parallel (independent domains); the supervisor integrated each with route/Today/doc wiring and re-verified. #26 (chart) depends on #25; #28 is the gate.
+- Phase 6 closed on 2026-11-12 (non-iOS gate passed, #28; iOS verification deferred—not passed, #58).
+- **Owner decision due:** Phase 6 is the first phase that reads/writes the cloud DB, so the one-time live `supabase db push` of the Phase 4–6 migrations (profiles, weight, catalog, RLS, Storage, lifecycle, advisors) is now required for real-device function. It is a backend deploy and remains pending explicit owner approval; all verification to date is on the local stack.
+- Next: Phase 7 — Real Meal Recommendations (milestone 8).
+
+Issue #28 progress (2026-11-12): the Phase 6 exit gate. All Phase 6 issues complete (#25 weight CRUD, #26 weekly-average chart, #27 private photos — #25/#27 built in parallel per ADR-0009, #26 after #25). Full tier green on a clean run: `npm run verify` (**235 Jest** + 27 toolchain, type-check, lint, format, dependency audit), **expo-doctor 21/21**, **all-platform `expo export`** (android/ios/web + server render, 25 routes, exit 0 — both platform bundles build). Backend: **71 pgTAP tests** pass on the local stack, including a new `0006_storage_privacy.test.sql` that verifies **two-user privacy for progress photos** — a user may write and read only under their own `{uid}/` prefix and can neither write into nor read another user's space. Accessibility (non-iOS): the progress chart is decorative with a matching in-words summary; loading announces via a `progressbar` region; errors via polite live regions; weight form inputs are labeled and never cleared on failure; motion is reduce-motion-aware. iOS runtime/device interaction, VoiceOver, and the image-picker media flow on-device are deferred—not passed, recorded in [#58](https://github.com/Csamuels1/BLOOM/issues/58) per ADR-0006.
+
+## Phase 6 (closed 2026-11-12)
+
+- Delivery note: first run of the parallel-delivery model (ADR-0009). Workers built #25 and #27 in parallel (independent domains); the supervisor integrated each with route/Today/doc wiring and re-verified. #26 (chart) depended on #25; #28 was the gate.
 - Done: [#25 weight log CRUD + unit conversion](https://github.com/Csamuels1/BLOOM/issues/25) (PR #100), [#27 private progress photos](https://github.com/Csamuels1/BLOOM/issues/27) (PR #101) — built in parallel (Wave 1); [#26 progress chart](https://github.com/Csamuels1/BLOOM/issues/26) (Wave 2, depends on #25). Next: the [#28 exit gate](https://github.com/Csamuels1/BLOOM/issues/28).
 
 Issue #26 progress (2026-11-12): weekly-average progress chart + gentle milestones. New `src/features/progress`: pure, timezone-free math (`weeklyAverages.ts` — groups entries into **weekly averages so daily spikes are never plotted**; `summarizeTrend` describes direction neutrally with a steady band so ordinary fluctuation isn't a trend), `milestones.ts` (recognizes **distinct weeks of showing up — gaps never remove a milestone; no streaks, no weight-reached**), a decorative `ProgressChart` (react-native-svg weekly line, hidden from assistive tech) paired with a matching `ProgressSummary` in words (**the accessible summary conveys the same data as the chart**), and `ProgressScreen` composing them over the #25 weight store with gentle loading/empty/error states + retry. Reached from the Today "bigger picture" card (new `src/app/(app)/progress.tsx` route). Voice: loss/gain/maintenance equal; no verdicts. Built sequentially (Wave 2) since it depends on #25's data. Verified: `npm run verify` green from the main checkout.
