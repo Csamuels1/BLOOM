@@ -22,11 +22,21 @@ These instructions apply to the entire repository.
 - Open pull requests against `main` and include `Closes #N`.
 - The empty-repository bootstrap is the sole exception: issue #1 may create the first `main` commit because no base branch exists for a pull request. All later issues require an issue branch and pull request.
 
+## Parallel delivery within a phase
+
+Delivery stays within one phase at a time, but independent issues of the current phase may be built in parallel to improve throughput. See ADR-0009.
+
+- **Roles.** A **supervisor** (the coordinating session) owns the phase; **worker** subagents each take one issue in their own branch and git worktree; the **owner** approves batch plans, change sets, and all merges and deploys.
+- **What may run in parallel.** Only issues that share no dependency and no files. Dependent issues are serialized by their dependency order. No issue is parallelized across the phase exit gate; the exit gate runs last and alone.
+- **Worker scope.** Workers implement their issue to every standard in this document and run the required verification tier, then report a diff summary and test results. Workers never push, open pull requests, or merge.
+- **Integration.** The supervisor reviews each worker's diff, resolves any cross-branch conflict, and re-runs full verification on the combined change set (issues that pass alone can still break together) before presenting consolidated change sets for approval.
+- **Unchanged guarantees.** Branch-per-issue, pull-request-per-issue, one commit per issue, and every test, review, and documentation gate still apply. Merges remain sequential and owner-approved; backend deploys and releases remain separately approved.
+
 ## Approval checkpoints
 
-- Before every commit, show the user the exact changed files, a concise diff summary, and test results, then ask for explicit permission.
-- After committing, show the commit hash and ask separately for permission before pushing.
-- Do not merge a pull request, tag a release, deploy a backend change, submit a store build, or change production data without separate explicit approval.
+- **Change-set gate.** Before committing, show the exact changed files, a concise diff summary, and the result of the required verification tier. One explicit approval at this gate authorizes commit, push, and opening the pull request together.
+- **Standing approval (optional).** The owner may grant standing change-set approval for a session or a phase. It covers commit, push, and opening pull requests only; it never covers merge, deploy, or release.
+- **Separate approvals.** Merging a pull request, deploying a backend change (including `supabase db push`), tagging a release, submitting a store build, or changing production data each requires its own explicit approval. These are the irreversible, outward-facing steps.
 - Do not combine unrelated issue work in one commit or pull request.
 - Do not carry unrelated uncommitted changes into another issue.
 
@@ -49,6 +59,15 @@ These instructions apply to the entire repository.
 - Use immutable `app_metadata` for staff roles; never authorize from user-editable metadata.
 - Prefer `security invoker`; treat every `security definer` function as a security review item.
 - Store privileged functions outside exposed schemas, revoke default execution where appropriate, and run database advisors.
+
+## Verification tiers
+
+Run the checks that apply to the change, so effort matches risk without weakening any gate.
+
+- **Every change** must pass `npm run verify` (type-check, lint, format, Jest, toolchain tests, dependency-audit gate) locally before the change-set gate, and `application-checks` green in CI before merge.
+- **Native, app-config, or dependency changes** additionally require `expo-doctor` and an all-platform `expo export`. These are also required at every phase exit gate, and are not required for pure application-logic or copy changes.
+- **Database changes** (migrations, policies, functions) additionally require a clean `supabase db reset`, `supabase test db` (pgTAP), a generated-type match against `src/types/database.ts`, and clean database advisors.
+- **Phase exit gates** run the full set regardless of tier.
 
 ## Definition of done
 
