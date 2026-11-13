@@ -18,7 +18,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push applied 2026-11-12)
 - [x] Phase 5: Home with Mock Meals (iOS verification deferred—not passed, #58)
 - [x] Phase 6: Weight Logging and Progress (non-iOS gate passed 2026-11-12, #28; iOS verification deferred—not passed, #58)
-- [ ] Phase 7: Real Meal Recommendations
+- [x] Phase 7: Real Meal Recommendations (engineering complete 2026-11-13; dietitian content review deferred—not passed, #33 / ADR-0010)
 - [ ] Phase 8: Cycle and Postpartum Context
 - [ ] Phase 9: Community and Moderation
 - [ ] Phase 10: RevenueCat Subscriptions
@@ -31,7 +31,13 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 7
+## Current phase: Phase 8
+
+- Phase 7 engineering completed 2026-11-13: schema (#107), both draft catalogs (#29, #30), the plan calculator (#32), and the recommendation engine (#31). Full gate tier green — **101 pgTAP** (incl. a draft-only invariant: zero approved/active meals), `npm run verify` (274 Jest + 27 toolchain), expo-doctor 21/21, all-platform export.
+- **Owner-approved deferral (ADR-0010):** the Phase 7 dietitian review (#33) is deferred — no qualified dietitian is available yet. Catalogs + calculator formula remain **unreviewed drafts** (`in_review` / `is_active=false`); nothing is served as approved. #33 stays open/blocked; when the owner supplies dietitian-approved data, an activation migration flips reviewed meals to approved/active and #33 completes. See [#113](https://github.com/Csamuels1/BLOOM/issues/113).
+- Next: Phase 8 — Cycle and Postpartum Context (milestone 9).
+
+## Phase 7 (engineering complete 2026-11-13; dietitian review deferred, #33)
 
 - Phase 6 closed on 2026-11-12 (non-iOS gate passed, #28; iOS verification deferred—not passed, #58).
 - **Live backend deploy done (2026-11-12):** with owner approval, the one-time live `supabase db push --remote` applied all five Phase 4 migrations (profiles/weight/cycle, product catalog, grants + RLS + Storage policies, account-lifecycle RPCs, advisor hardening) to the live project `bloom-dev` (ref `llfxmbxxwzqvoyhuehdl`). Migrations only — the dev seed/fixtures were not pushed. The remote schema now matches the locally verified one (clean advisors, 71 pgTAP). Operational note: this Supabase CLI defaults `db push` to the local stack, so `--remote` is required to target the cloud project.
