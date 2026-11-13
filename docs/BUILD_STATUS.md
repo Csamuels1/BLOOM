@@ -15,7 +15,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 1: Expo and Design-System Setup (iOS verification deferred—not passed, #58)
 - [x] Phase 2: Supabase Authentication (iOS verification deferred—not passed, #58)
 - [x] Phase 3: Onboarding UI (iOS verification deferred—not passed, #58)
-- [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push pending owner approval)
+- [x] Phase 4: Supabase Schema and Profile Persistence (non-iOS gate passed 2026-11-11; live migration push applied 2026-11-12)
 - [x] Phase 5: Home with Mock Meals (iOS verification deferred—not passed, #58)
 - [x] Phase 6: Weight Logging and Progress (non-iOS gate passed 2026-11-12, #28; iOS verification deferred—not passed, #58)
 - [ ] Phase 7: Real Meal Recommendations
@@ -34,7 +34,7 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 ## Current phase: Phase 7
 
 - Phase 6 closed on 2026-11-12 (non-iOS gate passed, #28; iOS verification deferred—not passed, #58).
-- **Owner decision due:** Phase 6 is the first phase that reads/writes the cloud DB, so the one-time live `supabase db push` of the Phase 4–6 migrations (profiles, weight, catalog, RLS, Storage, lifecycle, advisors) is now required for real-device function. It is a backend deploy and remains pending explicit owner approval; all verification to date is on the local stack.
+- **Live backend deploy done (2026-11-12):** with owner approval, the one-time live `supabase db push --remote` applied all five Phase 4 migrations (profiles/weight/cycle, product catalog, grants + RLS + Storage policies, account-lifecycle RPCs, advisor hardening) to the live project `bloom-dev` (ref `llfxmbxxwzqvoyhuehdl`). Migrations only — the dev seed/fixtures were not pushed. The remote schema now matches the locally verified one (clean advisors, 71 pgTAP). Operational note: this Supabase CLI defaults `db push` to the local stack, so `--remote` is required to target the cloud project.
 - Next: Phase 7 — Real Meal Recommendations (milestone 8).
 
 Issue #28 progress (2026-11-12): the Phase 6 exit gate. All Phase 6 issues complete (#25 weight CRUD, #26 weekly-average chart, #27 private photos — #25/#27 built in parallel per ADR-0009, #26 after #25). Full tier green on a clean run: `npm run verify` (**235 Jest** + 27 toolchain, type-check, lint, format, dependency audit), **expo-doctor 21/21**, **all-platform `expo export`** (android/ios/web + server render, 25 routes, exit 0 — both platform bundles build). Backend: **71 pgTAP tests** pass on the local stack, including a new `0006_storage_privacy.test.sql` that verifies **two-user privacy for progress photos** — a user may write and read only under their own `{uid}/` prefix and can neither write into nor read another user's space. Accessibility (non-iOS): the progress chart is decorative with a matching in-words summary; loading announces via a `progressbar` region; errors via polite live regions; weight form inputs are labeled and never cleared on failure; motion is reduce-motion-aware. iOS runtime/device interaction, VoiceOver, and the image-picker media flow on-device are deferred—not passed, recorded in [#58](https://github.com/Csamuels1/BLOOM/issues/58) per ADR-0006.
