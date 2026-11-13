@@ -3,6 +3,7 @@ import { foundationCopy } from '@/content/foundation';
 import { homeCopy } from '@/content/home';
 import { onboardingCopy } from '@/content/onboarding';
 import { photosCopy } from '@/content/photos';
+import { planCopy } from '@/content/plan';
 import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy } from '@/content/today';
@@ -31,6 +32,7 @@ const copyModules = {
   weightCopy,
   photosCopy,
   progressCopy,
+  planCopy,
 };
 
 describe('voice-sensitive copy', () => {
