@@ -64,12 +64,12 @@ select is(
   'all four meal slots are present in the Nigerian catalog');
 
 -- At least six meals per slot (seven-day + swap coverage).
-select is(
+select cmp_ok(
   (select min(c)::int from (
      select count(*) as c from public.meals
        where region = 'nigeria'
        group by slot) per_slot),
-  6,
+  '>=', 6,
   'the thinnest Nigerian slot still has at least six meals (>= 6 each)');
 
 -- Overall catalog size (4 slots x >= 6).
