@@ -35,7 +35,9 @@ On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes fr
 
 - Phase 7 engineering completed 2026-11-13: schema (#107), both draft catalogs (#29, #30), the plan calculator (#32), and the recommendation engine (#31). Full gate tier green — **101 pgTAP** (incl. a draft-only invariant: zero approved/active meals), `npm run verify` (274 Jest + 27 toolchain), expo-doctor 21/21, all-platform export.
 - **Owner-approved deferral (ADR-0010):** the Phase 7 dietitian review (#33) is deferred — no qualified dietitian is available yet. Catalogs + calculator formula remain **unreviewed drafts** (`in_review` / `is_active=false`); nothing is served as approved. #33 stays open/blocked; when the owner supplies dietitian-approved data, an activation migration flips reviewed meals to approved/active and #33 completes. See [#113](https://github.com/Csamuels1/BLOOM/issues/113).
-- Next: Phase 8 — Cycle and Postpartum Context (milestone 9).
+- Phase 8 (milestone 9): #34 cycle, #35 postpartum, #36 notifications built as a 3-way parallel run; then #37 gate.
+
+Issue #34 progress (2026-11-17): optional cycle logging + contextual insights (parallel worker, supervisor-integrated). New `src/features/cycle`: typed CRUD on `cycle_logs` (service + Zustand store), a pure deterministic `estimateCycleInsight(starts, today)` that **handles uncertainty explicitly** (<2 starts → insufficient-data, never invents a phase; irregular/stale data → low confidence / 'uncertain'; confidence is always explicit), and a screen with an explicit **disable flow** (turning tracking off asks keep-vs-delete history, never silent). Copy is **non-diagnostic** ("a rough guide, not medical advice"). Reached from a new `(app)/cycle.tsx` route (wired to `profiles.track_cycle`) via a home entry link. Verified: `npm run verify` green (311 Jest + 27 toolchain).
 
 ## Phase 7 (engineering complete 2026-11-13; dietitian review deferred, #33)
 
