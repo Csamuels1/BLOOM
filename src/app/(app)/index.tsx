@@ -10,6 +10,7 @@ import {
   SafetyNotice,
   SectionTitle,
 } from '@/components';
+import { communityCopy } from '@/content/community';
 import { cycleCopy } from '@/content/cycle';
 import { homeCopy as copy } from '@/content/home';
 import { notificationsCopy } from '@/content/notifications';
@@ -108,6 +109,27 @@ export default function HomeScreen() {
               >
                 <Body style={{ textAlign: 'center' }}>
                   {copy.startOnboarding}
+                </Body>
+              </Pressable>
+            </Link>
+
+            <Link href="/community" asChild>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={communityCopy.title}
+                style={({ pressed }) => ({
+                  minHeight: minTouchTarget,
+                  justifyContent: 'center',
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: radii.button,
+                  borderWidth: 1,
+                  borderColor: colors.mutedSage,
+                  opacity: pressed ? 0.85 : 1,
+                })}
+              >
+                <Body style={{ textAlign: 'center' }}>
+                  {communityCopy.title}
                 </Body>
               </Pressable>
             </Link>

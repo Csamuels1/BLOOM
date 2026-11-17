@@ -1,6 +1,7 @@
 import { authCopy } from '@/content/auth';
 import { foundationCopy } from '@/content/foundation';
 import { homeCopy } from '@/content/home';
+import { communityCopy } from '@/content/community';
 import { cycleCopy } from '@/content/cycle';
 import { notificationsCopy } from '@/content/notifications';
 import { onboardingCopy } from '@/content/onboarding';
@@ -41,6 +42,7 @@ const copyModules = {
   cycleCopy,
   postpartumCopy,
   notificationsCopy,
+  communityCopy,
 };
 
 describe('voice-sensitive copy', () => {
