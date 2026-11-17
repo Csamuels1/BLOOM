@@ -34,7 +34,13 @@
           "backgroundColor": "#FDF8F3"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "color": "#C97C5D"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

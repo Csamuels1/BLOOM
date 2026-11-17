@@ -13,7 +13,7 @@ Because these advisories cannot be cleared without upstream Expo releases, the o
 - Each allowlisted advisory is enumerated with justification in the script and must be mirrored here. The gate reports allowlisted advisories that are no longer present so stale entries are pruned.
 - The allowlist records accepted **build-time** risk only. It does not authorize production signing, a release, or any external gate, and it does not cover advisories on shipped runtime dependencies.
 
-Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f), `deepmerge` (GHSA-gcqx-w48m-w2h4), `glob` (GHSA-3g3m-2fjr-6pw4), and `minimatch` (GHSA-g3hv-75wg-m249).
+Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f) and `minimatch` (GHSA-g3hv-75wg-m249). (The `deepmerge` and `glob` entries were pruned on 2026-11-17 after `expo-notifications` shifted the dependency tree and those advisories dropped out.)
 
 Prefer upstream fixed releases once available, removing each patch and allowlist entry only after equivalent regression tests pass.
 
