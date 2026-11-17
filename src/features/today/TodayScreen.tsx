@@ -16,6 +16,7 @@ import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
 import { colors, radii, spacing } from '@/design/tokens';
+import { PostpartumContextCard } from '@/features/postpartum';
 import { hasCompletedOnboarding, useProfileStore } from '@/features/profile';
 import { ProAffordance } from '@/features/subscription';
 
@@ -118,6 +119,14 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
         {dateLabel ? <Caption color="plum">{dateLabel}</Caption> : null}
         <Body>{copy.intro}</Body>
       </FadeInView>
+
+      {/* Gentle recovery context — shown only to postpartum profiles, never to
+          those who said not_postpartum or preferred not to say. */}
+      {profile?.postpartum_status === 'postpartum' ? (
+        <FadeInView delay={60}>
+          <PostpartumContextCard />
+        </FadeInView>
+      ) : null}
 
       {/* Trend context — gentle, weeks not days. */}
       <FadeInView delay={90}>

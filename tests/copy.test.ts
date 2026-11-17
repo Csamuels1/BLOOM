@@ -5,6 +5,7 @@ import { cycleCopy } from '@/content/cycle';
 import { onboardingCopy } from '@/content/onboarding';
 import { photosCopy } from '@/content/photos';
 import { planCopy } from '@/content/plan';
+import { postpartumCopy } from '@/content/postpartum';
 import { progressCopy } from '@/content/progress';
 import { recommendationsCopy } from '@/content/recommendations';
 import { subscriptionCopy } from '@/content/subscription';
@@ -37,6 +38,7 @@ const copyModules = {
   planCopy,
   recommendationsCopy,
   cycleCopy,
+  postpartumCopy,
 };
 
 describe('voice-sensitive copy', () => {
