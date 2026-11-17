@@ -19,7 +19,7 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 - [x] Phase 5: Home with Mock Meals (iOS verification deferred—not passed, #58)
 - [x] Phase 6: Weight Logging and Progress (non-iOS gate passed 2026-11-12, #28; iOS verification deferred—not passed, #58)
 - [x] Phase 7: Real Meal Recommendations (engineering complete 2026-11-13; dietitian content review deferred—not passed, #33 / ADR-0010)
-- [ ] Phase 8: Cycle and Postpartum Context
+- [x] Phase 8: Cycle and Postpartum Context (non-iOS gate passed 2026-11-17, #37; iOS verification deferred—not passed, #58)
 - [ ] Phase 9: Community and Moderation
 - [ ] Phase 10: RevenueCat Subscriptions
 - [ ] Phase 11: Safety Guardrails
@@ -31,7 +31,14 @@ This file is the repository-level view of the [BLOOM MVP project](https://github
 
 On 2026-10-07 the owner deferred iOS-specific verification, builds, and fixes from Phases 1–12 to [Phase 13 gate #58](https://github.com/Csamuels1/BLOOM/issues/58). See [ADR-0006](adr/0006-defer-ios-qualification.md). Earlier gates require all non-iOS acceptance and an explicit "iOS verification deferred—not passed" record, with outstanding iOS tests carried into #58. The smoke workflow is manual-only until restored for qualification. Cross-platform implementation and bundle checks remain. Security and other platform gates are not waived.
 
-## Current phase: Phase 8
+## Current phase: Phase 9
+
+- Phase 8 closed on 2026-11-17 (non-iOS gate passed, #37; iOS verification deferred—not passed, #58). Phase 7 dietitian sign-off still outstanding on #33 (ADR-0010).
+- Next: Phase 9 — Community and Moderation (milestone 10).
+
+Issue #37 progress (2026-11-17): the Phase 8 exit gate. All Phase 8 issues complete (#34 cycle, #35 postpartum, #36 notifications — a 3-way parallel run). Full tier on a clean run: `npm run verify` (**360 Jest** + 27 toolchain, type-check, lint, format, audit), **expo-doctor 21/21**, **all-platform `expo export`** (iOS/Android/Web + server, 29 routes, exit 0). The gate matrix is covered by the feature suites: cycle date CRUD + uncertainty handling + explicit keep/delete disable; notification permission requested only on opt-in, clear opt-out that cancels schedules, non-sensitive text; postpartum non-diagnostic narratives with safe missing/prefer-not paths. **pgTAP:** Phase 8 made no database changes, so the suite is unchanged since the Phase 7 gate (#113, 101 passing); the local stack was offline for this run and it was not re-run. iOS runtime (notification delivery, permission prompts, VoiceOver) is deferred—not passed, recorded in #58.
+
+## Phase 8 (closed 2026-11-17)
 
 - Phase 7 engineering completed 2026-11-13: schema (#107), both draft catalogs (#29, #30), the plan calculator (#32), and the recommendation engine (#31). Full gate tier green — **101 pgTAP** (incl. a draft-only invariant: zero approved/active meals), `npm run verify` (274 Jest + 27 toolchain), expo-doctor 21/21, all-platform export.
 - **Owner-approved deferral (ADR-0010):** the Phase 7 dietitian review (#33) is deferred — no qualified dietitian is available yet. Catalogs + calculator formula remain **unreviewed drafts** (`in_review` / `is_active=false`); nothing is served as approved. #33 stays open/blocked; when the owner supplies dietitian-approved data, an activation migration flips reviewed meals to approved/active and #33 completes. See [#113](https://github.com/Csamuels1/BLOOM/issues/113).
