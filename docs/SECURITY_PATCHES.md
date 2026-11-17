@@ -58,6 +58,25 @@ individually (AGENTS.md Supabase standards).
 `persist_onboarding` and `export_current_user` are `SECURITY INVOKER` (RLS
 applies) and also force identity from `auth.uid()`.
 
+### Community moderation functions (Phase 9, #119)
+
+`public.moderate_post`, `public.moderate_media`, and `public.review_report`
+(migration `20261117142356_...`) are `SECURITY DEFINER` so that moderation
+status changes can only happen through them, with the audit row written in the
+same transaction. Each one:
+
+- refuses any caller for whom `public.is_moderator()` is false (staff role comes
+  from immutable `app_metadata`, never user-editable metadata);
+- accepts only a fixed set of actions and changes exactly one row;
+- inserts a `moderation_actions` row with `moderator_id = auth.uid()`;
+- sets an empty `search_path`, is revoked from `public`, and is granted only to
+  `authenticated`.
+
+The direct staff UPDATE policies on `community_posts` and `post_reports` were
+removed, so a moderator cannot change status without leaving an audit record.
+`public.is_pro()` is `SECURITY INVOKER` and reads only the caller's own
+subscription row.
+
 ## Database advisor hardening (Phase 4 exit gate, #21)
 
 Running the Supabase security and performance advisors against the reconstructed

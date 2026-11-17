@@ -86,6 +86,7 @@ export type Database = {
           body: string;
           created_at: string;
           id: string;
+          space: string;
           status: string;
           updated_at: string;
         };
@@ -95,6 +96,7 @@ export type Database = {
           body: string;
           created_at?: string;
           id?: string;
+          space?: string;
           status?: string;
           updated_at?: string;
         };
@@ -103,6 +105,7 @@ export type Database = {
           body?: string;
           created_at?: string;
           id?: string;
+          space?: string;
           status?: string;
           updated_at?: string;
         };
@@ -236,6 +239,54 @@ export type Database = {
           target_type?: string;
         };
         Relationships: [];
+      };
+      post_media: {
+        Row: {
+          author_id: string;
+          created_at: string;
+          id: string;
+          mime_type: string;
+          post_id: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          size_bytes: number;
+          status: string;
+          storage_path: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_id: string;
+          created_at?: string;
+          id?: string;
+          mime_type: string;
+          post_id: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          size_bytes: number;
+          status?: string;
+          storage_path: string;
+        };
+        Update: {
+          author_id?: string;
+          created_at?: string;
+          id?: string;
+          mime_type?: string;
+          post_id?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          size_bytes?: number;
+          status?: string;
+          storage_path?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'post_media_post_id_fkey';
+            columns: ['post_id'];
+            isOneToOne: false;
+            referencedRelation: 'community_posts';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       post_reactions: {
         Row: {
@@ -508,6 +559,15 @@ export type Database = {
       };
       export_current_user: { Args: Record<PropertyKey, never>; Returns: Json };
       is_moderator: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_pro: { Args: Record<PropertyKey, never>; Returns: boolean };
+      moderate_media: {
+        Args: { p_action: string; p_media_id: string; p_reason?: string };
+        Returns: string;
+      };
+      moderate_post: {
+        Args: { p_action: string; p_post_id: string; p_reason?: string };
+        Returns: string;
+      };
       persist_onboarding: {
         Args: { p: Json };
         Returns: {
@@ -533,6 +593,10 @@ export type Database = {
           isOneToOne: true;
           isSetofReturn: false;
         };
+      };
+      review_report: {
+        Args: { p_action: string; p_reason?: string; p_report_id: string };
+        Returns: string;
       };
     };
     Enums: {
