@@ -14,6 +14,7 @@ import { communityCopy } from '@/content/community';
 import { cycleCopy } from '@/content/cycle';
 import { homeCopy as copy } from '@/content/home';
 import { notificationsCopy } from '@/content/notifications';
+import { reportingCopy } from '@/content/reporting';
 import { todayCopy } from '@/content/today';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 import { useAuthStore } from '@/features/auth';
@@ -150,6 +151,48 @@ export default function HomeScreen() {
                 })}
               >
                 <Body style={{ textAlign: 'center' }}>{cycleCopy.title}</Body>
+              </Pressable>
+            </Link>
+
+            <Link href="/blocked" asChild>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={reportingCopy.blockedTitle}
+                style={({ pressed }) => ({
+                  minHeight: minTouchTarget,
+                  justifyContent: 'center',
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: radii.button,
+                  borderWidth: 1,
+                  borderColor: colors.mutedSage,
+                  opacity: pressed ? 0.85 : 1,
+                })}
+              >
+                <Body style={{ textAlign: 'center' }}>
+                  {reportingCopy.blockedTitle}
+                </Body>
+              </Pressable>
+            </Link>
+
+            <Link href="/my-reports" asChild>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={reportingCopy.myReportsTitle}
+                style={({ pressed }) => ({
+                  minHeight: minTouchTarget,
+                  justifyContent: 'center',
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: radii.button,
+                  borderWidth: 1,
+                  borderColor: colors.mutedSage,
+                  opacity: pressed ? 0.85 : 1,
+                })}
+              >
+                <Body style={{ textAlign: 'center' }}>
+                  {reportingCopy.myReportsTitle}
+                </Body>
               </Pressable>
             </Link>
 

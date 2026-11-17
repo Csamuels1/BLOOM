@@ -19,6 +19,7 @@ import {
   type MediaAsset,
   type PostMedia,
 } from '@/features/communityMedia';
+import { PostSafetyActions } from '@/features/reporting';
 import { getSupabaseClient } from '@/lib/supabase';
 
 /**
@@ -120,6 +121,17 @@ export default function CommunityRoute() {
               <PostMediaView
                 media={mediaByPost[post.id] ?? []}
                 viewerId={userId}
+              />
+            )}
+            renderActions={(post) => (
+              <PostSafetyActions
+                postId={post.id}
+                authorId={post.author_id}
+                currentUserId={userId}
+                onBlocked={() => {
+                  // Refresh the feed so the blocked member's posts drop out now.
+                  void useCommunityStore.getState().load(getSupabaseClient());
+                }}
               />
             )}
           />
