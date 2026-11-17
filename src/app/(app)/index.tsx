@@ -13,6 +13,7 @@ import {
 import { communityCopy } from '@/content/community';
 import { cycleCopy } from '@/content/cycle';
 import { homeCopy as copy } from '@/content/home';
+import { moderationCopy } from '@/content/moderation';
 import { notificationsCopy } from '@/content/notifications';
 import { reportingCopy } from '@/content/reporting';
 import { todayCopy } from '@/content/today';
@@ -35,6 +36,10 @@ import { getSupabaseClient } from '@/lib/supabase';
 export default function HomeScreen() {
   const signOut = useAuthStore((state) => state.signOut);
   const userId = useAuthStore((state) => state.session?.user.id);
+  // Cosmetic gate only: show the staff link to moderators. The moderation route
+  // and every action behind it are enforced server-side regardless of this.
+  const role = useAuthStore((state) => state.session?.user.app_metadata?.role);
+  const isModerator = role === 'moderator' || role === 'admin';
 
   const loadProfile = useProfileStore((state) => state.load);
   const profileStatus = useProfileStore((state) => state.status);
@@ -216,6 +221,29 @@ export default function HomeScreen() {
                 </Body>
               </Pressable>
             </Link>
+
+            {isModerator ? (
+              <Link href="/moderation" asChild>
+                <Pressable
+                  accessibilityRole="link"
+                  accessibilityLabel={moderationCopy.title}
+                  style={({ pressed }) => ({
+                    minHeight: minTouchTarget,
+                    justifyContent: 'center',
+                    paddingHorizontal: spacing.xl,
+                    paddingVertical: spacing.md,
+                    borderRadius: radii.button,
+                    borderWidth: 1,
+                    borderColor: colors.mutedSage,
+                    opacity: pressed ? 0.85 : 1,
+                  })}
+                >
+                  <Body style={{ textAlign: 'center' }}>
+                    {moderationCopy.title}
+                  </Body>
+                </Pressable>
+              </Link>
+            ) : null}
 
             <View style={{ gap: spacing.sm }}>
               <Button
