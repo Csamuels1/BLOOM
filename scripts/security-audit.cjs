@@ -34,6 +34,10 @@ const ALLOWLIST = new Map([
     'GHSA-g3hv-75wg-m249',
     'minimatch (Expo CLI / build tooling); not in app bundle.',
   ],
+  [
+    'GHSA-fc5q-39xc-vjpf',
+    'picomatch ReDoS via extglob (Metro / @expo/cli / jest / micromatch build + test tooling); affects all versions <=4.0.7 with no fixed release yet; glob patterns come from project config, never untrusted runtime input, and picomatch is not in the shipped app bundle.',
+  ],
 ]);
 
 function runAudit() {
