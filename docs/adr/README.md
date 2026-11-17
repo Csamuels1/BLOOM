@@ -21,3 +21,4 @@ Architecture Decision Records capture decisions that materially affect implement
 - [ADR-0008: Supabase environment strategy](0008-supabase-environment-strategy.md)
 - [ADR-0009: Parallel delivery within a phase](0009-parallel-delivery.md)
 - [ADR-0010: Defer Phase 7 dietitian review (owner-approved)](0010-defer-dietitian-review.md)
+- [ADR-0011: Defer moderation-operations sign-off (owner-approved)](0011-defer-moderation-ops-signoff.md)
