@@ -79,7 +79,11 @@ interface CommunityState {
   /** (Re)load the current space's feed. Safe to call again to retry. */
   load: (client: AppSupabaseClient) => Promise<void>;
   /** Share a post in the current space; resolves true on success. */
-  post: (client: AppSupabaseClient, body: string) => Promise<boolean>;
+  /** Create a post (pending review); resolves to the created post, or null. */
+  post: (
+    client: AppSupabaseClient,
+    body: string,
+  ) => Promise<CommunityPost | null>;
   /** Delete one of the viewer's posts; resolves true on success. */
   remove: (client: AppSupabaseClient, id: string) => Promise<boolean>;
   /** Toggle the viewer's quiet support on a post; resolves true on success. */
@@ -166,16 +170,16 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
 
   post: async (client, body) => {
     const space = get().space;
-    if (!space) return false;
+    if (!space) return null;
     const result = await createPost(client, { space, body });
-    if (!result.ok) return false;
+    if (!result.ok) return null;
     const created = result.value;
     set((state) =>
       state.space === created.space
         ? { posts: [created, ...state.posts], status: 'loaded' }
         : {},
     );
-    return true;
+    return created;
   },
 
   remove: async (client, id) => {
