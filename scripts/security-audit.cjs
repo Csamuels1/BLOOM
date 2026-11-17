@@ -31,14 +31,6 @@ const ALLOWLIST = new Map([
     'decode-uri-component (expo-router url parsing, build tooling); patched via overrides + patches/query-string.',
   ],
   [
-    'GHSA-gcqx-w48m-w2h4',
-    'deepmerge (Expo CLI tooling); low severity, not in app bundle.',
-  ],
-  [
-    'GHSA-3g3m-2fjr-6pw4',
-    'glob (Expo CLI / build tooling); not in app bundle.',
-  ],
-  [
     'GHSA-g3hv-75wg-m249',
     'minimatch (Expo CLI / build tooling); not in app bundle.',
   ],

@@ -12,6 +12,7 @@ import {
 } from '@/components';
 import { cycleCopy } from '@/content/cycle';
 import { homeCopy as copy } from '@/content/home';
+import { notificationsCopy } from '@/content/notifications';
 import { todayCopy } from '@/content/today';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 import { useAuthStore } from '@/features/auth';
@@ -127,6 +128,27 @@ export default function HomeScreen() {
                 })}
               >
                 <Body style={{ textAlign: 'center' }}>{cycleCopy.title}</Body>
+              </Pressable>
+            </Link>
+
+            <Link href="/notifications" asChild>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={notificationsCopy.title}
+                style={({ pressed }) => ({
+                  minHeight: minTouchTarget,
+                  justifyContent: 'center',
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: radii.button,
+                  borderWidth: 1,
+                  borderColor: colors.mutedSage,
+                  opacity: pressed ? 0.85 : 1,
+                })}
+              >
+                <Body style={{ textAlign: 'center' }}>
+                  {notificationsCopy.title}
+                </Body>
               </Pressable>
             </Link>
 
