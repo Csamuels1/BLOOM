@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -17,6 +17,8 @@ import { MAX_POST_LENGTH } from './communityService';
 export interface PostComposerProps {
   /** Share the body; resolves true when the post was saved (pending review). */
   onSubmit: (body: string) => Promise<boolean>;
+  /** Optional attachment UI (e.g. an image picker) shown above the submit button. */
+  attachment?: ReactNode;
 }
 
 /**
@@ -25,7 +27,7 @@ export interface PostComposerProps {
  * failed save the typed words are NEVER discarded; on success the box clears
  * and a warm note explains the post will appear once reviewed.
  */
-export function PostComposer({ onSubmit }: PostComposerProps) {
+export function PostComposer({ onSubmit, attachment }: PostComposerProps) {
   const [body, setBody] = useState('');
   const [validation, setValidation] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
@@ -75,6 +77,7 @@ export function PostComposer({ onSubmit }: PostComposerProps) {
           maxLength={MAX_POST_LENGTH}
           textAlignVertical="top"
         />
+        {attachment}
         <Button
           label={copy.composerSubmit}
           loading={submitting}

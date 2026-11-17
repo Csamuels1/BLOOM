@@ -27,6 +27,10 @@ export interface CommunityFeedScreenProps {
   renderMedia?: (post: CommunityPost) => ReactNode;
   /** Slot passed to every PostCard (e.g. report / block actions). */
   renderActions?: (post: CommunityPost) => ReactNode;
+  /** Optional attachment UI rendered inside the composer (e.g. an image picker). */
+  composerAttachment?: ReactNode;
+  /** Called after a post is created (e.g. to upload its attached image). */
+  onPostCreated?: (post: CommunityPost) => Promise<void> | void;
 }
 
 /** A gentle, pressure-free note that posting and support are part of Pro. */
@@ -72,6 +76,8 @@ export function CommunityFeedScreen({
   client,
   renderMedia,
   renderActions,
+  composerAttachment,
+  onPostCreated,
 }: CommunityFeedScreenProps) {
   const ready = useCommunityStore((state) => state.ready);
   const space = useCommunityStore((state) => state.space);
@@ -122,7 +128,15 @@ export function CommunityFeedScreen({
       {ready && space ? (
         <>
           {isPro ? (
-            <PostComposer onSubmit={(body) => post(resolveClient(), body)} />
+            <PostComposer
+              attachment={composerAttachment}
+              onSubmit={async (body) => {
+                const created = await post(resolveClient(), body);
+                if (!created) return false;
+                await onPostCreated?.(created);
+                return true;
+              }}
+            />
           ) : (
             <ProNote />
           )}
