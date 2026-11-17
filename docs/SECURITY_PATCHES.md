@@ -13,7 +13,9 @@ Because these advisories cannot be cleared without upstream Expo releases, the o
 - Each allowlisted advisory is enumerated with justification in the script and must be mirrored here. The gate reports allowlisted advisories that are no longer present so stale entries are pruned.
 - The allowlist records accepted **build-time** risk only. It does not authorize production signing, a release, or any external gate, and it does not cover advisories on shipped runtime dependencies.
 
-Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f) and `minimatch` (GHSA-g3hv-75wg-m249). (The `deepmerge` and `glob` entries were pruned on 2026-11-17 after `expo-notifications` shifted the dependency tree and those advisories dropped out.)
+Allowlisted advisories (all build-time Expo tooling): `decode-uri-component` (GHSA-qr28-fpjm-wq7f), `minimatch` (GHSA-g3hv-75wg-m249), and `picomatch` (GHSA-fc5q-39xc-vjpf). (The `deepmerge` and `glob` entries were pruned on 2026-11-17 after `expo-notifications` shifted the dependency tree and those advisories dropped out.)
+
+`picomatch` (GHSA-fc5q-39xc-vjpf, high, ReDoS via single-branch repeated extglobs) was added on 2026-11-17 when the advisory was newly published. It affects **all** released versions (`<=4.0.7`, which is the latest — no fixed release exists yet; `npm audit`'s only "fix" is a semver-major react-native **downgrade**, which is not a real fix). Every path into it is build/test-time tooling — `@expo/cli`, `@expo/metro-config`, Metro, `jest-util`, `micromatch`, `readdirp`, `anymatch`, `fdir`, `tinyglobby` — none of which ship in the application bundle, and the glob patterns picomatch compiles come from project/build config, never untrusted runtime input. Prune this entry once an upstream fixed picomatch is available and adopted.
 
 Prefer upstream fixed releases once available, removing each patch and allowlist entry only after equivalent regression tests pass.
 
