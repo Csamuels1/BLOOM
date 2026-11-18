@@ -24,6 +24,14 @@ Precise location is not collected. Product analytics must not contain any sensit
 - Enforce Free/Pro access server-side; hidden UI is not authorization.
 - Keep privileged functions outside exposed schemas and restrict execution explicitly.
 
+### Entitlement enforcement (issues #44, #45)
+
+- The entitlement source of truth is the `subscriptions` mirror, written **only** by the RevenueCat webhook through `apply_billing_event` (service role); clients have no insert/update grant, so no account can self-upgrade. Proven by pgTAP `0013` and `0014`.
+- Every premium action is enforced at the server/data boundary, not in the UI. Community posting and reactions require `is_pro()` in RLS (#119, pgTAP `0011`); the client `is_pro`/entitlement value is advisory and only decides what UI to show.
+- A member reads only their own subscription row (RLS select-own); entitlement never leaks across accounts at the data layer (pgTAP `0014`).
+- **Offline cache expiry:** the client caches the entitlement for at most `ENTITLEMENT_TTL_MS` (24h) and keys it to the signed-in user. After the TTL, on a failed read with no fresh cache, or for a different user, it falls back to Free (least privilege) until it re-verifies with the server.
+- **Account switching:** the cache is cleared on sign-out and whenever the signed-in user id changes, and a mismatched user can never read another user's cached Pro (`selectIsPro` is user- and freshness-checked).
+
 ## Storage
 
 - Progress photos are private to their owner.
