@@ -22,3 +22,4 @@ Architecture Decision Records capture decisions that materially affect implement
 - [ADR-0009: Parallel delivery within a phase](0009-parallel-delivery.md)
 - [ADR-0010: Defer Phase 7 dietitian review (owner-approved)](0010-defer-dietitian-review.md)
 - [ADR-0011: Defer moderation-operations sign-off (owner-approved)](0011-defer-moderation-ops-signoff.md)
+- [ADR-0012: Defer live store/sandbox subscription verification (owner-approved)](0012-defer-store-sandbox-verification.md)
