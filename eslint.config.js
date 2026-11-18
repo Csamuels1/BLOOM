@@ -3,7 +3,16 @@ const expoConfig = require('eslint-config-expo/flat');
 
 module.exports = defineConfig([
   expoConfig,
-  { ignores: ['dist/**', 'coverage/**', '.expo/**'] },
+  // Deno Edge Function entrypoints use Deno globals and URL imports; their
+  // testable logic lives in sibling logic.ts modules, which ARE linted.
+  {
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      '.expo/**',
+      'supabase/functions/**/index.ts',
+    ],
+  },
   {
     files: ['scripts/**/*.cjs'],
     languageOptions: {
