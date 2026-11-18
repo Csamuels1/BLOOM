@@ -80,6 +80,43 @@ export type Database = {
           },
         ];
       };
+      billing_events: {
+        Row: {
+          app_user_id: string | null;
+          applied: boolean;
+          event_id: string;
+          event_timestamp: string;
+          payload: Json | null;
+          period_end: string | null;
+          received_at: string;
+          store: string | null;
+          type: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          app_user_id?: string | null;
+          applied?: boolean;
+          event_id: string;
+          event_timestamp: string;
+          payload?: Json | null;
+          period_end?: string | null;
+          received_at?: string;
+          store?: string | null;
+          type: string;
+        };
+        Update: {
+          app_user_id?: string | null;
+          applied?: boolean;
+          event_id?: string;
+          event_timestamp?: string;
+          payload?: Json | null;
+          period_end?: string | null;
+          received_at?: string;
+          store?: string | null;
+          type?: string;
+        };
+        Relationships: [];
+      };
       community_posts: {
         Row: {
           author_id: string;
@@ -422,6 +459,7 @@ export type Database = {
         Row: {
           created_at: string;
           current_period_end: string | null;
+          last_event_at: string | null;
           source: string;
           status: string;
           tier: string;
@@ -432,6 +470,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           current_period_end?: string | null;
+          last_event_at?: string | null;
           source?: string;
           status?: string;
           tier?: string;
@@ -441,6 +480,7 @@ export type Database = {
         Update: {
           created_at?: string;
           current_period_end?: string | null;
+          last_event_at?: string | null;
           source?: string;
           status?: string;
           tier?: string;
@@ -553,6 +593,18 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      apply_billing_event: {
+        Args: {
+          p_app_user_id: string;
+          p_event_id: string;
+          p_event_timestamp: string;
+          p_payload?: Json;
+          p_period_end?: string;
+          p_store?: string;
+          p_type: string;
+        };
+        Returns: string;
+      };
       delete_current_user: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;

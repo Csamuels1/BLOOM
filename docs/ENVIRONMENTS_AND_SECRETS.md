@@ -20,6 +20,15 @@ Each environment uses separate Supabase projects, RevenueCat configuration, EAS 
 - Use platform-specific RevenueCat public SDK keys in the client; keep webhook authorization secrets server-side.
 - Use synthetic accounts and data for local development, screenshots, tests, and demos.
 
+### RevenueCat webhook (issue #44)
+
+The `revenuecat-webhook` Supabase Edge Function is the only writer of entitlement state. Before the webhook is activated, set these **server-only** secrets on the Supabase project (never in the client or the repo):
+
+- `REVENUECAT_WEBHOOK_SECRET` — the shared Authorization-header value, set identically in the RevenueCat dashboard webhook config and via `supabase secrets set`. The function fails closed (401) if it is unset or does not match.
+- `SUPABASE_SERVICE_ROLE_KEY` / `SUPABASE_URL` — injected by the platform; the function uses the service role only to call `apply_billing_event` (idempotent, ordered, audited). No client ever receives these.
+
+Deploy with `supabase functions deploy revenuecat-webhook --no-verify-jwt` (RevenueCat is not a Supabase user; the function enforces its own shared-secret auth). In RevenueCat, set the app user id to the Supabase user id (#43) so events map to the right mirror row.
+
 ## Environment promotion
 
 1. Develop and reset migrations locally.
