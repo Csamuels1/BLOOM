@@ -19,12 +19,19 @@ const envSchema = z.object({
   EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
     .string()
     .min(1, 'EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY is required'),
+  // RevenueCat public SDK keys (#43). Optional: purchasing is simply
+  // unavailable until they are set, so the rest of the app runs without them.
+  // These are public client keys, never the webhook/secret keys.
+  EXPO_PUBLIC_REVENUECAT_IOS_API_KEY: z.string().optional().default(''),
+  EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY: z.string().optional().default(''),
 });
 
 export interface PublicEnv {
   appEnv: AppEnvironment;
   supabaseUrl: string;
   supabasePublishableKey: string;
+  revenueCatIosKey: string;
+  revenueCatAndroidKey: string;
 }
 
 /**
@@ -40,12 +47,18 @@ export function parseEnv(
     EXPO_PUBLIC_SUPABASE_URL: source.EXPO_PUBLIC_SUPABASE_URL,
     EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
       source.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    EXPO_PUBLIC_REVENUECAT_IOS_API_KEY:
+      source.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY,
+    EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY:
+      source.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY,
   });
 
   return {
     appEnv: parsed.EXPO_PUBLIC_APP_ENV,
     supabaseUrl: parsed.EXPO_PUBLIC_SUPABASE_URL,
     supabasePublishableKey: parsed.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    revenueCatIosKey: parsed.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY,
+    revenueCatAndroidKey: parsed.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY,
   };
 }
 

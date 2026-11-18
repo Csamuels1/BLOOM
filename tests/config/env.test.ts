@@ -12,7 +12,19 @@ describe('public env config', () => {
       appEnv: 'staging',
       supabaseUrl: 'https://example.supabase.co',
       supabasePublishableKey: 'sb_publishable_test_key',
+      revenueCatIosKey: '',
+      revenueCatAndroidKey: '',
     });
+  });
+
+  it('reads the optional RevenueCat public keys when present', () => {
+    const parsed = parseEnv({
+      ...valid,
+      EXPO_PUBLIC_REVENUECAT_IOS_API_KEY: 'appl_ios',
+      EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY: 'goog_android',
+    });
+    expect(parsed.revenueCatIosKey).toBe('appl_ios');
+    expect(parsed.revenueCatAndroidKey).toBe('goog_android');
   });
 
   it('defaults the app environment to local', () => {

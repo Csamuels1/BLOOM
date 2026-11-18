@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import { router } from 'expo-router';
 
-import { Body, Button, Caption, Card, SectionTitle } from '@/components';
+import { Body, Button, Card, SectionTitle } from '@/components';
 import { subscriptionCopy as copy } from '@/content/subscription';
 
 /**
- * A gentle Pro affordance (issue #23). States what Pro adds without pressure,
- * scarcity, or shame. The CTA is honest that Pro is not purchasable yet (Phase
- * 10) rather than pretending — so the action is never silently lost.
+ * A gentle Pro affordance (issues #23, #43). States what Pro adds without
+ * pressure, scarcity, or shame, and opens the paywall where plans and prices are
+ * shown. Free stays genuinely useful on its own.
  */
 export function ProAffordance() {
-  const [noted, setNoted] = useState(false);
-
   return (
     <Card>
       <SectionTitle>{copy.proTitle}</SectionTitle>
@@ -18,13 +16,8 @@ export function ProAffordance() {
       <Button
         label={copy.proCta}
         variant="secondary"
-        onPress={() => setNoted(true)}
+        onPress={() => router.navigate('/paywall')}
       />
-      {noted ? (
-        <Caption accessibilityLiveRegion="polite" role="status">
-          {copy.proComingSoon}
-        </Caption>
-      ) : null}
     </Card>
   );
 }
