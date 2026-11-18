@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { subscriptionCopy as copy } from '@/content/subscription';
@@ -25,13 +25,12 @@ describe('entitlements', () => {
 });
 
 describe('ProAffordance', () => {
-  it('presents Pro without pressure and is honest it is not purchasable yet', () => {
+  it('presents Pro without pressure and opens the paywall', () => {
     render(<ProAffordance />);
 
     expect(screen.getByText(copy.proTitle)).toBeOnTheScreen();
-    expect(screen.queryByText(copy.proComingSoon)).toBeNull();
-
-    fireEvent.press(screen.getByRole('button', { name: copy.proCta }));
-    expect(screen.getByText(copy.proComingSoon)).toBeOnTheScreen();
+    expect(screen.getByText(copy.proBody)).toBeOnTheScreen();
+    // The CTA opens the paywall, not a dead "coming soon" state.
+    expect(screen.getByRole('button', { name: copy.proCta })).toBeOnTheScreen();
   });
 });

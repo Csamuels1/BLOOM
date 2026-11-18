@@ -17,6 +17,21 @@ jest.mock('expo-linking', () => ({
   createURL: (path) => `bloom://${String(path).replace(/^\/+/, '')}`,
 }));
 
+// react-native-purchases is a native module with no JS fallback under Jest.
+// Provide a default stub so any module that transitively imports the native
+// purchases adapter loads; tests that exercise purchasing mock the adapter.
+jest.mock('react-native-purchases', () => ({
+  __esModule: true,
+  default: {
+    configure: jest.fn(),
+    getOfferings: jest.fn(async () => ({ current: null })),
+    purchasePackage: jest.fn(async () => ({
+      customerInfo: { entitlements: { active: {} } },
+    })),
+    restorePurchases: jest.fn(async () => ({ entitlements: { active: {} } })),
+  },
+}));
+
 // Treat brand fonts as loaded in tests so the font-gated root layout renders.
 // At runtime useBrandFonts resolves once the real faces load; in unit tests we
 // assert component behavior, not font loading.

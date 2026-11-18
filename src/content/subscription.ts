@@ -14,4 +14,31 @@ export const subscriptionCopy = {
   proCta: 'Learn about Pro',
   proComingSoon:
     'Pro arrives in a later step. You will always see what is free and what is Pro, and nothing is ever charged without your say-so.',
+
+  // Paywall (issue #43).
+  paywallTitle: 'More with Pro',
+  paywallIntro:
+    'Choose the plan that suits you. Prices come straight from the store in your local currency, and you can cancel anytime. Free stays useful on its own.',
+  paywallPerMonth: 'per month',
+  paywallPerYear: 'per year',
+  paywallChoose: 'Choose this plan',
+  paywallPurchasing: 'Completing…',
+  paywallRestore: 'Restore a purchase',
+  paywallRestoring: 'Restoring…',
+  paywallManage: 'Manage your subscription',
+  paywallManageHint:
+    'You can view, change, or cancel your plan anytime in your App Store or Google Play account.',
+  paywallPurchasedTitle: 'You are all set',
+  paywallPurchasedBody:
+    'Thanks for supporting BLOOM. Your Pro features are unlocking now.',
+  paywallCancelled:
+    'No change was made and nothing was charged. You can choose a plan whenever you like.',
+  paywallLoadError: 'We could not load plans just now. Please try again.',
+  paywallEmptyTitle: 'Plans are not available yet',
+  paywallEmptyBody:
+    'Pro plans are not set up for your store yet. Nothing is charged, and Free stays fully available.',
+  paywallUnavailableTitle: 'Open BLOOM on your phone to subscribe',
+  paywallUnavailableBody:
+    'Purchases happen through the App Store or Google Play, so Pro is managed from the mobile app. Everything else works here.',
+  paywallRetry: 'Try again',
 } as const;
