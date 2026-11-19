@@ -117,6 +117,40 @@ export type Database = {
         };
         Relationships: [];
       };
+      client_crash_reports: {
+        Row: {
+          app_version: string | null;
+          error_name: string;
+          id: string;
+          message: string | null;
+          occurred_at: string;
+          platform: string;
+          stack: string | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          app_version?: string | null;
+          error_name: string;
+          id?: string;
+          message?: string | null;
+          occurred_at?: string;
+          platform: string;
+          stack?: string | null;
+          user_id?: string;
+        };
+        Update: {
+          app_version?: string | null;
+          error_name?: string;
+          id?: string;
+          message?: string | null;
+          occurred_at?: string;
+          platform?: string;
+          stack?: string | null;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       community_posts: {
         Row: {
           author_id: string;
