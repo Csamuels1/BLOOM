@@ -23,3 +23,4 @@ Architecture Decision Records capture decisions that materially affect implement
 - [ADR-0010: Defer Phase 7 dietitian review (owner-approved)](0010-defer-dietitian-review.md)
 - [ADR-0011: Defer moderation-operations sign-off (owner-approved)](0011-defer-moderation-ops-signoff.md)
 - [ADR-0012: Defer live store/sandbox subscription verification (owner-approved)](0012-defer-store-sandbox-verification.md)
+- [ADR-0013: Defer Phase 11 clinical safety sign-off, guardrails active (owner-approved)](0013-defer-clinical-safety-signoff.md)
