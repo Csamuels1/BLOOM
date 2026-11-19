@@ -1,4 +1,9 @@
 import { planCopy } from '@/content/plan';
+import { safetyCopy } from '@/content/safety';
+import {
+  applyCalorieFloor,
+  GUARDRAIL_VERSION,
+} from '@/features/safety/guardrails';
 
 /**
  * Calorie-range plan calculator (issue #32).
@@ -14,6 +19,10 @@ import { planCopy } from '@/content/plan';
  *  - During pregnancy, NO targets are ever generated (a care boundary, checked
  *    first, before anything else).
  *  - Output is always a range (min < max), never a single prescriptive figure.
+ *  - Every range is raised to the safe calorie floor (#47); the range can never
+ *    suggest below it, whatever the formula or adjustments do. The floor is
+ *    recorded as an adjustment so the range stays the sum of its adjustments,
+ *    and the guardrail version is stamped for audit.
  */
 
 /** Bump when the formula changes; a saved plan records which produced it. */
@@ -50,12 +59,14 @@ export type PlanResult =
       readonly kind: 'no_target';
       readonly formulaVersion: string;
       readonly contentVersion: string;
+      readonly guardrailVersion: string;
       readonly reason: string;
     }
   | {
       readonly kind: 'range';
       readonly formulaVersion: string;
       readonly contentVersion: string;
+      readonly guardrailVersion: string;
       readonly range: CalorieRange;
       readonly narrative: string;
       readonly adjustments: readonly Adjustment[];
@@ -99,6 +110,7 @@ export function computePlan(inputs: PlanInputs): PlanResult {
       kind: 'no_target',
       formulaVersion: FORMULA_VERSION,
       contentVersion: CONTENT_VERSION,
+      guardrailVersion: GUARDRAIL_VERSION,
       reason: planCopy.pregnancyNoTargetBody,
     };
   }
@@ -125,16 +137,29 @@ export function computePlan(inputs: PlanInputs): PlanResult {
     });
   }
 
-  // The range is exactly the sum of its adjustments, so it is fully auditable.
-  const range: CalorieRange = {
-    min: adjustments.reduce((sum, a) => sum + a.appliedMin, 0),
-    max: adjustments.reduce((sum, a) => sum + a.appliedMax, 0),
-  };
+  // The raw range is the sum of its adjustments, so it is fully auditable.
+  const rawMin = adjustments.reduce((sum, a) => sum + a.appliedMin, 0);
+  const rawMax = adjustments.reduce((sum, a) => sum + a.appliedMax, 0);
+
+  // SAFETY: raise to the calorie floor (#47). This only ever raises, so goals
+  // already above it are untouched. Record the raise as an adjustment so the
+  // range stays exactly the sum of its adjustments.
+  const floored = applyCalorieFloor({ min: rawMin, max: rawMax });
+  if (floored.min !== rawMin || floored.max !== rawMax) {
+    adjustments.push({
+      id: 'safety_floor',
+      label: safetyCopy.calorieFloorAdjustment,
+      appliedMin: floored.min - rawMin,
+      appliedMax: floored.max - rawMax,
+    });
+  }
+  const range: CalorieRange = { min: floored.min, max: floored.max };
 
   return {
     kind: 'range',
     formulaVersion: FORMULA_VERSION,
     contentVersion: CONTENT_VERSION,
+    guardrailVersion: GUARDRAIL_VERSION,
     range,
     narrative: NARRATIVE[inputs.goal],
     adjustments,
