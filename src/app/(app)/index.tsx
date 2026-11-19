@@ -24,6 +24,8 @@ import {
   exportAccount,
   useProfileStore,
 } from '@/features/profile';
+import { supportCopy } from '@/content/support';
+import { GentleCheckIn } from '@/features/support';
 import { TodayScreen } from '@/features/today';
 import { getSupabaseClient } from '@/lib/supabase';
 
@@ -90,6 +92,10 @@ export default function HomeScreen() {
             alignSelf: 'center',
           }}
         >
+          {/* A gentle, non-diagnostic check-in surfaces here only when the
+              server-side engine (#48) flags a concerning pattern. */}
+          <GentleCheckIn />
+
           <TodayScreen
             onRetryProfile={() => void loadProfile(getSupabaseClient())}
           />
@@ -219,6 +225,25 @@ export default function HomeScreen() {
                 <Body style={{ textAlign: 'center' }}>
                   {notificationsCopy.title}
                 </Body>
+              </Pressable>
+            </Link>
+
+            <Link href="/support" asChild>
+              <Pressable
+                accessibilityRole="link"
+                accessibilityLabel={supportCopy.title}
+                style={({ pressed }) => ({
+                  minHeight: minTouchTarget,
+                  justifyContent: 'center',
+                  paddingHorizontal: spacing.xl,
+                  paddingVertical: spacing.md,
+                  borderRadius: radii.button,
+                  borderWidth: 1,
+                  borderColor: colors.mutedSage,
+                  opacity: pressed ? 0.85 : 1,
+                })}
+              >
+                <Body style={{ textAlign: 'center' }}>{supportCopy.title}</Body>
               </Pressable>
             </Link>
 

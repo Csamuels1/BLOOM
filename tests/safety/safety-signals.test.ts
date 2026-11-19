@@ -65,6 +65,15 @@ describe('fetchSafetySignals', () => {
     expect(result?.signals).toEqual(['rapid_sustained_loss']);
   });
 
+  it('fails closed (null, no throw) when the call itself throws', async () => {
+    const rpc = jest.fn(async () => {
+      throw new Error('offline');
+    });
+    await expect(
+      fetchSafetySignals({ rpc } as unknown as AppSupabaseClient),
+    ).resolves.toBeNull();
+  });
+
   it('returns null on a server error rather than guessing', async () => {
     const rpc = jest.fn(async () => ({ data: null, error: { code: '500' } }));
     expect(

@@ -11,6 +11,7 @@ import { photosCopy } from '@/content/photos';
 import { planCopy } from '@/content/plan';
 import { reportingCopy } from '@/content/reporting';
 import { safetyCopy } from '@/content/safety';
+import { supportCopy } from '@/content/support';
 import { postpartumCopy } from '@/content/postpartum';
 import { progressCopy } from '@/content/progress';
 import { recommendationsCopy } from '@/content/recommendations';
@@ -51,6 +52,7 @@ const copyModules = {
   reportingCopy,
   moderationCopy,
   safetyCopy,
+  supportCopy,
 };
 
 describe('voice-sensitive copy', () => {
