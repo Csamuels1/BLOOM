@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Animated, type DimensionValue, type ViewStyle } from 'react-native';
 
+import { motion } from '@/design/motion';
 import { colors, radii } from '@/design/tokens';
 import { useReducedMotion } from '@/design/useReducedMotion';
 
@@ -28,6 +29,7 @@ export function Skeleton({
 
   useEffect(() => {
     if (reduceMotion) {
+      pulse.stopAnimation();
       pulse.setValue(0.6);
       return;
     }
@@ -35,12 +37,12 @@ export function Skeleton({
       Animated.sequence([
         Animated.timing(pulse, {
           toValue: 1,
-          duration: 650,
+          duration: motion.duration.pulse,
           useNativeDriver: true,
         }),
         Animated.timing(pulse, {
           toValue: 0.5,
-          duration: 650,
+          duration: motion.duration.pulse,
           useNativeDriver: true,
         }),
       ]),

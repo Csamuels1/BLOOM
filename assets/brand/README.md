@@ -27,6 +27,31 @@ Fonts (`assets/fonts/`), loaded via `src/design/fonts.ts`:
 - Licenses: `OFL-Fraunces.txt`, `OFL-Manrope.txt` (SIL Open Font License — these
   files must stay alongside the fonts).
 
+## In-app spot illustrations (issue #51) — PENDING OWNER APPROVAL
+
+> **Status: pending owner approval at the Phase 12 gate (#54).** These are
+> engineering-authored originals; they are not approved brand art until the
+> owner records approval on #54.
+
+Original botanical spot illustrations replace the remaining text-only
+placeholders (onboarding welcome and empty states). They are drawn in code with
+`react-native-svg` in `src/components/Illustration.tsx` (no raster files, ~5 KB
+of source total) and use only brand tokens from `src/design/tokens.ts`
+(terracotta, blush, gold, sage, muted sage, ivory — never amber, never red).
+
+| Name      | Motif                                       | Used on                       |
+| --------- | ------------------------------------------- | ----------------------------- |
+| `blossom` | Five-petal blossom echoing the mark         | Onboarding welcome; photos    |
+| `sprout`  | Small sprout rising from a soft mound       | Weight log and progress empty |
+| `leaves`  | Two leaves leaning together (quiet company) | Community empty feed          |
+| `sunrise` | Gentle sun over soft hills                  | Today "finish setup" state    |
+| `moon`    | Soft crescent with small petals             | Cycle empty history           |
+
+Art rules (checked in review): calm, organic, inclusive, and non-body-focused —
+no figures, bodies, scales, numbers, or before/after framing. Every
+illustration is decorative (hidden from screen readers; the adjacent text
+carries meaning) and its soft entrance is skipped under reduce-motion.
+
 ## Regenerate the raster assets
 
 The PNGs and wordmark are derived from the SVG sources. The rasterizer is not a

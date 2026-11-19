@@ -32,6 +32,27 @@ jest.mock('react-native-purchases', () => ({
   },
 }));
 
+// expo-haptics calls a native module; unit tests must never load it. Provide a
+// resolving stub so src/design/haptics.ts can be exercised (issue #51).
+jest.mock('expo-haptics', () => ({
+  __esModule: true,
+  impactAsync: jest.fn(async () => undefined),
+  selectionAsync: jest.fn(async () => undefined),
+  notificationAsync: jest.fn(async () => undefined),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+    Medium: 'medium',
+    Heavy: 'heavy',
+    Soft: 'soft',
+    Rigid: 'rigid',
+  },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
+}));
+
 // Treat brand fonts as loaded in tests so the font-gated root layout renders.
 // At runtime useBrandFonts resolves once the real faces load; in unit tests we
 // assert component behavior, not font loading.

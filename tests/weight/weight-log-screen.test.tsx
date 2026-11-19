@@ -4,6 +4,7 @@ import {
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import * as Haptics from 'expo-haptics';
 
 import type { AppSupabaseClient } from '@/lib/supabase';
 import { weightCopy as copy } from '@/content/weight';
@@ -118,6 +119,20 @@ describe('WeightLogScreen', () => {
     );
     // ...and the user's input is NOT discarded.
     expect(screen.getByDisplayValue('68')).toBeOnTheScreen();
+    // A failure never buzzes — no "punishment" haptic.
+    expect(Haptics.impactAsync).not.toHaveBeenCalled();
+  });
+
+  it('confirms a successful save with one soft haptic tap', async () => {
+    render(<WeightLogScreen client={makeClient({ rows: [] })} />);
+
+    fireEvent.changeText(screen.getByLabelText(copy.weightLabel), '68');
+    fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+
+    await waitFor(() => expect(Haptics.impactAsync).toHaveBeenCalledTimes(1));
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(
+      Haptics.ImpactFeedbackStyle.Light,
+    );
   });
 
   it('closes the save notice when retry (dismiss) is pressed', async () => {

@@ -165,7 +165,11 @@ export function CommunityFeedScreen({
             ) : null}
 
             {status === 'loaded' && posts.length === 0 ? (
-              <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+              <EmptyState
+                title={copy.emptyTitle}
+                body={copy.emptyBody}
+                illustration="leaves"
+              />
             ) : null}
 
             {posts.map((item) => (

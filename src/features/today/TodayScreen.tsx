@@ -210,6 +210,7 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
           <EmptyState
             title={copy.setupTitle}
             body={copy.setupBody}
+            illustration="sunrise"
             actionLabel={copy.setupCta}
             onAction={() => router.navigate('/onboarding')}
           />

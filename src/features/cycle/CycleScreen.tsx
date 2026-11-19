@@ -285,7 +285,11 @@ export function CycleScreen({
             ) : null}
 
             {!isLoading && !isLoadError && entries.length === 0 ? (
-              <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+              <EmptyState
+                title={copy.emptyTitle}
+                body={copy.emptyBody}
+                illustration="moon"
+              />
             ) : null}
 
             {entries.map((entry) => (

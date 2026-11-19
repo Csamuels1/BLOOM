@@ -91,6 +91,7 @@ export function ProgressScreen({ client }: ProgressScreenProps) {
         <EmptyState
           title={copy.emptyTitle}
           body={copy.emptyBody}
+          illustration="sprout"
           actionLabel={copy.emptyCta}
           onAction={() => router.navigate('/weight-log')}
         />
