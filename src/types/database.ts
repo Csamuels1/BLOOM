@@ -609,6 +609,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
       };
+      evaluate_safety_signals: {
+        Args: { p_as_of?: string };
+        Returns: Json;
+      };
       export_current_user: { Args: Record<PropertyKey, never>; Returns: Json };
       is_moderator: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_pro: { Args: Record<PropertyKey, never>; Returns: boolean };
