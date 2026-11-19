@@ -2,9 +2,11 @@ import '../../global.css';
 
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
 import { useBrandFonts } from '@/design/fonts';
 import { AuthProvider, useAuthStore } from '@/features/auth';
+import { installGlobalCrashHandler } from '@/features/telemetry';
 
 /**
  * Auth-gated navigator (issues #9, #10).
@@ -47,6 +49,12 @@ export function RootNavigator() {
 }
 
 export default function RootLayout() {
+  // Sanitized, first-party crash reporting (#53). The app's own error handling
+  // is unchanged — the previous global handler always still runs.
+  useEffect(() => {
+    installGlobalCrashHandler();
+  }, []);
+
   return (
     <AuthProvider>
       <RootNavigator />

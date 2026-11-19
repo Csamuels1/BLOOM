@@ -66,6 +66,7 @@ Precise location is not collected. Product analytics must not contain any sensit
 - Product events use a fixed allowlist with no arbitrary property bags.
 - Never record weight, meals, cycle/postpartum values, free text, images, email, precise location, auth tokens, or database payloads.
 - Disable session replay unless a separate privacy review and explicit user consent are approved.
+- **Implementation (#53, ADR-0014):** telemetry is first-party only, with no third-party SDKs (a toolchain test enforces this). Crash reports are scrubbed on the device and sent as a fixed schema (`error_name`, `message`, `stack`, `app_version`, `platform`) to `client_crash_reports`. Clients can only insert their own reports and can never read them, and a server trigger scrubs again. Numbers are kept only on stack-frame lines. Analytics `track()` accepts only an allowlisted event name (no properties argument) and records only the user's id. The client and server allowlists are kept identical by test. pgTAP `0017` covers both.
 
 ## Release security gate
 

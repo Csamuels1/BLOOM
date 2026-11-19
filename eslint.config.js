@@ -10,6 +10,9 @@ module.exports = defineConfig([
       'dist/**',
       'coverage/**',
       '.expo/**',
+      // Parallel-worker worktrees (ADR-0009) live here; they are separate
+      // checkouts and must never be linted as part of this one.
+      '.claude/**',
       'supabase/functions/**/index.ts',
     ],
   },
