@@ -10,6 +10,7 @@ import { onboardingCopy } from '@/content/onboarding';
 import { photosCopy } from '@/content/photos';
 import { planCopy } from '@/content/plan';
 import { reportingCopy } from '@/content/reporting';
+import { safetyCopy } from '@/content/safety';
 import { postpartumCopy } from '@/content/postpartum';
 import { progressCopy } from '@/content/progress';
 import { recommendationsCopy } from '@/content/recommendations';
@@ -49,6 +50,7 @@ const copyModules = {
   communityMediaCopy,
   reportingCopy,
   moderationCopy,
+  safetyCopy,
 };
 
 describe('voice-sensitive copy', () => {
