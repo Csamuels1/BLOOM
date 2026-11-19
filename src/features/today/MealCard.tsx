@@ -11,6 +11,7 @@ import {
 
 import { Body, Button, Caption, SectionTitle } from '@/components';
 import { todayCopy as copy } from '@/content/today';
+import { motion } from '@/design/motion';
 import { colors, radii, spacing } from '@/design/tokens';
 import { useReducedMotion } from '@/design/useReducedMotion';
 
@@ -37,7 +38,7 @@ function Chevron({ expanded }: { expanded: boolean }) {
     }
     const animation = Animated.timing(turn, {
       toValue: expanded ? 1 : 0,
-      duration: 220,
+      duration: motion.duration.quick,
       useNativeDriver: true,
     });
     animation.start();

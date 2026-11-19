@@ -29,8 +29,8 @@ import {
 /**
  * Store-driven onboarding host (issue #13). Renders the component for the
  * current step and the shared chrome (Back + progress). Navigation lives in the
- * store, so this is a single route rather than one route per step. Steps whose
- * screens are not built yet fall back to a placeholder (#14, #15).
+ * store, so this is a single route rather than one route per step. Every step
+ * has a finished screen (the record below is exhaustive).
  */
 // A full record: TypeScript enforces that every onboarding step has a screen.
 const STEP_COMPONENTS: Record<OnboardingStepId, ComponentType> = {

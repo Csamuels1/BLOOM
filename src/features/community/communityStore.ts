@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
+import { communityCopy } from '@/content/community';
 import type { AppSupabaseClient } from '@/lib/supabase';
 
 import {
@@ -109,6 +110,9 @@ const initialState = {
   actionError: null,
 };
 
+/** Post ids with a support request in flight (module scope; not UI state). */
+const supportInFlight = new Set<string>();
+
 export const useCommunityStore = create<CommunityState>((set, get) => ({
   ...initialState,
 
@@ -194,21 +198,46 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
   },
 
   toggleSupport: async (client, postId) => {
-    set({ actionError: null });
+    // One request per post at a time: a second tap while one is in flight is
+    // ignored, so the optimistic value and the server never disagree.
+    if (supportInFlight.has(postId)) return false;
+    supportInFlight.add(postId);
+
     const supported = get().mySupport[postId] === true;
-    const result = supported
-      ? await removeSupport(client, postId)
-      : await addSupport(client, postId);
-    if (!result.ok) {
-      set({ actionError: result.error });
-      return false;
-    }
+    // Optimistic (issue #51): support is a reversible private yes/no, so it is
+    // safe to show the new state immediately and roll back on failure.
     set((state) => ({
+      actionError: null,
       mySupport: { ...state.mySupport, [postId]: !supported },
     }));
-    return true;
+
+    try {
+      const result = supported
+        ? await removeSupport(client, postId)
+        : await addSupport(client, postId);
+      if (!result.ok) {
+        // Roll back and surface the gentle, visible action error.
+        set((state) => ({
+          actionError: result.error,
+          mySupport: { ...state.mySupport, [postId]: supported },
+        }));
+        return false;
+      }
+      return true;
+    } catch {
+      set((state) => ({
+        actionError: communityCopy.actionErrorBody,
+        mySupport: { ...state.mySupport, [postId]: supported },
+      }));
+      return false;
+    } finally {
+      supportInFlight.delete(postId);
+    }
   },
 
   clearActionError: () => set({ actionError: null }),
-  clear: () => set({ ...initialState }),
+  clear: () => {
+    supportInFlight.clear();
+    set({ ...initialState });
+  },
 }));

@@ -13,6 +13,7 @@ import {
   SectionTitle,
 } from '@/components';
 import { onboardingCopy as copy } from '@/content/onboarding';
+import { confirmHaptic } from '@/design/haptics';
 import { spacing } from '@/design/tokens';
 import { persistOnboarding, useProfileStore } from '@/features/profile';
 import { getSupabaseClient } from '@/lib/supabase';
@@ -70,6 +71,8 @@ export function PreviewStep() {
       setError(copy.planSaveError);
       return;
     }
+    // A single soft tap confirms the plan was saved — never a celebration.
+    confirmHaptic();
     setProfile(result.profile);
     reset();
     router.replace('/');

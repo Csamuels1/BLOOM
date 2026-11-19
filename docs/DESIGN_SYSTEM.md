@@ -37,6 +37,35 @@ against drift. **Do not hardcode brand hex values in components — import token
 | `Card`                                                               | Soft grouping surface                | Decorative container; pass roles/labels as needed                                                  |
 | `SafetyNotice`                                                       | Genuine safety messages only (amber) | `alert` role; title + message announced together                                                   |
 
+## Motion, haptics, and art (issue #51)
+
+- **Motion tokens** (`src/design/motion.ts`): `quick` 180ms, `gentle` 280ms,
+  `entrance` 420ms, `pulse` 650ms; press scale 0.98; 8dp rise. No animation may
+  exceed `MAX_MOTION_DURATION_MS` (700ms). No flashing, bouncing, confetti, or
+  looping celebration; the skeleton pulse is the only loop.
+- **`FadeIn`** (`src/components/FadeIn.tsx`): the shared entrance (`rise` or
+  `settle`). Under reduce-motion no animation starts and content renders in its
+  final state. `useReducedMotion` remembers the last OS value so later views
+  never show a first frame of motion. Every animated surface (FadeIn, Skeleton,
+  Button, MealCard chevron/expand) honours reduce-motion and is covered by
+  `tests/design/motion.test.tsx`.
+- **Haptics** (`src/design/haptics.ts`, `expo-haptics`): `confirm` (light
+  impact) and `selection` only. No-ops on web, never throws. Used for meaningful
+  confirmations only — a saved weight entry and finishing onboarding — never on
+  errors and never as a reward loop.
+- **Optimistic updates:** used only where rollback is safe. The community
+  support toggle updates instantly, ignores double taps while in flight, and on
+  failure rolls back and shows the gentle action notice. Weight, cycle, photo,
+  and profile writes stay confirm-then-update (pessimistic) because they are
+  health data; their failures are non-destructive and visible.
+- **Illustrations** (`src/components/Illustration.tsx`): original SVG botanical
+  spot art, decorative and non-body-focused; `EmptyState` accepts an optional
+  `illustration`. Pending owner approval (see
+  [../assets/brand/README.md](../assets/brand/README.md)).
+- **No gamification:** `tests/design/no-gamification.test.ts` fails if any
+  `src/content` string uses streaks, badges, points, levels, ranks,
+  achievements, or loss-aversion phrasing.
+
 ## Accessibility foundations
 
 - **Dynamic text:** all text scales with the OS setting, bounded by

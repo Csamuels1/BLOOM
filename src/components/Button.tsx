@@ -6,6 +6,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { motion } from '@/design/motion';
 import { useReducedMotion } from '@/design/useReducedMotion';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 
@@ -77,7 +78,9 @@ export function Button({
           opacity: isInactive ? 0.5 : pressedActive ? 0.85 : 1,
           // Subtle press feedback, suppressed under reduce-motion.
           transform:
-            pressedActive && !reduceMotion ? [{ scale: 0.98 }] : undefined,
+            pressedActive && !reduceMotion
+              ? [{ scale: motion.pressScale }]
+              : undefined,
         };
       }}
       {...rest}

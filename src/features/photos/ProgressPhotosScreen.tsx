@@ -169,6 +169,7 @@ export function ProgressPhotosScreen({
         <EmptyState
           title={copy.emptyTitle}
           body={copy.emptyBody}
+          illustration="blossom"
           actionLabel={copy.emptyAction}
           onAction={onAdd}
         />

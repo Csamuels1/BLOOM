@@ -12,6 +12,7 @@ import {
   SectionTitle,
 } from '@/components';
 import { weightCopy as copy } from '@/content/weight';
+import { confirmHaptic } from '@/design/haptics';
 import { colors, radii, spacing } from '@/design/tokens';
 import { useProfileStore } from '@/features/profile';
 import { getSupabaseClient, type AppSupabaseClient } from '@/lib/supabase';
@@ -87,12 +88,15 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
     // On failure the form stays mounted with the user's values intact; the
     // store sets `error`, which renders as a retryable notice below. On success
     // the store prepends the new entry and the list updates.
-    await add(resolveClient(), {
+    const ok = await add(resolveClient(), {
       weightKg: values.weightKg,
       measuredAt: values.measuredAt,
       note: values.note,
     });
     setSubmitting(false);
+    // One soft tap confirms the save. Failures get no buzz — just the calm,
+    // visible notice — so feedback never feels like a punishment.
+    if (ok) confirmHaptic();
   }
 
   async function handleUpdate(values: WeightFormValues) {
@@ -186,7 +190,11 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
         ) : null}
 
         {!isLoading && !isLoadError && entries.length === 0 ? (
-          <EmptyState title={copy.emptyTitle} body={copy.emptyBody} />
+          <EmptyState
+            title={copy.emptyTitle}
+            body={copy.emptyBody}
+            illustration="sprout"
+          />
         ) : null}
 
         {entries.map((entry) => (
