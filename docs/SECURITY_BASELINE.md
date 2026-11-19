@@ -24,6 +24,12 @@ Precise location is not collected. Product analytics must not contain any sensit
 - Enforce Free/Pro access server-side; hidden UI is not authorization.
 - Keep privileged functions outside exposed schemas and restrict execution explicitly.
 
+### Safety guardrails and concerning-pattern signals (issues #47, #48)
+
+- Protective boundaries (calorie floor 1200, loss pace ≤ 1 kg/week) are versioned and enforced at the computation layer, not the UI; the floor only ever raises a range and cannot be bypassed (pgTAP via the plan calculator, Jest fuzz).
+- Concerning-pattern evaluation is **server-side** (`evaluate_safety_signals`, SECURITY INVOKER + RLS): it reads only the caller's own data, takes no user id, triggers only on **complete data over a real span** (no false alarms from sparse data), is **versioned**, and emits **non-diagnostic signal codes only** — never a diagnosis or condition (pgTAP `0015`). The client maps codes to gentle, reviewed copy and ignores unknown codes.
+- Threshold values are conservative defaults pending clinical sign-off (#50); the completeness, server-side, own-data-only, and no-diagnosis guarantees hold independent of the specific numbers.
+
 ### Entitlement enforcement (issues #44, #45)
 
 - The entitlement source of truth is the `subscriptions` mirror, written **only** by the RevenueCat webhook through `apply_billing_event` (service role); clients have no insert/update grant, so no account can self-upgrade. Proven by pgTAP `0013` and `0014`.

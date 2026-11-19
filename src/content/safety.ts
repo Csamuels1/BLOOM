@@ -23,6 +23,12 @@ export const safetyCopy = {
   // Shared reassurance used where a guardrail steps in.
   guardrailReassurance:
     'Nothing here is a test or a target. These gentle limits are here to look after you.',
+
+  // Non-diagnostic messages for concerning-pattern signals (issue #48). These
+  // never name a condition or diagnose — they gently notice and offer support.
+  signalRapidLossTitle: 'A gentle check-in',
+  signalRapidLossBody:
+    'We’ve noticed things have been changing quite quickly lately. There’s no judgement here at all — we just want to check you’re feeling okay. If it would help, talking with someone you trust or a professional can be a kind next step.',
 } as const;
 
 export default safetyCopy;
