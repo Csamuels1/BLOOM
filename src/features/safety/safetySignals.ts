@@ -65,7 +65,13 @@ export function describeSignal(code: SafetySignalCode): SignalMessage {
 export async function fetchSafetySignals(
   client: AppSupabaseClient,
 ): Promise<SafetyEvaluation | null> {
-  const { data, error } = await client.rpc('evaluate_safety_signals', {});
-  if (error) return null;
-  return parseEvaluation(data);
+  // Fail closed: a transport failure (offline, thrown client error) must never
+  // surface as an unhandled rejection — the caller simply shows nothing.
+  try {
+    const { data, error } = await client.rpc('evaluate_safety_signals', {});
+    if (error) return null;
+    return parseEvaluation(data);
+  } catch {
+    return null;
+  }
 }
