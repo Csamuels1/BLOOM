@@ -1,42 +1,29 @@
-import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Link, type Href } from 'expo-router';
+import { useEffect } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-  Body,
-  Button,
-  Caption,
-  SafetyNotice,
-  SectionTitle,
-} from '@/components';
+import { Body, SectionTitle } from '@/components';
 import { communityCopy } from '@/content/community';
 import { cycleCopy } from '@/content/cycle';
-import { homeCopy as copy } from '@/content/home';
 import { moderationCopy } from '@/content/moderation';
-import { notificationsCopy } from '@/content/notifications';
-import { reportingCopy } from '@/content/reporting';
+import { settingsCopy } from '@/content/settings';
+import { supportCopy } from '@/content/support';
 import { todayCopy } from '@/content/today';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 import { useAuthStore } from '@/features/auth';
-import {
-  deleteAccount,
-  exportAccount,
-  useProfileStore,
-} from '@/features/profile';
-import { supportCopy } from '@/content/support';
+import { useProfileStore } from '@/features/profile';
 import { GentleCheckIn } from '@/features/support';
 import { TodayScreen } from '@/features/today';
 import { getSupabaseClient } from '@/lib/supabase';
 
 /**
- * Authenticated home (issues #9, #20, #22). The Today screen is the branded
- * daily overview and leads the page; account lifecycle actions (export, delete,
- * sign out) — authenticated and RLS-scoped to the signed-in user — sit below in
- * a de-emphasized account section.
+ * Authenticated home (issues #9, #20, #22, #52). The Today screen is the branded
+ * daily overview and leads the page. Below it sits a de-emphasized area with the
+ * feature links and a single Settings entry; account lifecycle (export, delete,
+ * sign out) and privacy controls live in Settings (#52).
  */
 export default function HomeScreen() {
-  const signOut = useAuthStore((state) => state.signOut);
   const userId = useAuthStore((state) => state.session?.user.id);
   // Cosmetic gate only: show the staff link to moderators. The moderation route
   // and every action behind it are enforced server-side regardless of this.
@@ -52,32 +39,6 @@ export default function HomeScreen() {
       void loadProfile(getSupabaseClient());
     }
   }, [userId, profileStatus, loadProfile]);
-
-  const [exportState, setExportState] = useState<
-    'idle' | 'working' | 'done' | 'error'
-  >('idle');
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
-
-  const onExport = async () => {
-    setExportState('working');
-    const data = await exportAccount(getSupabaseClient());
-    setExportState(data ? 'done' : 'error');
-  };
-
-  const onConfirmDelete = async () => {
-    if (!userId) return;
-    setDeleting(true);
-    setDeleteError(null);
-    const result = await deleteAccount(getSupabaseClient(), userId);
-    setDeleting(false);
-    if (!result.ok) {
-      setDeleteError(copy.deleteError);
-      return;
-    }
-    // Sign-out happened inside deleteAccount; the auth guard returns to sign-in.
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
@@ -103,234 +64,41 @@ export default function HomeScreen() {
           {/* De-emphasized account area — the daily overview comes first. */}
           <View style={{ gap: spacing.md }}>
             <SectionTitle>{todayCopy.accountTitle}</SectionTitle>
-
-            <Link href="/onboarding" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={copy.startOnboarding}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>
-                  {copy.startOnboarding}
-                </Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/community" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={communityCopy.title}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>
-                  {communityCopy.title}
-                </Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/cycle" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={cycleCopy.title}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>{cycleCopy.title}</Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/blocked" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={reportingCopy.blockedTitle}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>
-                  {reportingCopy.blockedTitle}
-                </Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/my-reports" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={reportingCopy.myReportsTitle}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>
-                  {reportingCopy.myReportsTitle}
-                </Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/notifications" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={notificationsCopy.title}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>
-                  {notificationsCopy.title}
-                </Body>
-              </Pressable>
-            </Link>
-
-            <Link href="/support" asChild>
-              <Pressable
-                accessibilityRole="link"
-                accessibilityLabel={supportCopy.title}
-                style={({ pressed }) => ({
-                  minHeight: minTouchTarget,
-                  justifyContent: 'center',
-                  paddingHorizontal: spacing.xl,
-                  paddingVertical: spacing.md,
-                  borderRadius: radii.button,
-                  borderWidth: 1,
-                  borderColor: colors.mutedSage,
-                  opacity: pressed ? 0.85 : 1,
-                })}
-              >
-                <Body style={{ textAlign: 'center' }}>{supportCopy.title}</Body>
-              </Pressable>
-            </Link>
-
+            <HomeLink href="/community" label={communityCopy.title} />
+            <HomeLink href="/cycle" label={cycleCopy.title} />
+            {/* Safety (#49): support stays one tap from Home, independent of
+                whether a check-in is showing. Do not move this into Settings. */}
+            <HomeLink href="/support" label={supportCopy.title} />
+            <HomeLink href="/settings" label={settingsCopy.homeLink} />
             {isModerator ? (
-              <Link href="/moderation" asChild>
-                <Pressable
-                  accessibilityRole="link"
-                  accessibilityLabel={moderationCopy.title}
-                  style={({ pressed }) => ({
-                    minHeight: minTouchTarget,
-                    justifyContent: 'center',
-                    paddingHorizontal: spacing.xl,
-                    paddingVertical: spacing.md,
-                    borderRadius: radii.button,
-                    borderWidth: 1,
-                    borderColor: colors.mutedSage,
-                    opacity: pressed ? 0.85 : 1,
-                  })}
-                >
-                  <Body style={{ textAlign: 'center' }}>
-                    {moderationCopy.title}
-                  </Body>
-                </Pressable>
-              </Link>
+              <HomeLink href="/moderation" label={moderationCopy.title} />
             ) : null}
-
-            <View style={{ gap: spacing.sm }}>
-              <Button
-                label={copy.exportData}
-                variant="secondary"
-                onPress={onExport}
-                loading={exportState === 'working'}
-                disabled={exportState === 'working'}
-              />
-              {exportState === 'done' ? (
-                <Caption accessibilityLiveRegion="polite">
-                  {copy.exportReady}
-                </Caption>
-              ) : null}
-              {exportState === 'error' ? (
-                <Caption color="terracotta" accessibilityLiveRegion="polite">
-                  {copy.exportError}
-                </Caption>
-              ) : null}
-            </View>
-
-            {confirmingDelete ? (
-              <View style={{ gap: spacing.sm }}>
-                <SafetyNotice
-                  title={copy.deleteConfirmTitle}
-                  message={copy.deleteConfirmBody}
-                />
-                {deleteError ? (
-                  <Caption color="terracotta" accessibilityLiveRegion="polite">
-                    {deleteError}
-                  </Caption>
-                ) : null}
-                <Button
-                  label={copy.deleteConfirm}
-                  onPress={onConfirmDelete}
-                  loading={deleting}
-                  disabled={deleting}
-                />
-                <Button
-                  label={copy.deleteCancel}
-                  variant="ghost"
-                  onPress={() => setConfirmingDelete(false)}
-                />
-              </View>
-            ) : (
-              <Button
-                label={copy.deleteAccount}
-                variant="ghost"
-                onPress={() => setConfirmingDelete(true)}
-              />
-            )}
-
-            <Button
-              label={copy.signOut}
-              variant="secondary"
-              onPress={() => {
-                void signOut(getSupabaseClient());
-              }}
-            />
           </View>
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function HomeLink({ href, label }: { href: Href; label: string }) {
+  return (
+    <Link href={href} asChild>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={label}
+        style={({ pressed }) => ({
+          minHeight: minTouchTarget,
+          justifyContent: 'center',
+          paddingHorizontal: spacing.xl,
+          paddingVertical: spacing.md,
+          borderRadius: radii.button,
+          borderWidth: 1,
+          borderColor: colors.mutedSage,
+          opacity: pressed ? 0.85 : 1,
+        })}
+      >
+        <Body style={{ textAlign: 'center' }}>{label}</Body>
+      </Pressable>
+    </Link>
   );
 }
