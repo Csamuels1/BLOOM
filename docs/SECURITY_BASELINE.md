@@ -23,6 +23,7 @@ Precise location is not collected. Product analytics must not contain any sensit
 - Use `app_metadata` for staff authorization and account for JWT refresh latency.
 - Enforce Free/Pro access server-side; hidden UI is not authorization.
 - Keep privileged functions outside exposed schemas and restrict execution explicitly.
+- **Least-privilege grants (#55):** `anon` holds no privilege on any table, sequence or function in `public`, and `authenticated` holds no TRUNCATE (which bypasses RLS), TRIGGER or REFERENCES. New tables inherit this by default. Postgres always grants new functions EXECUTE to `PUBLIC`, so every new function migration must end with `revoke execute on function … from public, anon;`. pgTAP `0019` fails if any public function is anon-executable.
 
 ### Safety guardrails and concerning-pattern signals (issues #47, #48)
 
