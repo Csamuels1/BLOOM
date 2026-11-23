@@ -47,3 +47,6 @@ yarn-error.log*
 
 # Parallel-worker git worktrees (ADR-0009)
 .claude/
+
+# Jest coverage output (release-candidate reports)
+coverage/
