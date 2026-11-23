@@ -60,7 +60,7 @@ against drift. **Do not hardcode brand hex values in components — import token
   health data; their failures are non-destructive and visible.
 - **Illustrations** (`src/components/Illustration.tsx`): original SVG botanical
   spot art, decorative and non-body-focused; `EmptyState` accepts an optional
-  `illustration`. Pending owner approval (see
+  `illustration`. Approved by the owner on 2026-11-23 (#54; see
   [../assets/brand/README.md](../assets/brand/README.md)).
 - **No gamification:** `tests/design/no-gamification.test.ts` fails if any
   `src/content` string uses streaks, badges, points, levels, ranks,

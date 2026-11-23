@@ -27,11 +27,12 @@ Fonts (`assets/fonts/`), loaded via `src/design/fonts.ts`:
 - Licenses: `OFL-Fraunces.txt`, `OFL-Manrope.txt` (SIL Open Font License — these
   files must stay alongside the fonts).
 
-## In-app spot illustrations (issue #51) — PENDING OWNER APPROVAL
+## In-app spot illustrations (issue #51) — APPROVED
 
-> **Status: pending owner approval at the Phase 12 gate (#54).** These are
-> engineering-authored originals; they are not approved brand art until the
-> owner records approval on #54.
+> **Status: approved by the owner on 2026-11-23 at the Phase 12 gate (#54).**
+> All five (blossom, sprout, leaves, sunrise, moon) were reviewed on a rendered
+> preview at preview and in-app sizes, on the app's ivory background. Any change
+> to them needs fresh owner approval.
 
 Original botanical spot illustrations replace the remaining text-only
 placeholders (onboarding welcome and empty states). They are drawn in code with

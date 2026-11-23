@@ -1,36 +1,20 @@
-import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ErrorState } from '@/components';
+import { cycleCopy } from '@/content/cycle';
 import { colors, spacing } from '@/design/tokens';
-import { useAuthStore } from '@/features/auth';
-import { CycleScreen } from '@/features/cycle';
-import { useProfileStore } from '@/features/profile';
-import { getSupabaseClient } from '@/lib/supabase';
+import { CycleScreen, useTrackingPreference } from '@/features/cycle';
 
 /**
  * Optional cycle logging route (issue #34). Reached from the Today screen. The
  * CycleScreen owns the CRUD, the uncertainty-aware insight, and the disable flow
  * (keep vs delete history); this route wires its on/off state to the profile's
- * `track_cycle` preference.
+ * `track_cycle` preference. The save reflects server truth and fails visibly:
+ * on failure the toggle reverts and a retryable error shows (#54).
  */
 export default function CycleRoute() {
-  const profile = useProfileStore((state) => state.profile);
-  const setProfile = useProfileStore((state) => state.setProfile);
-  const userId = useAuthStore((state) => state.session?.user.id);
-  const [tracking, setTracking] = useState(profile?.track_cycle ?? true);
-
-  const onTrackingChange = async (next: boolean) => {
-    setTracking(next);
-    if (!userId) return;
-    const { error } = await getSupabaseClient()
-      .from('profiles')
-      .update({ track_cycle: next })
-      .eq('id', userId);
-    if (!error && profile) {
-      setProfile({ ...profile, track_cycle: next });
-    }
-  };
+  const { tracking, saveError, change, retry } = useTrackingPreference();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
@@ -45,9 +29,17 @@ export default function CycleRoute() {
             alignSelf: 'center',
           }}
         >
+          {saveError ? (
+            <ErrorState
+              title={cycleCopy.trackingSaveErrorTitle}
+              message={cycleCopy.trackingSaveErrorBody}
+              retryLabel={cycleCopy.retry}
+              onRetry={() => void retry()}
+            />
+          ) : null}
           <CycleScreen
             tracking={tracking}
-            onTrackingChange={onTrackingChange}
+            onTrackingChange={(next) => void change(next)}
           />
         </View>
       </ScrollView>

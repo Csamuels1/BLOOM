@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
 import { communityCopy } from '@/content/community';
+import { track } from '@/features/telemetry';
 import type { AppSupabaseClient } from '@/lib/supabase';
 
 import {
@@ -183,6 +184,8 @@ export const useCommunityStore = create<CommunityState>((set, get) => ({
         ? { posts: [created, ...state.posts], status: 'loaded' }
         : {},
     );
+    // Allowlisted, fixed-schema analytics (#53): name + user id only.
+    void track('community_post_created');
     return created;
   },
 

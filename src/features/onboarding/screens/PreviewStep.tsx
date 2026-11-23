@@ -16,6 +16,7 @@ import { onboardingCopy as copy } from '@/content/onboarding';
 import { confirmHaptic } from '@/design/haptics';
 import { spacing } from '@/design/tokens';
 import { persistOnboarding, useProfileStore } from '@/features/profile';
+import { track } from '@/features/telemetry';
 import { getSupabaseClient } from '@/lib/supabase';
 
 import { useOnboardingStore } from '../onboardingStore';
@@ -73,6 +74,7 @@ export function PreviewStep() {
     }
     // A single soft tap confirms the plan was saved — never a celebration.
     confirmHaptic();
+    void track('onboarding_completed');
     setProfile(result.profile);
     reset();
     router.replace('/');

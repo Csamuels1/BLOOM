@@ -1,10 +1,11 @@
-import { type ComponentType } from 'react';
+import { type ComponentType, useEffect } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Body, Caption } from '@/components';
 import { onboardingCopy as copy } from '@/content/onboarding';
 import { colors, minTouchTarget, spacing } from '@/design/tokens';
+import { track } from '@/features/telemetry';
 
 import { useOnboardingStore } from './onboardingStore';
 import { CycleStep } from './screens/CycleStep';
@@ -53,6 +54,11 @@ export function OnboardingFlow() {
   const draft = useOnboardingStore((state) => state.draft);
   const back = useOnboardingStore((state) => state.back);
   const skip = useOnboardingStore((state) => state.skip);
+
+  // Allowlisted, fixed-schema analytics (#53): fired once when the flow opens.
+  useEffect(() => {
+    void track('onboarding_started');
+  }, []);
 
   const StepComponent = STEP_COMPONENTS[currentStepId];
   const visible = visibleStepIds(draft);

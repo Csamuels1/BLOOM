@@ -6,8 +6,9 @@ import { colors } from '@/design/tokens';
 import { FadeIn } from './FadeIn';
 
 /**
- * Original BLOOM spot illustrations (issue #51) — PENDING OWNER APPROVAL at the
- * Phase 12 gate (#54); see assets/brand/README.md.
+ * Original BLOOM spot illustrations (issue #51), approved by the owner on
+ * 2026-11-23 at the Phase 12 gate (#54); see assets/brand/README.md. Any change
+ * needs fresh owner approval.
  *
  * Simple botanical motifs drawn from the brand palette only. They are
  * deliberately non-body-focused: no figures, bodies, scales, numbers, or

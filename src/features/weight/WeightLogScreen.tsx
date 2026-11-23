@@ -15,6 +15,7 @@ import { weightCopy as copy } from '@/content/weight';
 import { confirmHaptic } from '@/design/haptics';
 import { colors, radii, spacing } from '@/design/tokens';
 import { useProfileStore } from '@/features/profile';
+import { track } from '@/features/telemetry';
 import { getSupabaseClient, type AppSupabaseClient } from '@/lib/supabase';
 
 import { WeightEntryForm, type WeightFormValues } from './WeightEntryForm';
@@ -96,7 +97,12 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
     setSubmitting(false);
     // One soft tap confirms the save. Failures get no buzz — just the calm,
     // visible notice — so feedback never feels like a punishment.
-    if (ok) confirmHaptic();
+    if (ok) {
+      confirmHaptic();
+      // Allowlisted, fixed-schema analytics (#53): the event name only, never
+      // the weight itself.
+      void track('weight_logged');
+    }
   }
 
   async function handleUpdate(values: WeightFormValues) {

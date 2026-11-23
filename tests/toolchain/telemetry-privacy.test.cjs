@@ -90,6 +90,21 @@ test('the client analytics allowlist matches the server allowlist exactly', () =
   assert.deepEqual(clientEvents.sort(), serverEvents.sort());
 });
 
+test('every allowlisted analytics event has an emitter in the app (no dead events)', () => {
+  const client = read('src/features/telemetry/analytics.ts');
+  const listBlock = client.slice(
+    client.indexOf('ANALYTICS_EVENTS = ['),
+    client.indexOf('] as const'),
+  );
+  const events = [...listBlock.matchAll(/'([a-z_]+)'/g)].map((m) => m[1]);
+  const appSource = sourceFiles(join(root, 'src'))
+    .filter((f) => !f.includes(join('features', 'telemetry')))
+    .map((f) => readFileSync(f, 'utf8'))
+    .join('\n');
+  const missing = events.filter((e) => !appSource.includes(`track('${e}')`));
+  assert.deepEqual(missing, [], `allowlisted events never emitted: ${missing}`);
+});
+
 test('crash payloads are fixed-schema: the reporter exposes no context bag', () => {
   const reporter = read('src/features/telemetry/crashReporter.ts');
   for (const banned of [
