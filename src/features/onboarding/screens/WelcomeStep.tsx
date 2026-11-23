@@ -8,7 +8,7 @@ import { useOnboardingStore } from '../onboardingStore';
 
 /**
  * Onboarding welcome: approved brand + tagline, gentle intro (issue #13), with
- * a decorative blossom illustration (issue #51, pending owner approval).
+ * a decorative blossom illustration (issue #51, owner-approved at #54).
  */
 export function WelcomeStep() {
   const next = useOnboardingStore((state) => state.next);

@@ -14,6 +14,7 @@ import { todayCopy as copy } from '@/content/today';
 import { motion } from '@/design/motion';
 import { colors, radii, spacing } from '@/design/tokens';
 import { useReducedMotion } from '@/design/useReducedMotion';
+import { track } from '@/features/telemetry';
 
 import type { MockMeal } from './mockMeals';
 
@@ -103,6 +104,9 @@ export function MealCard({
     if (!reduceMotion) {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }
+    // Allowlisted analytics (#53): a meal counts as viewed when it is opened,
+    // not when it is closed. Name only — never which meal.
+    if (!expanded) void track('meal_viewed');
     setExpanded((value) => !value);
   };
 

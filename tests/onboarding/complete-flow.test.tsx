@@ -16,6 +16,10 @@ jest.mock('expo-router', () => ({
 }));
 
 jest.mock('@/lib/supabase', () => ({ getSupabaseClient: () => ({}) }));
+
+// This walks the entire flow through a dozen screens; the default 5s timeout
+// is too tight on a loaded machine (it timed out, not failed, at the #54 gate).
+jest.setTimeout(30000);
 jest.mock('@/features/profile', () => ({
   persistOnboarding: jest.fn().mockResolvedValue({ ok: true, profile: {} }),
   useProfileStore: (selector: (s: { setProfile: () => void }) => unknown) =>

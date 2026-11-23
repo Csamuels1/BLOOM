@@ -18,6 +18,7 @@ export {
   type InsufficientDataInsight,
 } from './insights';
 export { CycleScreen, type CycleScreenProps } from './CycleScreen';
+export { useTrackingPreference } from './useTrackingPreference';
 export { CycleStartForm, type CycleStartFormProps } from './CycleStartForm';
 export {
   CycleInsightCard,

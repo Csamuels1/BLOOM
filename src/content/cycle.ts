@@ -97,6 +97,9 @@ export const cycleCopy = {
     'Your dates are kept and will be here if you turn cycle notes back on.',
 
   // Errors — nothing is lost; retry is always offered.
+  trackingSaveErrorTitle: 'Your setting did not change',
+  trackingSaveErrorBody:
+    'We could not save that just now, so cycle tracking stays as it was. Please check your connection and try again.',
   saveErrorTitle: 'That did not save',
   saveErrorBody:
     'Your date is still here — nothing was lost. Please check your connection and try again.',

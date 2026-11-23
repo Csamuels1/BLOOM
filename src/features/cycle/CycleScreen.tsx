@@ -73,6 +73,14 @@ export function CycleScreen({
   const clearError = useCycleStore((state) => state.clearError);
 
   const [trackingOn, setTrackingOn] = useState(tracking);
+  // Stay in step with the parent's `tracking` (server truth). If the parent
+  // reverts after a failed save, the screen reverts too. This adjusts state
+  // during render rather than in an effect, as React recommends.
+  const [syncedTracking, setSyncedTracking] = useState(tracking);
+  if (tracking !== syncedTracking) {
+    setSyncedTracking(tracking);
+    setTrackingOn(tracking);
+  }
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [confirmingDisable, setConfirmingDisable] = useState(false);
