@@ -14,7 +14,7 @@ name: BLOOM iOS auth
 # is on screen, then dismiss the sheet if present (found on the first iOS run).
 - extendedWaitUntil:
     visible:
-      text: 'Continue|Your body, your pace\.'
+      text: 'Continue|Welcome back. Take your time.'
     timeout: 120000
 - tapOn:
     text: Continue
@@ -24,7 +24,7 @@ name: BLOOM iOS auth
     optional: true
 # Signed out, the app lands on sign-in.
 - extendedWaitUntil:
-    visible: Your body, your pace.
+    visible: Welcome back. Take your time.
     timeout: 30000
 - assertVisible: Sign in
 # A deep link to a protected route must not reach it while signed out.
@@ -45,4 +45,4 @@ name: BLOOM iOS auth
 - assertVisible: Please confirm you are 18 or older to continue.
 # Return to sign-in.
 - tapOn: Already have an account? Sign in
-- assertVisible: Your body, your pace.
+- assertVisible: Welcome back. Take your time.
