@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { type Ref, useState } from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
 import {
@@ -22,6 +22,8 @@ export interface TextFieldProps extends Omit<
   error?: string;
   /** Optional helper text shown under the label. */
   hint?: string;
+  /** Lets a form move focus to this field (return key "next", #146). */
+  ref?: Ref<TextInput>;
 }
 
 /**
@@ -36,6 +38,9 @@ export function TextField({
   error,
   hint,
   secureTextEntry,
+  onFocus,
+  onBlur,
+  ref,
   ...rest
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
@@ -73,8 +78,17 @@ export function TextField({
           placeholderTextColor={colors.mutedSage}
           allowFontScaling
           maxFontSizeMultiplier={maxFontSizeMultiplier}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          ref={ref}
+          onFocus={(event) => {
+            setFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            // Compose with the caller (react-hook-form) instead of being
+            // replaced by it, so the focus border clears on blur.
+            setFocused(false);
+            onBlur?.(event);
+          }}
           style={{
             flex: 1,
             minHeight: minTouchTarget,

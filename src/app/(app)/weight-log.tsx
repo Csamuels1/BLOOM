@@ -1,6 +1,7 @@
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { KeyboardSafeScrollView } from '@/components';
 import { colors, spacing } from '@/design/tokens';
 import { WeightLogScreen } from '@/features/weight';
 
@@ -12,7 +13,7 @@ import { WeightLogScreen } from '@/features/weight';
 export default function WeightLogRoute() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardSafeScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{
             flex: 1,
@@ -25,7 +26,7 @@ export default function WeightLogRoute() {
         >
           <WeightLogScreen />
         </View>
-      </ScrollView>
+      </KeyboardSafeScrollView>
     </SafeAreaView>
   );
 }

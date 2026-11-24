@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { KeyboardSafeScrollView } from '@/components';
 import { communityMediaCopy } from '@/content/communityMedia';
 import { colors, spacing } from '@/design/tokens';
 import { useAuthStore } from '@/features/auth';
@@ -92,7 +93,7 @@ export default function CommunityRoute() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardSafeScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{
             flex: 1,
@@ -136,7 +137,7 @@ export default function CommunityRoute() {
             )}
           />
         </View>
-      </ScrollView>
+      </KeyboardSafeScrollView>
     </SafeAreaView>
   );
 }

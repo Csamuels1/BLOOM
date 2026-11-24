@@ -23,6 +23,7 @@ export default function RegisterScreen() {
   const {
     control,
     handleSubmit,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -66,6 +67,9 @@ export default function RegisterScreen() {
         <ControlledTextField
           control={control}
           name="email"
+          returnKeyType="next"
+          submitBehavior="submit"
+          onSubmitEditing={() => setFocus('password')}
           label={copy.emailLabel}
           placeholder={copy.emailPlaceholder}
           error={errors.email?.message}
@@ -78,6 +82,9 @@ export default function RegisterScreen() {
         <ControlledTextField
           control={control}
           name="password"
+          returnKeyType="next"
+          submitBehavior="submit"
+          onSubmitEditing={() => setFocus('confirmPassword')}
           label={copy.passwordLabel}
           placeholder={copy.passwordPlaceholder}
           error={errors.password?.message}
@@ -89,6 +96,7 @@ export default function RegisterScreen() {
         <ControlledTextField
           control={control}
           name="confirmPassword"
+          returnKeyType="done"
           label={copy.confirmPasswordLabel}
           placeholder={copy.confirmPasswordPlaceholder}
           error={errors.confirmPassword?.message}

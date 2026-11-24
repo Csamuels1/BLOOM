@@ -71,4 +71,27 @@ describe('sign-in flow', () => {
     await waitFor(() => expect(mockedSignIn).toHaveBeenCalledTimes(1));
     expect(screen.queryByText(copy.errSignInGeneric)).toBeNull();
   });
+
+  // #146: on Android the keyboard can cover the button, so the keyboard's own
+  // return key must also work: "next" on email, submit on password.
+  it('offers next on email and submits from the password return key', async () => {
+    mockedSignIn.mockResolvedValue({ ok: true });
+    render(<SignInScreen />);
+    const email = screen.getByLabelText(copy.emailLabel);
+    const password = screen.getByLabelText(copy.passwordLabel);
+    expect(email).toHaveProp('returnKeyType', 'next');
+    expect(password).toHaveProp('returnKeyType', 'go');
+
+    fill('a@b.co', 'secret123');
+    fireEvent(email, 'submitEditing');
+    expect(mockedSignIn).not.toHaveBeenCalled();
+    fireEvent(password, 'submitEditing');
+
+    await waitFor(() =>
+      expect(mockedSignIn).toHaveBeenCalledWith(expect.anything(), {
+        email: 'a@b.co',
+        password: 'secret123',
+      }),
+    );
+  });
 });
