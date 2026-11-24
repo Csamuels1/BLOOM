@@ -73,7 +73,7 @@ both-platform items come from Phase 12 (#54).
 
 ### Restore automatic iOS checks (required before #58 closes, per AGENTS.md)
 
-- [ ] `ios-smoke.yml` runs automatically again (it has been manual-only since Phase 1)
+- [x] `ios-smoke.yml` runs automatically again on pull requests (non-blocking; first green run 45443558807). Making it a required check is an owner decision.
 
 ## Part 3: Postpartum usability sessions
 
