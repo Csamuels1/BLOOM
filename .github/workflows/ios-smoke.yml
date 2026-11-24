@@ -80,6 +80,18 @@ jobs:
           done
           cat test-results/ios/metro.log
           exit 1
+      # The first iOS bundle takes minutes to build on a hosted runner (about
+      # 200s for roughly 2,200 modules), longer than Expo Go waits for it, which
+      # surfaces as "Could not connect to development server". Build it once
+      # here so Metro serves the test's request from its cache.
+      - name: Pre-warm the iOS JavaScript bundle
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 840 --output /dev/null \
+            'http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=src%2Fapp&unstable_transformProfile=hermes-stable'
+          echo "iOS bundle built and cached."
       - name: Run signed-out auth smoke test (sign-in, deep-link guard, 18+ gate)
         timeout-minutes: 10
         run: maestro --device "$BLOOM_IOS_DEVICE" test --debug-output test-results/ios/maestro --format junit --output test-results/ios/results.xml .maestro/ios-auth.yml
