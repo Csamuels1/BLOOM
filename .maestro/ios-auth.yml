@@ -9,6 +9,13 @@ name: BLOOM iOS auth
 - tapOn:
     text: Open
     optional: true
+# Expo Go shows a one-time "developer menu" sheet over the app once the bundle
+# loads, which hides the sign-in screen. Wait until either the sheet or the app
+# is on screen, then dismiss the sheet if present (found on the first iOS run).
+- extendedWaitUntil:
+    visible:
+      text: 'Continue|Your body, your pace\.'
+    timeout: 120000
 - tapOn:
     text: Continue
     optional: true
@@ -18,7 +25,7 @@ name: BLOOM iOS auth
 # Signed out, the app lands on sign-in.
 - extendedWaitUntil:
     visible: Your body, your pace.
-    timeout: 120000
+    timeout: 30000
 - assertVisible: Sign in
 # A deep link to a protected route must not reach it while signed out.
 - openLink: exp://127.0.0.1:8081/--/foundation
