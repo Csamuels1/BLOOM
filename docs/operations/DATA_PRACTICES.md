@@ -58,12 +58,12 @@ Protections in place:
 
 ## 4. Service providers (processors)
 
-| Provider                      | What it receives                                                           | Purpose                                                                                    |
-| ----------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Supabase                      | All account and app data in section 1                                      | Hosting, database, auth, storage. **The owner must confirm the project's hosting region.** |
-| RevenueCat                    | The Supabase user id (as the RevenueCat app user id) and purchase events   | Subscription status                                                                        |
-| Apple App Store / Google Play | Purchases and payments (their own accounts)                                | Billing                                                                                    |
-| Expo                          | Build and app tooling; no user data is sent for notifications (local only) | App delivery                                                                               |
+| Provider                      | What it receives                                                           | Purpose                                                                                                                                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Supabase                      | All account and app data in section 1                                      | Hosting, database, auth, storage. **Hosted in AWS eu-west-1 (Ireland, EU)**, confirmed 2026-11-24 for the current dev/staging project. The production project's region is still to be chosen (Phase 14). |
+| RevenueCat                    | The Supabase user id (as the RevenueCat app user id) and purchase events   | Subscription status                                                                                                                                                                                      |
+| Apple App Store / Google Play | Purchases and payments (their own accounts)                                | Billing                                                                                                                                                                                                  |
+| Expo                          | Build and app tooling; no user data is sent for notifications (local only) | App delivery                                                                                                                                                                                             |
 
 ## 5. User rights as implemented
 
@@ -91,7 +91,10 @@ Protections in place:
    under US state health and reproductive-data laws (for example Washington's
    My Health My Data Act and similar state laws)?
 2. Nigeria cross-border transfer: user data is stored in the Supabase hosting
-   region (to be confirmed). What is required if that region is outside Nigeria?
+   region, currently **eu-west-1 (Ireland, EU)**, outside Nigeria. What does the
+   NDPA require for this transfer (for example adequacy, contractual safeguards
+   or consent), and should the production project be hosted in a different
+   region?
 3. How long should de-identified billing events and analytics events be kept,
    and should that be stated in the policy?
 4. Is the 18+ self-confirmation sufficient, or is stronger age assurance

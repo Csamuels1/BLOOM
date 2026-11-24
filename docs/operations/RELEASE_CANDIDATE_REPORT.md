@@ -21,18 +21,18 @@ npx expo-doctor && npm run export               # project health + iOS/Android/w
 
 ## Results
 
-| Check                                | Result                                                                                          |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| `npm run verify`                     | Pass: 94 suites, 662 Jest; 41 toolchain; deps up to date                                        |
-| Coverage                             | Statements 83.9%, branches 75.4%, functions 82.9%, lines 83.9%                                  |
-| Migrations from a clean reset        | Pass                                                                                            |
-| pgTAP                                | Pass: 198 tests across 19 files                                                                 |
-| Supabase advisors (security)         | No issues                                                                                       |
-| Supabase advisors (performance)      | No issues (2 warnings fixed in this change)                                                     |
-| Dependency-audit gate                | Pass: 2 allowlisted build-time advisories                                                       |
-| Secrets scan (all tracked files)     | Pass, with a self-check proving the scanner fires                                               |
-| Third-party telemetry or replay SDKs | None (toolchain guard)                                                                          |
-| expo-doctor / all-platform export    | 21/21, and export passes (verified at the Phase 12 gate; no app, native or config change since) |
+| Check                                | Result                                                                                                           |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `npm run verify`                     | Pass: 94 suites, 662 Jest; 41 toolchain; deps up to date                                                         |
+| Coverage                             | Statements 83.9%, branches 75.4%, functions 82.9%, lines 83.9%                                                   |
+| Migrations from a clean reset        | Pass                                                                                                             |
+| pgTAP                                | Pass: 198 tests across 19 files                                                                                  |
+| Supabase advisors (security)         | No issues locally. Remote (hosted, newer linter): 5 intentional lint-0029 warnings, accepted in SECURITY_PATCHES |
+| Supabase advisors (performance)      | No issues (2 warnings fixed in this change)                                                                      |
+| Dependency-audit gate                | Pass: 2 allowlisted build-time advisories                                                                        |
+| Secrets scan (all tracked files)     | Pass, with a self-check proving the scanner fires                                                                |
+| Third-party telemetry or replay SDKs | None (toolchain guard)                                                                                           |
+| expo-doctor / all-platform export    | 21/21, and export passes (verified at the Phase 12 gate; no app, native or config change since)                  |
 
 ## Findings fixed in this change
 

@@ -43,6 +43,24 @@ Prefer upstream fixed releases once available, removing each patch and allowlist
 
 The URI decoder compatibility patch and scoped coverage YAML override remain documented in ADR-0005; neither is reverted by this work.
 
+## Accepted advisor exceptions
+
+The hosted Supabase security advisor (newer than the local CLI's) reports lint
+`0029 authenticated_security_definer_function_executable` (WARN) for five
+functions. Each is **intentional**: these SECURITY DEFINER functions exist so
+signed-in users can call them, each has a server-side guard, and each is
+reviewed below and proven by pgTAP. Accepted 2026-11-24, on the first remote
+advisor run after the Phases 7–13 push.
+
+| Function                                           | Why signed-in users must call it                                      | Guard (test)                                                                      |
+| -------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `delete_current_user`                              | Deleting your own account must remove the `auth.users` row            | Caller only; refuses with no user (`0004`)                                        |
+| `export_current_user`                              | Right of access must include tables clients cannot read               | Every query filtered to `auth.uid()`, no parameters, no staff identities (`0020`) |
+| `moderate_post`, `moderate_media`, `review_report` | The only path to change moderation status, so every change is audited | `is_moderator()` from immutable `app_metadata` (`0011`, `0012`)                   |
+
+A new SECURITY DEFINER function needs its own entry here. It is not covered by
+this exception.
+
 ## Security-definer database functions (Phase 4)
 
 `SECURITY DEFINER` functions run with the definer's privileges and are reviewed
