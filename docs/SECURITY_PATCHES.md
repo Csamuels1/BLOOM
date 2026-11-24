@@ -51,14 +51,32 @@ individually (AGENTS.md Supabase standards).
 - `public.delete_current_user()` (migration `20261111135613_...`): lets an
   authenticated user delete their own account. It is **scoped strictly to
   `auth.uid()`** — it never takes a target id — so a caller can only ever delete
-  themselves. It sets an empty `search_path`, is revoked from `public`/`anon`,
-  and is granted only to `authenticated`. It deletes the `auth.users` row, which
-  cascades to all owned rows and invalidates sessions. Private Storage objects
-  are removed client-side via the Storage API beforehand (direct deletes from
-  `storage.objects` are blocked by a Storage trigger).
+  themselves. It refuses a call with no signed-in user. Its `search_path` is
+  pinned to `public`. **Correction (2026-11-24):** this entry previously said it
+  used an empty `search_path` and was revoked from `anon`. Neither was true;
+  `anon` could call it, although it refused any call without a user. #55 removed
+  all `anon` function access (pgTAP `0019`). It deletes the `auth.users` row,
+  which cascades to all owned rows and invalidates sessions. Since #57, staff
+  references (moderation audit, `reviewed_by`) are SET NULL, so staff can delete
+  their accounts too. Private Storage objects are removed client-side via the
+  Storage API beforehand (direct deletes from `storage.objects` are blocked by a
+  Storage trigger).
+- `public.export_current_user()` (migration `20261124090000_...`, #57): returns
+  ALL of the caller's own data as JSON (right of access). It became `SECURITY
+DEFINER` because analytics events and crash reports are deliberately not
+  client-readable. Safeguards:
+  - it takes no parameters;
+  - every query is filtered to `auth.uid()`;
+  - a call without a signed-in user is refused;
+  - staff identities (`reviewed_by`) are never included;
+  - `search_path` is empty;
+  - it is revoked from `public` and `anon` and granted only to `authenticated`.
 
-`persist_onboarding` and `export_current_user` are `SECURITY INVOKER` (RLS
-applies) and also force identity from `auth.uid()`.
+  pgTAP `0020` proves the export contains the caller's data in every category
+  and none of anyone else's.
+
+`persist_onboarding` is `SECURITY INVOKER` (RLS applies) and forces identity
+from `auth.uid()`.
 
 ### Community moderation functions (Phase 9, #119)
 

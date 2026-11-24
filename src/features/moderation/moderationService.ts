@@ -64,7 +64,8 @@ export interface PendingMediaItem {
 /** One entry in the moderation audit history. */
 export interface HistoryItem {
   id: string;
-  moderatorId: string;
+  /** Null when the moderator has since deleted their account (#57). */
+  moderatorId: string | null;
   action: string;
   targetType: string;
   targetId: string;

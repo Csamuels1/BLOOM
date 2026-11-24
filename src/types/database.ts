@@ -285,7 +285,7 @@ export type Database = {
           action: string;
           created_at: string;
           id: string;
-          moderator_id: string;
+          moderator_id: string | null;
           reason: string | null;
           target_id: string;
           target_type: string;
@@ -295,7 +295,7 @@ export type Database = {
           action: string;
           created_at?: string;
           id?: string;
-          moderator_id: string;
+          moderator_id?: string | null;
           reason?: string | null;
           target_id: string;
           target_type: string;
@@ -304,7 +304,7 @@ export type Database = {
           action?: string;
           created_at?: string;
           id?: string;
-          moderator_id?: string;
+          moderator_id?: string | null;
           reason?: string | null;
           target_id?: string;
           target_type?: string;
