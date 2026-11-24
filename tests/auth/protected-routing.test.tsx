@@ -5,8 +5,11 @@ import { act, renderRouter, screen } from 'expo-router/testing-library';
 import AppLayout from '@/app/(app)/_layout';
 import FoundationScreen from '@/app/(app)/foundation';
 import HomeScreen from '@/app/(app)/index';
-import AuthLayout from '@/app/(auth)/_layout';
+import AuthLayout, { unstable_settings } from '@/app/(auth)/_layout';
+import ForgotPasswordScreen from '@/app/(auth)/forgot-password';
+import RegisterScreen from '@/app/(auth)/register';
 import SignInScreen from '@/app/(auth)/sign-in';
+import VerifyScreen from '@/app/(auth)/verify';
 import { RootNavigator } from '@/app/_layout';
 import { authCopy } from '@/content/auth';
 import { foundationCopy } from '@/content/foundation';
@@ -52,6 +55,31 @@ describe('protected routing', () => {
 
     expect(await screen.findByText(authCopy.signInIntro)).toBeOnTheScreen();
     expect(screen.queryByText(todayCopy.intro)).toBeNull();
+  });
+
+  it('lands signed-out users on sign-in even when other auth screens come first (#58)', async () => {
+    // Found by the first iOS simulator smoke run: with no initial route for the
+    // (auth) group, a cold launch resolved to "Check your email" (verify).
+    // Register every auth screen, sign-in LAST, as file discovery can order
+    // them on a device.
+    expect(unstable_settings.initialRouteName).toBe('sign-in');
+    setAuth('unauthenticated');
+    renderRouter(
+      {
+        _layout: RootNavigator,
+        '(auth)/_layout': { default: AuthLayout, unstable_settings },
+        '(auth)/verify': VerifyScreen,
+        '(auth)/register': RegisterScreen,
+        '(auth)/forgot-password': ForgotPasswordScreen,
+        '(auth)/sign-in': SignInScreen,
+        '(app)/_layout': AppLayout,
+        '(app)/index': HomeScreen,
+      },
+      { initialUrl: '/' },
+    );
+
+    expect(await screen.findByText(authCopy.signInIntro)).toBeOnTheScreen();
+    expect(screen.queryByText(authCopy.verifyHeading)).toBeNull();
   });
 
   it('cannot reach a protected route by navigating to it while signed out', async () => {
