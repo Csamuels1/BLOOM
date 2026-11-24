@@ -3,6 +3,16 @@ name: iOS simulator smoke
 on:
   # Owner-approved deferral: restore pull_request in Phase 13 (ADR-0006).
   workflow_dispatch:
+    inputs:
+      runner:
+        # macOS arm64 hosted capacity is often exhausted ("job was not acquired").
+        # The Intel image draws on a separate pool and is the manual fallback.
+        description: macOS runner image
+        type: choice
+        default: macos-15
+        options:
+          - macos-15
+          - macos-15-intel
 
 permissions:
   contents: read
@@ -15,8 +25,9 @@ jobs:
   ios-smoke:
     # Standard runner minutes are free for this public repo. Reassess if private.
     if: github.event.repository.private == false
-    runs-on: macos-15
-    timeout-minutes: 30
+    runs-on: ${{ inputs.runner || 'macos-15' }}
+    # Intel simulators build and boot more slowly than arm64.
+    timeout-minutes: ${{ inputs.runner == 'macos-15-intel' && 45 || 30 }}
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
