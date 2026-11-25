@@ -38,7 +38,7 @@ jobs:
     if: github.event.repository.private == false
     runs-on: ${{ inputs.runner || 'macos-15-intel' }}
     # Intel simulators build and boot more slowly than arm64.
-    timeout-minutes: ${{ inputs.runner == 'macos-15' && 30 || 45 }}
+    timeout-minutes: ${{ inputs.runner == 'macos-15' && 30 || 60 }}
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
@@ -77,7 +77,7 @@ jobs:
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/bloom-maestro"
           echo "$RUNNER_TEMP/bloom-maestro/maestro/bin" >> "$GITHUB_PATH"
       - name: Boot an available iPhone simulator
-        timeout-minutes: 8
+        timeout-minutes: 12
         shell: bash
         run: |
           set -euo pipefail
@@ -86,7 +86,7 @@ jobs:
           xcrun simctl boot "$device"
           xcrun simctl bootstatus "$device" -b
       - name: Start Metro and install SDK-compatible Expo Go
-        timeout-minutes: 8
+        timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
