@@ -60,11 +60,17 @@ export function Button({
       accessibilityState={{ disabled: isInactive, busy: loading }}
       disabled={isInactive}
       hitSlop={8}
-      style={({ pressed }): ViewStyle => {
+      style={{ minHeight: minTouchTarget, minWidth: minTouchTarget }}
+      {...rest}
+    >
+      {({ pressed }) => {
         const pressedActive = pressed && !isInactive;
-        return {
+        // The visual lives on a plain View, not in Pressable's style function.
+        // On Android (Expo Go, SDK 57) the style function's result was not
+        // applied: the plum fill vanished and "Sign in" rendered ivory on
+        // ivory, invisible (#146).
+        const face: ViewStyle = {
           minHeight: minTouchTarget,
-          minWidth: minTouchTarget,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
@@ -76,29 +82,31 @@ export function Button({
           borderColor: scheme.border,
           backgroundColor: scheme.background,
           opacity: isInactive ? 0.5 : pressedActive ? 0.85 : 1,
-          // Subtle press feedback, suppressed under reduce-motion.
-          transform:
-            pressedActive && !reduceMotion
-              ? [{ scale: motion.pressScale }]
-              : undefined,
+          // Subtle press feedback, suppressed under reduce-motion. Always an
+          // array: never hand the native view `transform: undefined`.
+          transform: [
+            { scale: pressedActive && !reduceMotion ? motion.pressScale : 1 },
+          ],
         };
+        return (
+          <View style={face}>
+            {loading ? (
+              <ActivityIndicator color={colors[scheme.text]} />
+            ) : (
+              <>
+                {icon ? <View accessible={false}>{icon}</View> : null}
+                <Typography
+                  variant="sectionTitle"
+                  color={scheme.text}
+                  style={{ textAlign: 'center' }}
+                >
+                  {label}
+                </Typography>
+              </>
+            )}
+          </View>
+        );
       }}
-      {...rest}
-    >
-      {loading ? (
-        <ActivityIndicator color={colors[scheme.text]} />
-      ) : (
-        <>
-          {icon ? <View accessible={false}>{icon}</View> : null}
-          <Typography
-            variant="sectionTitle"
-            color={scheme.text}
-            style={{ textAlign: 'center' }}
-          >
-            {label}
-          </Typography>
-        </>
-      )}
     </Pressable>
   );
 }

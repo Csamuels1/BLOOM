@@ -6,7 +6,6 @@ import {
   Pressable,
   UIManager,
   View,
-  type ViewStyle,
 } from 'react-native';
 
 import { Body, Button, Caption, SectionTitle } from '@/components';
@@ -126,34 +125,45 @@ export function MealCard({
         accessibilityHint={copy.mealExpandHint}
         accessibilityState={{ expanded }}
         onPress={toggle}
-        style={({ pressed }): ViewStyle => ({
-          padding: spacing.lg,
-          gap: spacing.sm,
-          transform: pressed && !reduceMotion ? [{ scale: 0.985 }] : undefined,
-        })}
       >
-        <View style={{ flexDirection: 'row', gap: spacing.md }}>
-          <View style={{ flex: 1 }}>
-            <SectionTitle>{meal.name}</SectionTitle>
-          </View>
-          <Chevron expanded={expanded} />
-        </View>
-
-        {meal.tags.length > 0 ? (
+        {/* Visual on a plain View, not the style function, and never
+            transform: undefined (#146). */}
+        {({ pressed }) => (
           <View
-            style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs }}
+            style={{
+              padding: spacing.lg,
+              gap: spacing.sm,
+              transform: [{ scale: pressed && !reduceMotion ? 0.985 : 1 }],
+            }}
           >
-            {meal.tags.map((tag) => (
-              <Tag key={tag} label={tag} />
-            ))}
-          </View>
-        ) : null}
+            <View style={{ flexDirection: 'row', gap: spacing.md }}>
+              <View style={{ flex: 1 }}>
+                <SectionTitle>{meal.name}</SectionTitle>
+              </View>
+              <Chevron expanded={expanded} />
+            </View>
 
-        {/* Calories stay small, muted, and clearly approximate. */}
-        <Caption color="gold">
-          {copy.mealCaloriesLabel} {meal.calories.min}–{meal.calories.max}{' '}
-          {copy.mealCaloriesUnit}
-        </Caption>
+            {meal.tags.length > 0 ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  gap: spacing.xs,
+                }}
+              >
+                {meal.tags.map((tag) => (
+                  <Tag key={tag} label={tag} />
+                ))}
+              </View>
+            ) : null}
+
+            {/* Calories stay small, muted, and clearly approximate. */}
+            <Caption color="gold">
+              {copy.mealCaloriesLabel} {meal.calories.min}–{meal.calories.max}{' '}
+              {copy.mealCaloriesUnit}
+            </Caption>
+          </View>
+        )}
       </Pressable>
 
       {expanded ? (

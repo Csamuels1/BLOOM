@@ -1,4 +1,4 @@
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { useReducedMotion } from '@/design/useReducedMotion';
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
@@ -40,19 +40,25 @@ export function ChoiceCard({
       accessibilityHint={body}
       accessibilityState={{ selected, checked: selected }}
       onPress={onSelect}
-      style={({ pressed }) => ({
-        minHeight: minTouchTarget,
-        gap: spacing.xs,
-        padding: spacing.lg,
-        borderRadius: radii.card,
-        borderWidth: 2,
-        borderColor: selected ? colors.terracotta : colors.mutedSage,
-        backgroundColor: selected ? colors.mutedSage : colors.ivory,
-        opacity: pressed && !reduceMotion ? 0.9 : 1,
-      })}
     >
-      <SectionTitle>{title}</SectionTitle>
-      {body ? <Body>{body}</Body> : null}
+      {/* Visual on a plain View, not the style function (#146: not applied on Android). */}
+      {({ pressed }) => (
+        <View
+          style={{
+            minHeight: minTouchTarget,
+            gap: spacing.xs,
+            padding: spacing.lg,
+            borderRadius: radii.card,
+            borderWidth: 2,
+            borderColor: selected ? colors.terracotta : colors.mutedSage,
+            backgroundColor: selected ? colors.mutedSage : colors.ivory,
+            opacity: pressed && !reduceMotion ? 0.9 : 1,
+          }}
+        >
+          <SectionTitle>{title}</SectionTitle>
+          {body ? <Body>{body}</Body> : null}
+        </View>
+      )}
     </Pressable>
   );
 }

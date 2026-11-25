@@ -56,3 +56,25 @@ test('KeyboardSafeScrollView avoids the keyboard on every platform', () => {
   assert.doesNotMatch(source, /Platform\.OS/);
   assert.match(source, /keyboardShouldPersistTaps="handled"/);
 });
+
+// #146: on Android (Expo Go, SDK 57) a Pressable style *function* was not
+// applied. The primary button lost its plum fill and "Sign in" vanished,
+// ivory on ivory. Visuals belong on a plain inner View (Pressable's children
+// function provides `pressed`).
+test('no Pressable styles itself with a style function (#146)', () => {
+  const offenders = walk(join(root, 'src'))
+    .filter((path) => /\.tsx$/.test(path))
+    .filter((path) => /style=\{\(\{\s*pressed/.test(readFileSync(path, 'utf8')))
+    .map((path) => relative(root, path));
+  assert.deepEqual(offenders, []);
+});
+
+test('no style hands the native view transform: undefined (#146)', () => {
+  const offenders = walk(join(root, 'src'))
+    .filter((path) => /\.tsx$/.test(path))
+    .filter((path) =>
+      /transform:[^,}]*:\s*undefined/.test(readFileSync(path, 'utf8')),
+    )
+    .map((path) => relative(root, path));
+  assert.deepEqual(offenders, []);
+});
