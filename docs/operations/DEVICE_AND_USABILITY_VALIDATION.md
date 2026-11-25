@@ -31,6 +31,7 @@ both-platform items come from Phase 12 (#54).
 
 - [ ] iOS: run `.maestro/ios-auth.yml` (sign-in, deep-link guard, registration, 18+ gate)
 - [ ] Verified sign-up → home; sign-out; the password-reset link sets a new password (needs a seeded verified test account and a mailbox)
+- [ ] With the keyboard open, every form's primary button can be reached, and the return key moves to the next field and submits the last one (#146)
 
 ### Onboarding
 
@@ -131,6 +132,14 @@ that felt judgmental, pressuring or confusing is a finding.
   the owner.
 - Write a short evidence summary into this file: devices tested, sessions run,
   goals covered, findings by priority, and blockers resolved.
+
+### Findings log
+
+| Issue | Priority | Found on               | Finding                                                                                                                                                                                                      | Status                                                                      |
+| ----- | -------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| #146  | P1       | Owner Android, Expo Go | Keyboard covered the sign-in button and the screen could not scroll to it (Android edge-to-edge). The return key did nothing.                                                                                | Fixed: shared keyboard-safe scroll on all input screens, return key submits |
+| #146  | P0       | Owner Android, Expo Go | Primary buttons invisible even with the keyboard closed: the Pressable style function was not applied, so "Sign in" rendered ivory on ivory. Same pattern in choice cards, pills, settings rows, meal cards. | Fixed: visuals moved to a plain inner View; guard rejects style functions   |
+| —     | P1       | Owner Android, Expo Go | Verification email link spins in the browser after confirming: the hosted project's redirect allow-list lacks the app's links.                                                                               | Owner: add redirect URLs in Supabase Auth settings                          |
 
 ## Evidence summary (fill in after testing)
 

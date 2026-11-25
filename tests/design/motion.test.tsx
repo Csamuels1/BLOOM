@@ -92,19 +92,19 @@ describe('Skeleton', () => {
 });
 
 describe('Button press feedback', () => {
-  /** Resolve the Pressable's style for its pressed state. */
+  /** Render the Button face for its pressed state and return its transform. */
   function pressedTransform() {
-    // The (possibly css-interop-wrapped) Pressable is the node whose style is a
-    // function of its interaction state.
+    // The visual lives on a plain View returned by Pressable's children
+    // function, not a style function (#146: css-interop on Android dropped it).
     const [pressable] = screen.UNSAFE_root.findAll(
-      (node) => typeof node.props.style === 'function',
+      (node) => typeof node.props.children === 'function',
     );
     if (!pressable)
-      throw new Error('expected a Pressable with a style function');
-    const styleFn = pressable.props.style as (state: {
+      throw new Error('expected a Pressable with a children function');
+    const renderFace = pressable.props.children as (state: {
       pressed: boolean;
-    }) => ViewStyle;
-    return styleFn({ pressed: true }).transform;
+    }) => { props: { style: ViewStyle } };
+    return renderFace({ pressed: true }).props.style.transform;
   }
 
   it('scales subtly on press when motion is allowed', () => {
@@ -112,9 +112,9 @@ describe('Button press feedback', () => {
     expect(pressedTransform()).toEqual([{ scale: motion.pressScale }]);
   });
 
-  it('does not scale under reduce-motion', () => {
+  it('does not scale under reduce-motion (and never sends transform: undefined)', () => {
     mockReduceMotion = true;
     render(<Button label="Save" onPress={() => undefined} />);
-    expect(pressedTransform()).toBeUndefined();
+    expect(pressedTransform()).toEqual([{ scale: 1 }]);
   });
 });

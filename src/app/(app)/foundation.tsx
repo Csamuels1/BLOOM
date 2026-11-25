@@ -62,22 +62,25 @@ export default function FoundationScreen() {
           <SafetyNotice title={copy.safetyTitle} message={copy.safetyMessage} />
 
           <Link href="/" replace asChild>
-            <Pressable
-              accessibilityRole="link"
-              accessibilityLabel={copy.back}
-              style={({ pressed }) => ({
-                minHeight: minTouchTarget,
-                justifyContent: 'center',
-                paddingHorizontal: spacing.xl,
-                paddingVertical: spacing.md,
-                borderRadius: radii.button,
-                backgroundColor: colors.plum,
-                opacity: pressed ? 0.85 : 1,
-              })}
-            >
-              <Body color="ivory" style={{ textAlign: 'center' }}>
-                {copy.back}
-              </Body>
+            <Pressable accessibilityRole="link" accessibilityLabel={copy.back}>
+              {/* Visual on a plain View, not the style function (#146). */}
+              {({ pressed }) => (
+                <View
+                  style={{
+                    minHeight: minTouchTarget,
+                    justifyContent: 'center',
+                    paddingHorizontal: spacing.xl,
+                    paddingVertical: spacing.md,
+                    borderRadius: radii.button,
+                    backgroundColor: colors.plum,
+                    opacity: pressed ? 0.85 : 1,
+                  }}
+                >
+                  <Body color="ivory" style={{ textAlign: 'center' }}>
+                    {copy.back}
+                  </Body>
+                </View>
+              )}
             </Pressable>
           </Link>
         </View>

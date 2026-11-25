@@ -1,8 +1,8 @@
 import { type ComponentType, useEffect } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Body, Caption } from '@/components';
+import { Body, Caption, KeyboardSafeScrollView } from '@/components';
 import { onboardingCopy as copy } from '@/content/onboarding';
 import { colors, minTouchTarget, spacing } from '@/design/tokens';
 import { track } from '@/features/telemetry';
@@ -107,9 +107,8 @@ export function OnboardingFlow() {
         )}
       </View>
 
-      <ScrollView
+      <KeyboardSafeScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
-        keyboardShouldPersistTaps="handled"
       >
         <View
           style={{
@@ -121,7 +120,7 @@ export function OnboardingFlow() {
         >
           <StepComponent />
         </View>
-      </ScrollView>
+      </KeyboardSafeScrollView>
     </SafeAreaView>
   );
 }

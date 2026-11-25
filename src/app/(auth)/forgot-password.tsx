@@ -67,6 +67,8 @@ export default function ForgotPasswordScreen() {
             <ControlledTextField
               control={control}
               name="email"
+              returnKeyType="send"
+              onSubmitEditing={() => void onSubmit()}
               label={copy.emailLabel}
               placeholder={copy.emailPlaceholder}
               error={errors.email?.message}

@@ -11,6 +11,10 @@ export {
   type IllustrationName,
   type IllustrationProps,
 } from './Illustration';
+export {
+  KeyboardSafeScrollView,
+  type KeyboardSafeScrollViewProps,
+} from './KeyboardSafeScrollView';
 export { Pill, type PillProps } from './Pill';
 export { Skeleton, type SkeletonProps } from './Skeleton';
 export { TextField, type TextFieldProps } from './TextField';

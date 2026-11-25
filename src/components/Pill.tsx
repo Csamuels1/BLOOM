@@ -1,4 +1,9 @@
-import { Pressable, type PressableProps, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  View,
+  type PressableProps,
+  type ViewStyle,
+} from 'react-native';
 
 import { colors, minTouchTarget, radii, spacing } from '@/design/tokens';
 
@@ -32,23 +37,31 @@ export function Pill({
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
       hitSlop={8}
-      style={({ pressed }): ViewStyle => ({
-        minHeight: minTouchTarget,
-        alignSelf: 'flex-start',
-        justifyContent: 'center',
-        paddingHorizontal: spacing.lg,
-        paddingVertical: spacing.sm,
-        borderRadius: radii.pill,
-        borderWidth: 1,
-        borderColor: selected ? colors.terracotta : colors.mutedSage,
-        backgroundColor: selected ? colors.terracotta : 'transparent',
-        opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
-      })}
+      style={{ alignSelf: 'flex-start' }}
       {...rest}
     >
-      <Typography variant="caption" color={selected ? 'ivory' : 'plum'}>
-        {label}
-      </Typography>
+      {/* Visual on a plain View, not the style function (#146): a selected
+          pill is ivory text and vanished when the fill was not applied. */}
+      {({ pressed }) => {
+        const face: ViewStyle = {
+          minHeight: minTouchTarget,
+          justifyContent: 'center',
+          paddingHorizontal: spacing.lg,
+          paddingVertical: spacing.sm,
+          borderRadius: radii.pill,
+          borderWidth: 1,
+          borderColor: selected ? colors.terracotta : colors.mutedSage,
+          backgroundColor: selected ? colors.terracotta : 'transparent',
+          opacity: disabled ? 0.5 : pressed ? 0.85 : 1,
+        };
+        return (
+          <View style={face}>
+            <Typography variant="caption" color={selected ? 'ivory' : 'plum'}>
+              {label}
+            </Typography>
+          </View>
+        );
+      }}
     </Pressable>
   );
 }

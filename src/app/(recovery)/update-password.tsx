@@ -29,6 +29,7 @@ export default function UpdatePasswordScreen() {
   const {
     control,
     handleSubmit,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<UpdatePasswordValues>({
     resolver: zodResolver(updatePasswordSchema),
@@ -60,6 +61,9 @@ export default function UpdatePasswordScreen() {
             <ControlledTextField
               control={control}
               name="password"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => setFocus('confirmPassword')}
               label={copy.newPasswordLabel}
               placeholder={copy.passwordPlaceholder}
               error={errors.password?.message}
@@ -71,6 +75,8 @@ export default function UpdatePasswordScreen() {
             <ControlledTextField
               control={control}
               name="confirmPassword"
+              returnKeyType="go"
+              onSubmitEditing={() => void onSubmit()}
               label={copy.confirmPasswordLabel}
               placeholder={copy.confirmPasswordPlaceholder}
               error={errors.confirmPassword?.message}

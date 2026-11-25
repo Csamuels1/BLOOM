@@ -83,21 +83,24 @@ export default function HomeScreen() {
 function HomeLink({ href, label }: { href: Href; label: string }) {
   return (
     <Link href={href} asChild>
-      <Pressable
-        accessibilityRole="link"
-        accessibilityLabel={label}
-        style={({ pressed }) => ({
-          minHeight: minTouchTarget,
-          justifyContent: 'center',
-          paddingHorizontal: spacing.xl,
-          paddingVertical: spacing.md,
-          borderRadius: radii.button,
-          borderWidth: 1,
-          borderColor: colors.mutedSage,
-          opacity: pressed ? 0.85 : 1,
-        })}
-      >
-        <Body style={{ textAlign: 'center' }}>{label}</Body>
+      <Pressable accessibilityRole="link" accessibilityLabel={label}>
+        {/* Visual on a plain View, not the style function (#146). */}
+        {({ pressed }) => (
+          <View
+            style={{
+              minHeight: minTouchTarget,
+              justifyContent: 'center',
+              paddingHorizontal: spacing.xl,
+              paddingVertical: spacing.md,
+              borderRadius: radii.button,
+              borderWidth: 1,
+              borderColor: colors.mutedSage,
+              opacity: pressed ? 0.85 : 1,
+            }}
+          >
+            <Body style={{ textAlign: 'center' }}>{label}</Body>
+          </View>
+        )}
       </Pressable>
     </Link>
   );

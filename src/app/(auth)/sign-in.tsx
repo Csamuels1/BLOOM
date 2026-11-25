@@ -22,6 +22,7 @@ export default function SignInScreen() {
   const {
     control,
     handleSubmit,
+    setFocus,
     formState: { errors, isSubmitting },
   } = useForm<SignInValues>({
     resolver: zodResolver(signInSchema),
@@ -65,6 +66,9 @@ export default function SignInScreen() {
         <ControlledTextField
           control={control}
           name="email"
+          returnKeyType="next"
+          submitBehavior="submit"
+          onSubmitEditing={() => setFocus('password')}
           label={copy.emailLabel}
           placeholder={copy.emailPlaceholder}
           error={errors.email?.message}
@@ -77,6 +81,8 @@ export default function SignInScreen() {
         <ControlledTextField
           control={control}
           name="password"
+          returnKeyType="go"
+          onSubmitEditing={() => void onSubmit()}
           label={copy.passwordLabel}
           placeholder={copy.passwordPlaceholder}
           error={errors.password?.message}

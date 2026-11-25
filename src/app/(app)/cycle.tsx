@@ -1,7 +1,7 @@
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ErrorState } from '@/components';
+import { ErrorState, KeyboardSafeScrollView } from '@/components';
 import { cycleCopy } from '@/content/cycle';
 import { colors, spacing } from '@/design/tokens';
 import { CycleScreen, useTrackingPreference } from '@/features/cycle';
@@ -18,7 +18,7 @@ export default function CycleRoute() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardSafeScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{
             flex: 1,
@@ -42,7 +42,7 @@ export default function CycleRoute() {
             onTrackingChange={(next) => void change(next)}
           />
         </View>
-      </ScrollView>
+      </KeyboardSafeScrollView>
     </SafeAreaView>
   );
 }
