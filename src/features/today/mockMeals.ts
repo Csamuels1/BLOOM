@@ -14,6 +14,8 @@ export interface MockMeal {
   readonly id: string;
   readonly name: string;
   readonly region: MealRegion;
+  /** Which part of the day this idea suits (#152). Drives the card accent. */
+  readonly slot: 'breakfast' | 'lunch' | 'dinner' | 'snack';
   /** Illustrative only — shown small and secondary, never a per-user figure. */
   readonly calories: { readonly min: number; readonly max: number };
   /** Neutral, supportive descriptors. Never "clean", "good", or "bad". */
@@ -25,6 +27,7 @@ export interface MockMeal {
 const GENERAL_MEALS: readonly MockMeal[] = [
   {
     id: 'general-1',
+    slot: 'breakfast',
     name: 'Oatmeal with berries, yoghurt, and a spoon of nut butter',
     region: 'general',
     calories: { min: 350, max: 450 },
@@ -34,6 +37,7 @@ const GENERAL_MEALS: readonly MockMeal[] = [
   },
   {
     id: 'general-2',
+    slot: 'lunch',
     name: 'Grilled chicken salad with beans and olive oil',
     region: 'general',
     calories: { min: 450, max: 600 },
@@ -43,6 +47,7 @@ const GENERAL_MEALS: readonly MockMeal[] = [
   },
   {
     id: 'general-3',
+    slot: 'dinner',
     name: 'Baked fish with brown rice and steamed vegetables',
     region: 'general',
     calories: { min: 500, max: 650 },
@@ -55,6 +60,7 @@ const GENERAL_MEALS: readonly MockMeal[] = [
 const NIGERIA_MEALS: readonly MockMeal[] = [
   {
     id: 'nigeria-1',
+    slot: 'lunch',
     name: 'Jollof rice with grilled chicken and sautéed greens',
     region: 'nigeria',
     calories: { min: 550, max: 700 },
@@ -64,6 +70,7 @@ const NIGERIA_MEALS: readonly MockMeal[] = [
   },
   {
     id: 'nigeria-2',
+    slot: 'breakfast',
     name: 'Moi moi with a side of pap and fruit',
     region: 'nigeria',
     calories: { min: 350, max: 500 },
@@ -73,6 +80,7 @@ const NIGERIA_MEALS: readonly MockMeal[] = [
   },
   {
     id: 'nigeria-3',
+    slot: 'dinner',
     name: 'Yam and vegetable sauce with smoked fish',
     region: 'nigeria',
     calories: { min: 500, max: 650 },

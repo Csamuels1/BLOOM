@@ -15,6 +15,8 @@ import { colors, radii, spacing } from '@/design/tokens';
 import { useReducedMotion } from '@/design/useReducedMotion';
 import { track } from '@/features/telemetry';
 
+import { mealSlotStyle, resolveMealSlot } from './mealSlotStyle';
+import { MealSlotMotif } from './MealSlotMotif';
 import type { MockMeal } from './mockMeals';
 
 // LayoutAnimation needs this opt-in on old-architecture Android; harmless
@@ -88,16 +90,25 @@ function Tag({ label }: { label: string }) {
  * reveals its ingredients and a quick "note this meal" action, with a gentle
  * height animation and press feedback — both suppressed under reduce-motion.
  * Illustrative mock content only; real recommendations are a later phase.
+ *
+ * Each card carries a gentle, decorative identity by meal slot (issue #152): a
+ * soft brand-colour band across the top and a small line motif beside the
+ * name. Both are hidden from screen readers; an unknown slot falls back to a
+ * calm muted-sage sprig.
  */
 export function MealCard({
   meal,
   onLog,
+  slot,
 }: {
-  meal: MockMeal;
+  meal: MockMeal & { readonly slot?: string | null };
   onLog: () => void;
+  /** Optional explicit slot; otherwise resolved from the meal. */
+  slot?: string | null;
 }) {
   const reduceMotion = useReducedMotion();
   const [expanded, setExpanded] = useState(false);
+  const slotStyle = mealSlotStyle(resolveMealSlot(meal, slot));
 
   const toggle = () => {
     if (!reduceMotion) {
@@ -119,6 +130,14 @@ export function MealCard({
         overflow: 'hidden',
       }}
     >
+      {/* Decorative slot accent: a soft tinted band, never behind text. */}
+      <View
+        testID={`meal-slot-band-${slotStyle.slot}`}
+        accessible={false}
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+        style={{ height: 6, backgroundColor: slotStyle.accent, opacity: 0.7 }}
+      />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={meal.name}
@@ -137,6 +156,7 @@ export function MealCard({
             }}
           >
             <View style={{ flexDirection: 'row', gap: spacing.md }}>
+              <MealSlotMotif slotStyle={slotStyle} />
               <View style={{ flex: 1 }}>
                 <SectionTitle>{meal.name}</SectionTitle>
               </View>
