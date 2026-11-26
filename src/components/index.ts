@@ -16,6 +16,11 @@ export {
   type KeyboardSafeScrollViewProps,
 } from './KeyboardSafeScrollView';
 export { Pill, type PillProps } from './Pill';
+export {
+  SavedConfirmation,
+  SAVED_CONFIRMATION_VISIBLE_MS,
+  type SavedConfirmationProps,
+} from './SavedConfirmation';
 export { Skeleton, type SkeletonProps } from './Skeleton';
 export { TextField, type TextFieldProps } from './TextField';
 export { SafetyNotice, type SafetyNoticeProps } from './SafetyNotice';

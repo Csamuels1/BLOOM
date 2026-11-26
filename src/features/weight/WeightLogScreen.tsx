@@ -84,7 +84,7 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
     [entries, editingId],
   );
 
-  async function handleAdd(values: WeightFormValues) {
+  async function handleAdd(values: WeightFormValues): Promise<boolean> {
     setSubmitting(true);
     // On failure the form stays mounted with the user's values intact; the
     // store sets `error`, which renders as a retryable notice below. On success
@@ -103,10 +103,12 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
       // the weight itself.
       void track('weight_logged');
     }
+    // Lets the form show its brief, neutral "Saved" confirmation (#153).
+    return ok;
   }
 
-  async function handleUpdate(values: WeightFormValues) {
-    if (!editingId) return;
+  async function handleUpdate(values: WeightFormValues): Promise<boolean> {
+    if (!editingId) return false;
     setSubmitting(true);
     const ok = await update(resolveClient(), editingId, {
       weightKg: values.weightKg,
@@ -117,6 +119,7 @@ export function WeightLogScreen({ client }: WeightLogScreenProps) {
     if (ok) {
       setEditingId(null);
     }
+    return ok;
   }
 
   async function handleDelete(id: string) {

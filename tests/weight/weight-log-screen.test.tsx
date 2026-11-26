@@ -121,6 +121,45 @@ describe('WeightLogScreen', () => {
     expect(screen.getByDisplayValue('68')).toBeOnTheScreen();
     // A failure never buzzes — no "punishment" haptic.
     expect(Haptics.impactAsync).not.toHaveBeenCalled();
+    // ...and no "Saved" confirmation is shown.
+    expect(screen.queryByTestId('weight-saved-confirmation')).toBeNull();
+    expect(screen.queryByText(copy.savedConfirmation)).toBeNull();
+  });
+
+  it('shows a calm, neutral "Saved" confirmation after a successful save', async () => {
+    render(<WeightLogScreen client={makeClient({ rows: [] })} />);
+
+    fireEvent.changeText(screen.getByLabelText(copy.weightLabel), '68');
+    fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+
+    const confirmation = await screen.findByTestId('weight-saved-confirmation');
+    expect(confirmation.props.accessibilityLiveRegion).toBe('polite');
+    expect(confirmation.props.role).toBe('status');
+    expect(screen.getByText(copy.savedConfirmation)).toBeOnTheScreen();
+    // Still exactly one soft haptic tap.
+    expect(Haptics.impactAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the same message whatever the number (no direction-based praise)', async () => {
+    render(
+      <WeightLogScreen
+        client={makeClient({
+          rows: [entry({ weight_kg: 70 })],
+          insertResult: {
+            data: entry({ id: 'w2', weight_kg: 65 }),
+            error: null,
+          },
+        })}
+      />,
+    );
+    await screen.findByText(copy.listTitle);
+
+    fireEvent.changeText(screen.getByLabelText(copy.weightLabel), '65');
+    fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+    const confirmation = await screen.findByTestId('weight-saved-confirmation');
+    expect(confirmation).toHaveTextContent(copy.savedConfirmation, {
+      exact: true,
+    });
   });
 
   it('confirms a successful save with one soft haptic tap', async () => {

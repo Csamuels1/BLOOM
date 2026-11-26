@@ -108,10 +108,12 @@ export function CycleScreen({
     [entries, today],
   );
 
-  async function handleAdd(startedOn: string) {
+  async function handleAdd(startedOn: string): Promise<boolean> {
     setSubmitting(true);
-    await add(resolveClient(), startedOn);
+    const ok = await add(resolveClient(), startedOn);
     setSubmitting(false);
+    // Lets the form show its brief, neutral "Saved" confirmation (#153).
+    return ok;
   }
 
   async function handleUpdate(startedOn: string) {

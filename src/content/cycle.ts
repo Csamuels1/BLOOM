@@ -24,6 +24,8 @@ export const cycleCopy = {
   saveEdit: 'Save changes',
   cancelEdit: 'Cancel',
   saving: 'Saving…',
+  // Shown briefly after any successful save; the same neutral word every time (#153).
+  savedConfirmation: 'Saved',
 
   // Validation — gentle, specific, never blaming.
   dateInvalid: 'Please use the date format YYYY-MM-DD.',

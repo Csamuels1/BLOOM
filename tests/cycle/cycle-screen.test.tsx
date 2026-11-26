@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -7,7 +8,12 @@ import {
 
 import type { AppSupabaseClient } from '@/lib/supabase';
 import { cycleCopy as copy } from '@/content/cycle';
-import { CycleScreen, useCycleStore, type CycleStart } from '@/features/cycle';
+import {
+  CycleScreen,
+  CycleStartForm,
+  useCycleStore,
+  type CycleStart,
+} from '@/features/cycle';
 
 jest.mock('@/design/useReducedMotion', () => ({
   useReducedMotion: () => false,
@@ -31,8 +37,17 @@ function entry(partial: Partial<CycleStart>): CycleStart {
 }
 
 /** A client supporting list load, insert, single-delete and bulk-delete. */
-function makeClient(options: { rows?: CycleStart[] } = {}) {
+function makeClient(
+  options: {
+    rows?: CycleStart[];
+    insertResult?: { data: unknown; error: unknown };
+  } = {},
+) {
   const rows = options.rows ?? [];
+  const insertResult = options.insertResult ?? {
+    data: entry({}),
+    error: null,
+  };
   return asClient({
     auth: {
       getUser: async () => ({ data: { user: { id: 'u1' } }, error: null }),
@@ -41,7 +56,7 @@ function makeClient(options: { rows?: CycleStart[] } = {}) {
       select: () => ({ order: async () => ({ data: rows, error: null }) }),
       insert: () => ({
         select: () => ({
-          single: async () => ({ data: entry({}), error: null }),
+          single: async () => insertResult,
         }),
       }),
       delete: () => ({ eq: async () => ({ error: null }) }),
@@ -64,6 +79,57 @@ afterEach(() => {
 });
 
 describe('CycleScreen', () => {
+  it('shows a calm "Saved" confirmation after a successful save', async () => {
+    render(<CycleScreen client={makeClient({ rows: [] })} />);
+    await screen.findByText(copy.emptyTitle);
+
+    fireEvent.changeText(screen.getByLabelText(copy.dateLabel), '2026-11-01');
+    fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+
+    const confirmation = await screen.findByTestId('cycle-saved-confirmation');
+    expect(confirmation.props.accessibilityLiveRegion).toBe('polite');
+    expect(confirmation.props.role).toBe('status');
+    expect(screen.getByText(copy.savedConfirmation)).toBeOnTheScreen();
+  });
+
+  it('shows no confirmation when a save fails', async () => {
+    render(
+      <CycleScreen
+        client={makeClient({
+          rows: [],
+          insertResult: { data: null, error: { message: 'offline' } },
+        })}
+      />,
+    );
+    await screen.findByText(copy.emptyTitle);
+
+    fireEvent.changeText(screen.getByLabelText(copy.dateLabel), '2026-11-01');
+    fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+
+    await screen.findByText(copy.saveErrorTitle);
+    expect(screen.getByDisplayValue('2026-11-01')).toBeOnTheScreen();
+    expect(screen.queryByTestId('cycle-saved-confirmation')).toBeNull();
+    expect(screen.queryByText(copy.savedConfirmation)).toBeNull();
+  });
+
+  it('CycleStartForm hides the confirmation again after about two seconds', async () => {
+    jest.useFakeTimers();
+    try {
+      render(<CycleStartForm onSubmit={async () => true} />);
+      fireEvent.press(screen.getByRole('button', { name: copy.saveAdd }));
+      await act(async () => {
+        await Promise.resolve();
+      });
+      expect(screen.getByTestId('cycle-saved-confirmation')).toBeOnTheScreen();
+      act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+      expect(screen.queryByTestId('cycle-saved-confirmation')).toBeNull();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('renders the header and the non-diagnostic disclaimer with an estimate', async () => {
     render(
       <CycleScreen
