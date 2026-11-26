@@ -1,8 +1,29 @@
 name: iOS simulator smoke
 
 on:
-  # Owner-approved deferral: restore pull_request in Phase 13 (ADR-0006).
+  # Restored in Phase 13 (#58, ADR-0006). Non-blocking: not a required check
+  # while hosted macOS capacity is unreliable. The owner decides when to require it.
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - '.maestro/**'
+      - 'app.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/select-ios-simulator.cjs'
+      - '.github/workflows/ios-smoke.yml'
   workflow_dispatch:
+    inputs:
+      runner:
+        # macOS arm64 hosted capacity was often exhausted ("job was not acquired"),
+        # so Intel (a separate pool, first green run 45443558807) is the default.
+        description: macOS runner image
+        type: choice
+        default: macos-15-intel
+        options:
+          - macos-15-intel
+          - macos-15
 
 permissions:
   contents: read
@@ -15,8 +36,9 @@ jobs:
   ios-smoke:
     # Standard runner minutes are free for this public repo. Reassess if private.
     if: github.event.repository.private == false
-    runs-on: macos-15
-    timeout-minutes: 30
+    runs-on: ${{ inputs.runner || 'macos-15-intel' }}
+    # Intel simulators build and boot more slowly than arm64.
+    timeout-minutes: ${{ inputs.runner == 'macos-15' && 30 || 60 }}
     env:
       CI: '1'
       EXPO_NO_TELEMETRY: '1'
@@ -24,6 +46,12 @@ jobs:
       MAESTRO_CLI_NO_ANALYTICS: 'true'
       # Allow up to five minutes for XCTest startup on the hosted simulator.
       MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
+      # Public, non-secret PLACEHOLDER config so the app can boot (the auth
+      # client reads these at startup). The smoke test exercises only the
+      # signed-out surface, which never reaches the network.
+      EXPO_PUBLIC_APP_ENV: local
+      EXPO_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-publishable-key
     steps:
       - uses: actions/checkout@v7
         with:
@@ -49,7 +77,7 @@ jobs:
           unzip -q "$RUNNER_TEMP/maestro.zip" -d "$RUNNER_TEMP/bloom-maestro"
           echo "$RUNNER_TEMP/bloom-maestro/maestro/bin" >> "$GITHUB_PATH"
       - name: Boot an available iPhone simulator
-        timeout-minutes: 8
+        timeout-minutes: 12
         shell: bash
         run: |
           set -euo pipefail
@@ -58,7 +86,7 @@ jobs:
           xcrun simctl boot "$device"
           xcrun simctl bootstatus "$device" -b
       - name: Start Metro and install SDK-compatible Expo Go
-        timeout-minutes: 8
+        timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
@@ -74,9 +102,21 @@ jobs:
           done
           cat test-results/ios/metro.log
           exit 1
-      - name: Run navigation and direct-link smoke tests
+      # The first iOS bundle takes minutes to build on a hosted runner (about
+      # 200s for roughly 2,200 modules), longer than Expo Go waits for it, which
+      # surfaces as "Could not connect to development server". Build it once
+      # here so Metro serves the test's request from its cache.
+      - name: Pre-warm the iOS JavaScript bundle
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 840 --output /dev/null \
+            'http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=src%2Fapp&unstable_transformProfile=hermes-stable'
+          echo "iOS bundle built and cached."
+      - name: Run signed-out auth smoke test (sign-in, deep-link guard, 18+ gate)
         timeout-minutes: 10
-        run: maestro --device "$BLOOM_IOS_DEVICE" test --debug-output test-results/ios/maestro --format junit --output test-results/ios/results.xml .maestro/ios-foundation.yml
+        run: maestro --device "$BLOOM_IOS_DEVICE" test --debug-output test-results/ios/maestro --format junit --output test-results/ios/results.xml .maestro/ios-auth.yml
       - name: Record simulator toolchain diagnostics
         if: always()
         run: |

@@ -9,6 +9,13 @@ name: BLOOM iOS auth
 - tapOn:
     text: Open
     optional: true
+# Expo Go shows a one-time "developer menu" sheet over the app once the bundle
+# loads, which hides the sign-in screen. Wait until either the sheet or the app
+# is on screen, then dismiss the sheet if present (found on the first iOS run).
+- extendedWaitUntil:
+    visible:
+      text: 'Continue|Welcome back. Take your time.'
+    timeout: 120000
 - tapOn:
     text: Continue
     optional: true
@@ -17,8 +24,8 @@ name: BLOOM iOS auth
     optional: true
 # Signed out, the app lands on sign-in.
 - extendedWaitUntil:
-    visible: Your body, your pace.
-    timeout: 120000
+    visible: Welcome back. Take your time.
+    timeout: 30000
 - assertVisible: Sign in
 # A deep link to a protected route must not reach it while signed out.
 - openLink: exp://127.0.0.1:8081/--/foundation
@@ -36,6 +43,18 @@ name: BLOOM iOS auth
     optional: true
 - tapOn: Create account
 - assertVisible: Please confirm you are 18 or older to continue.
+# A failed submit focuses the first invalid field (#146), which opens the
+# keyboard. On a fresh simulator, iOS first shows a one-time "slide to type"
+# tip with a Continue button over the bottom of the screen. Dismiss both.
+- tapOn:
+    text: Continue
+    optional: true
+- hideKeyboard
 # Return to sign-in.
+- scrollUntilVisible:
+    element:
+      text: Already have an account? Sign in
+    direction: DOWN
+    timeout: 15000
 - tapOn: Already have an account? Sign in
-- assertVisible: Your body, your pace.
+- assertVisible: Welcome back. Take your time.
