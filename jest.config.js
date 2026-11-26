@@ -8,6 +8,9 @@ module.exports = {
   modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
   clearMocks: true,
+  // The first jest-expo render in a suite pays a one-off warm-up that can pass
+  // the 5 s default on a loaded machine (flaky settings-ui timeouts, #154).
+  testTimeout: 20000,
   // The patched decoder is ESM; preserve Expo's allowlist and transform it too.
   transformIgnorePatterns: expoPreset.transformIgnorePatterns.map((pattern) =>
     pattern.replace('(?!(.pnpm|', '(?!(decode-uri-component|.pnpm|'),
