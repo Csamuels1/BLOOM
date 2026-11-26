@@ -2,9 +2,9 @@ import type { Session } from '@supabase/supabase-js';
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 
 import AppLayout from '@/app/(app)/_layout';
-import HomeScreen from '@/app/(app)/index';
+import HomeScreen from '@/app/(app)/(tabs)/index';
 import PrivacyPolicyRoute from '@/app/(app)/privacy-policy';
-import SettingsRoute from '@/app/(app)/settings';
+import SettingsRoute from '@/app/(app)/(tabs)/settings';
 import { RootNavigator } from '@/app/_layout';
 import { moderationCopy } from '@/content/moderation';
 import { settingsCopy } from '@/content/settings';

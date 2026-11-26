@@ -15,7 +15,7 @@ const INPUT_SCREENS = [
   'src/features/onboarding/OnboardingFlow.tsx',
   'src/app/(app)/weight-log.tsx',
   'src/app/(app)/cycle.tsx',
-  'src/app/(app)/community.tsx',
+  'src/app/(app)/(tabs)/community.tsx',
 ];
 
 function walk(dir) {
