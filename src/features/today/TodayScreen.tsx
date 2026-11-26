@@ -15,27 +15,61 @@ import { photosCopy } from '@/content/photos';
 import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
 import { todayCopy as copy } from '@/content/today';
+import { motion } from '@/design/motion';
 import { colors, radii, spacing } from '@/design/tokens';
 import { PostpartumContextCard } from '@/features/postpartum';
 import { hasCompletedOnboarding, useProfileStore } from '@/features/profile';
 import { ProAffordance } from '@/features/subscription';
 
 import { FadeInView } from './FadeInView';
+import { dailyNoteFor, greetingFor } from './greeting';
 import { MealCard } from './MealCard';
 import { MealCardSkeleton } from './MealCardSkeleton';
 import { mockMealsForRegion, regionForCountry } from './mockMeals';
 
+/** Default clock: the device's local time. Injected via props for tests. */
+const deviceNow = () => new Date();
+
 /** Friendly local date, e.g. "Tuesday, 11 November". Locale-aware, no timezone math. */
-function todayLabel(): string {
+function todayLabel(date: Date): string {
   try {
     return new Intl.DateTimeFormat(undefined, {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-    }).format(new Date());
+    }).format(date);
   } catch {
     return '';
   }
+}
+
+/**
+ * The day's gentle note (#151): a soft card that settles in just after the
+ * greeting. Purely supportive text — nothing to tap, nothing to complete.
+ */
+function DailyNote({ note }: { note: string }) {
+  return (
+    <FadeInView delay={motion.stagger} variant="settle">
+      <View
+        accessible
+        accessibilityLabel={`${copy.dailyNoteLabel}. ${note}`}
+        style={{
+          backgroundColor: colors.ivory,
+          borderRadius: radii.card,
+          borderWidth: 1,
+          borderColor: colors.blush,
+          borderLeftWidth: 4,
+          borderLeftColor: colors.gold,
+          paddingVertical: spacing.md,
+          paddingHorizontal: spacing.lg,
+          gap: spacing.xs,
+        }}
+      >
+        <Caption color="plum">{copy.dailyNoteLabel}</Caption>
+        <Body>{note}</Body>
+      </View>
+    </FadeInView>
+  );
 }
 
 /**
@@ -84,6 +118,11 @@ function TrendBaseline() {
 export interface TodayScreenProps {
   /** Re-run the profile load; shown as "try again" in the error state. */
   onRetryProfile?: () => void;
+  /**
+   * Clock used for the date, greeting, and daily note. Defaults to the device
+   * clock; injectable so tests are deterministic. Never uses location.
+   */
+  now?: () => Date;
 }
 
 /**
@@ -96,13 +135,27 @@ export interface TodayScreenProps {
  * the mock ideas still render (general fallback) so nothing is lost. Free
  * allowances and a pressure-free Pro affordance are shown explicitly. All motion
  * is reduce-motion-aware. No backend writes here.
+ *
+ * Issue #151: the header greets by time of day (device clock only) and a short
+ * gentle note, rotating by calendar date, settles in beneath it.
  */
-export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
+export function TodayScreen({
+  onRetryProfile,
+  now = deviceNow,
+}: TodayScreenProps) {
   const profile = useProfileStore((state) => state.profile);
   const status = useProfileStore((state) => state.status);
   const region = regionForCountry(profile?.country_code);
   const meals = useMemo(() => mockMealsForRegion(region), [region]);
-  const dateLabel = useMemo(() => todayLabel(), []);
+  // Read the clock once per mount so the header stays steady while reading.
+  const { dateLabel, greeting, dailyNote } = useMemo(() => {
+    const date = now();
+    return {
+      dateLabel: todayLabel(date),
+      greeting: greetingFor(date),
+      dailyNote: dailyNoteFor(date),
+    };
+  }, [now]);
 
   // Honest placeholder: logging opens next phase. One shared, polite message.
   const [showLogNote, setShowLogNote] = useState(false);
@@ -114,11 +167,15 @@ export function TodayScreen({ onRetryProfile }: TodayScreenProps) {
 
   return (
     <View style={{ gap: spacing.xl }}>
-      <FadeInView delay={0} style={{ gap: spacing.xs }}>
-        <PageTitle>{copy.title}</PageTitle>
-        {dateLabel ? <Caption color="plum">{dateLabel}</Caption> : null}
-        <Body>{copy.intro}</Body>
-      </FadeInView>
+      <View style={{ gap: spacing.md }}>
+        <FadeInView delay={0} style={{ gap: spacing.xs }}>
+          <SectionTitle>{greeting}</SectionTitle>
+          <PageTitle>{copy.title}</PageTitle>
+          {dateLabel ? <Caption color="plum">{dateLabel}</Caption> : null}
+          <Body>{copy.intro}</Body>
+        </FadeInView>
+        {dailyNote ? <DailyNote note={dailyNote} /> : null}
+      </View>
 
       {/* Gentle recovery context — shown only to postpartum profiles, never to
           those who said not_postpartum or preferred not to say. */}
