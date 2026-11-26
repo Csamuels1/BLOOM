@@ -92,7 +92,11 @@ export default function CommunityRoute() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
+    <SafeAreaView
+      // The tab bar owns the bottom inset (#149).
+      edges={['top', 'left', 'right']}
+      style={{ flex: 1, backgroundColor: colors.ivory }}
+    >
       <KeyboardSafeScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{

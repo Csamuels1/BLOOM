@@ -41,7 +41,11 @@ export default function HomeScreen() {
   }, [userId, profileStatus, loadProfile]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
+    <SafeAreaView
+      // The tab bar owns the bottom inset (#149).
+      edges={['top', 'left', 'right']}
+      style={{ flex: 1, backgroundColor: colors.ivory }}
+    >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{

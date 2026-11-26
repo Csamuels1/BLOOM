@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { useBrandFonts } from '@/design/fonts';
+import { useScreenAnimation } from '@/design/screenTransitions';
 import { AuthProvider, useAuthStore } from '@/features/auth';
 import { installGlobalCrashHandler } from '@/features/telemetry';
 
@@ -21,6 +22,8 @@ export function RootNavigator() {
   const status = useAuthStore((state) => state.status);
   const recovering = useAuthStore((state) => state.recovering);
   const fontsLoaded = useBrandFonts();
+  // Signing in or out cross-fades between areas; none under Reduce Motion.
+  const animation = useScreenAnimation('switch');
 
   if (!fontsLoaded || status === 'loading') {
     return null;
@@ -31,7 +34,7 @@ export function RootNavigator() {
   return (
     <>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, animation: 'none' }}>
+      <Stack screenOptions={{ headerShown: false, animation }}>
         {/* Recovery takes precedence: after a reset link the user must set a new
             password before reaching the app, even though the session is valid. */}
         <Stack.Protected guard={recovering}>

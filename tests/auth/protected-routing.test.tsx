@@ -4,7 +4,7 @@ import { act, renderRouter, screen } from 'expo-router/testing-library';
 
 import AppLayout from '@/app/(app)/_layout';
 import FoundationScreen from '@/app/(app)/foundation';
-import HomeScreen from '@/app/(app)/index';
+import HomeScreen from '@/app/(app)/(tabs)/index';
 import AuthLayout, { unstable_settings } from '@/app/(auth)/_layout';
 import ForgotPasswordScreen from '@/app/(auth)/forgot-password';
 import RegisterScreen from '@/app/(auth)/register';

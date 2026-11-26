@@ -2,16 +2,20 @@ import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/design/tokens';
-import { SettingsScreen } from '@/features/settings';
+import { ProgressScreen } from '@/features/progress';
 
 /**
- * Settings hub route (issue #52). Reached from the home account area. Holds the
- * account, notification, privacy (export, deletion, cycle preference, blocks,
- * reports), legal, and help controls.
+ * Progress route (issue #26). Reached from the Today screen's "bigger picture"
+ * card. The screen owns the weekly-average chart, the matching summary, gentle
+ * milestones, and its own loading/empty/error states.
  */
-export default function SettingsRoute() {
+export default function ProgressRoute() {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.ivory }}>
+    <SafeAreaView
+      // The tab bar owns the bottom inset (#149).
+      edges={['top', 'left', 'right']}
+      style={{ flex: 1, backgroundColor: colors.ivory }}
+    >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View
           style={{
@@ -23,7 +27,7 @@ export default function SettingsRoute() {
             alignSelf: 'center',
           }}
         >
-          <SettingsScreen />
+          <ProgressScreen />
         </View>
       </ScrollView>
     </SafeAreaView>
