@@ -27,6 +27,10 @@ export const weightCopy = {
   saveEdit: 'Save changes',
   cancelEdit: 'Cancel',
   saving: 'Saving…',
+  // Shown briefly after any successful save. Deliberately the same neutral
+  // word every time: never praise, and never tied to the number or its
+  // direction (#153).
+  savedConfirmation: 'Saved',
 
   // Validation — gentle, specific, never blaming.
   weightRequired: 'Enter a weight to continue.',

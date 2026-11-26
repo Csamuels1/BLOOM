@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Caption, TextField } from '@/components';
+import { Button, Caption, SavedConfirmation, TextField } from '@/components';
 import { cycleCopy as copy } from '@/content/cycle';
 import { spacing } from '@/design/tokens';
 
@@ -19,9 +19,11 @@ export interface CycleStartFormProps {
   /**
    * Called with a validated YYYY-MM-DD start date. The parent persists it; if
    * the save fails it leaves the form mounted and the user's value stays exactly
-   * as typed — nothing is cleared here on the parent's behalf.
+   * as typed — nothing is cleared here on the parent's behalf. Resolve to
+   * `true` once the save succeeds and the form shows a brief, neutral "Saved"
+   * confirmation; anything else (a failure, or no result) shows nothing.
    */
-  onSubmit: (startedOn: string) => void;
+  onSubmit: (startedOn: string) => void | boolean | Promise<void | boolean>;
   /** Optional cancel affordance (shown while editing). */
   onCancel?: () => void;
 }
@@ -39,6 +41,15 @@ export function CycleStartForm({
 }: CycleStartFormProps) {
   const [date, setDate] = useState(entry?.started_on ?? localDateString());
   const [dateError, setDateError] = useState<string | undefined>();
+  const [savedCount, setSavedCount] = useState(0);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const isEditing = entry !== undefined;
 
@@ -48,7 +59,11 @@ export function CycleStartForm({
       return;
     }
     setDateError(undefined);
-    onSubmit(date);
+    const result = onSubmit(date);
+    // Nothing is shown when the save fails.
+    void Promise.resolve(result).then((ok) => {
+      if (ok === true && mounted.current) setSavedCount((count) => count + 1);
+    });
   }
 
   return (
@@ -91,6 +106,12 @@ export function CycleStartForm({
           {copy.saving}
         </Caption>
       ) : null}
+
+      <SavedConfirmation
+        trigger={savedCount}
+        label={copy.savedConfirmation}
+        testID="cycle-saved-confirmation"
+      />
     </View>
   );
 }

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Caption, TextField } from '@/components';
+import { Button, Caption, SavedConfirmation, TextField } from '@/components';
 import { weightCopy as copy } from '@/content/weight';
 import { spacing } from '@/design/tokens';
 
@@ -28,9 +28,13 @@ export interface WeightEntryFormProps {
   /**
    * Called with validated values. The parent persists them; if the save fails
    * it leaves the form mounted and the user's values stay exactly as typed —
-   * nothing is cleared here on the parent's behalf.
+   * nothing is cleared here on the parent's behalf. Resolve to `true` once the
+   * save succeeds and the form shows a brief, neutral "Saved" confirmation;
+   * anything else (a failure, or no result) shows nothing.
    */
-  onSubmit: (values: WeightFormValues) => void;
+  onSubmit: (
+    values: WeightFormValues,
+  ) => void | boolean | Promise<void | boolean>;
   /** Optional cancel affordance (shown while editing). */
   onCancel?: () => void;
 }
@@ -67,6 +71,15 @@ export function WeightEntryForm({
   const [note, setNote] = useState(entry?.note ?? '');
   const [weightError, setWeightError] = useState<string | undefined>();
   const [dateError, setDateError] = useState<string | undefined>();
+  const [savedCount, setSavedCount] = useState(0);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const isEditing = entry !== undefined;
 
@@ -85,10 +98,15 @@ export function WeightEntryForm({
       return;
     }
 
-    onSubmit({
+    const result = onSubmit({
       weightKg,
       measuredAt: date,
       note: note.trim() === '' ? null : note.trim(),
+    });
+    // The same calm confirmation for every successful save, whatever the
+    // number. Nothing is shown when the save fails.
+    void Promise.resolve(result).then((ok) => {
+      if (ok === true && mounted.current) setSavedCount((count) => count + 1);
     });
   }
 
@@ -154,6 +172,12 @@ export function WeightEntryForm({
           {copy.saving}
         </Caption>
       ) : null}
+
+      <SavedConfirmation
+        trigger={savedCount}
+        label={copy.savedConfirmation}
+        testID="weight-saved-confirmation"
+      />
     </View>
   );
 }
