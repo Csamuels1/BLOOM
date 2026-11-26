@@ -34,8 +34,11 @@ name: BLOOM iOS auth
     timeout: 30000
 - assertNotVisible: A gentle beginning
 # Go to registration.
+# Screens now animate in (#149): wait for each to settle before asserting.
 - tapOn: Create an account
-- assertVisible: Create your account
+- extendedWaitUntil:
+    visible: Create your account
+    timeout: 15000
 - assertVisible: I confirm I am 18 or older.
 # Attempt to create without confirming 18+ — creation is blocked with a notice.
 - tapOn:
@@ -57,4 +60,6 @@ name: BLOOM iOS auth
     direction: DOWN
     timeout: 15000
 - tapOn: Already have an account? Sign in
-- assertVisible: Welcome back. Take your time.
+- extendedWaitUntil:
+    visible: Welcome back. Take your time.
+    timeout: 15000
