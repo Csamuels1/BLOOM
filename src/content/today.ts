@@ -48,6 +48,24 @@ export const todayCopy = {
   mealLog: 'Note this meal',
   mealExpandHint: 'Shows ingredients and a quick note action.',
 
+  // Test builds only (#159): shown whenever Today is rotating the unreviewed
+  // draft catalog (ADR-0010). Production never shows drafts, so never this.
+  draftMealsLabel:
+    'Sample ideas for testing — not yet reviewed by a dietitian.',
+  // Heading for a slot the engine left open rather than fill unsafely.
+  draftGapBreakfast: 'Breakfast',
+  draftGapLunch: 'Lunch',
+  draftGapDinner: 'Dinner',
+  draftGapSnack: 'Snack',
+  // Neutral labels for catalog dietary tags on draft cards. Descriptive only:
+  // never "good", "clean", or a judgment about the food.
+  draftTagHighFibre: 'High fibre',
+  draftTagHighProtein: 'High protein',
+  draftTagBalanced: 'Balanced',
+  draftTagVegetarian: 'Vegetarian',
+  draftTagVegan: 'Vegan',
+  draftTagGlutenFree: 'Gluten-free',
+
   // Presentation states (#23) — gentle, accessible, nothing lost.
   loadingLabel: 'Loading your day…',
   errorTitle: 'We could not load your setup',

@@ -42,10 +42,12 @@ afterEach(() => {
   useProfileStore.setState({ profile: null, status: 'idle' });
 });
 
+// These cover the reviewed (production) meal path. Draft rotation for test
+// builds (#159) is covered in tests/today/draft-meals.test.tsx.
 describe('TodayScreen — overview', () => {
   it('leads with a gentle overview, trend, quick log, meals, and Pro', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     expect(screen.getByText(copy.title)).toBeOnTheScreen();
     expect(screen.getByText(copy.intro)).toBeOnTheScreen();
@@ -57,7 +59,7 @@ describe('TodayScreen — overview', () => {
 
   it('makes the Free allowance clear', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
     expect(
       screen.getByText(
         `${subscriptionCopy.freePlanLabel} · ${subscriptionCopy.freeDailyIdeas}`,
@@ -67,7 +69,7 @@ describe('TodayScreen — overview', () => {
 
   it('shows three region-aware meals with calories kept secondary', () => {
     setLoaded('NG');
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     for (const meal of mockMealsForRegion('nigeria')) {
       expect(screen.getByRole('button', { name: meal.name })).toBeOnTheScreen();
@@ -82,7 +84,7 @@ describe('TodayScreen — overview', () => {
 
   it('expands a meal to reveal its ingredients only on tap', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     const first = firstMeal('general');
     expect(screen.queryByText(first.ingredients)).toBeNull();
@@ -92,7 +94,7 @@ describe('TodayScreen — overview', () => {
 
   it('opens the weight log from the quick-log weight action', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     fireEvent.press(screen.getByRole('button', { name: copy.quickLogWeight }));
     expect(router.navigate).toHaveBeenCalledWith('/weight-log');
@@ -100,7 +102,7 @@ describe('TodayScreen — overview', () => {
 
   it('opens private progress photos from the Today entry', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     fireEvent.press(screen.getByRole('button', { name: photosCopy.entryCta }));
     expect(router.navigate).toHaveBeenCalledWith('/progress-photos');
@@ -108,7 +110,7 @@ describe('TodayScreen — overview', () => {
 
   it('opens the progress view from the bigger-picture card', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     fireEvent.press(
       screen.getByRole('button', { name: progressCopy.seeProgress }),
@@ -118,7 +120,7 @@ describe('TodayScreen — overview', () => {
 
   it('shows an honest "coming soon" note for meal logging (still Phase 6+)', () => {
     setLoaded(null);
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     expect(screen.queryByText(copy.quickLogComingSoon)).toBeNull();
     fireEvent.press(screen.getByRole('button', { name: copy.quickLogMeal }));
@@ -129,7 +131,7 @@ describe('TodayScreen — overview', () => {
 describe('TodayScreen — presentation states', () => {
   it('shows skeletons while the profile is loading (no meals yet)', () => {
     useProfileStore.setState({ profile: null, status: 'loading' });
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     expect(screen.getByLabelText(copy.loadingLabel)).toBeOnTheScreen();
     expect(screen.queryByText(firstMeal('general').name)).toBeNull();
@@ -137,7 +139,7 @@ describe('TodayScreen — presentation states', () => {
 
   it('nudges setup gently when onboarding is unfinished, and meals still show', () => {
     useProfileStore.setState({ profile: null, status: 'loaded' });
-    render(<TodayScreen />);
+    render(<TodayScreen appEnv="production" />);
 
     expect(screen.getByText(copy.setupTitle)).toBeOnTheScreen();
     // Meals still render (general fallback) — nothing is lost.
@@ -152,7 +154,7 @@ describe('TodayScreen — presentation states', () => {
   it('shows a calm, retryable error — and still renders the ideas', () => {
     useProfileStore.setState({ profile: null, status: 'error' });
     const onRetryProfile = jest.fn();
-    render(<TodayScreen onRetryProfile={onRetryProfile} />);
+    render(<TodayScreen appEnv="production" onRetryProfile={onRetryProfile} />);
 
     expect(screen.getByText(copy.errorTitle)).toBeOnTheScreen();
     // Fallback ideas remain visible so no content is lost.
