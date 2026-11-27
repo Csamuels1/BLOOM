@@ -52,7 +52,9 @@ export interface RecommendationCriteria {
   readonly goal: MealGoal;
   /**
    * Allergens to avoid. SAFETY-CRITICAL: a meal containing any of these is
-   * never selected or offered as a swap.
+   * never selected or offered as a swap. Values must be in the catalog
+   * vocabulary: build them from a profile with `catalogAllergensFor` (#160),
+   * never from raw profile values.
    */
   readonly avoidAllergens: readonly string[];
   /** Optional: every tag listed must be present on the meal. */

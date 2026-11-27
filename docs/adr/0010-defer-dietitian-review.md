@@ -37,6 +37,8 @@ Proceed past Phase 7 with the meal catalogs and the calculator formula as
   `reviewed_by` / `reviewed_at`), bumps the formula/content version if inputs
   changed, links the approval evidence safely (no PII in the repo), and then
   #33 is completed and closed.
+- Activation checklist (#33): route profile allergens through the canonical
+  mapping (#160), `catalogAllergensFor` in `src/features/recommendations`.
 
 This deferral covers content and formula review only. All engineering gates
 (migrations from a clean reset, pgTAP, advisors, `verify`, `expo-doctor`,
