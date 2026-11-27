@@ -66,6 +66,18 @@ Before the first authorized EAS build:
 
 There is no automatic EAS build, submission, update, production access, or credential provisioning. No original brand assets are claimed as approved.
 
+### Installable Android test build and over-the-air updates (#163)
+
+- **App ID:** `android.package` is `com.bloomapp.bloom`. It is provisional and may change before the first Play Store upload; after that it is permanent.
+- **Updates:** `expo-updates` is installed. Each profile has a channel (`development`, `preview`, `production`), and `runtimeVersion` follows the app version (`policy: appVersion`). A build only receives updates published to its own channel and runtime.
+- **EAS environment variables** (set once with `eas env:create`; public values only, no secrets):
+  - `preview`: `EXPO_PUBLIC_APP_ENV=staging`, plus the bloom-dev `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+  - `production`: `EXPO_PUBLIC_APP_ENV=production` and the production project values (Phase 14). The draft-meal gate (#159) fails closed, so a build that leaves `EXPO_PUBLIC_APP_ENV` unset never shows drafts.
+- **Build a test APK:** `eas build --platform android --profile preview`. Install it from the link EAS prints, allowing installs from the browser once.
+- **Push a JS-only change** (screens, copy, styles, logic) to installed preview builds: `eas update --channel preview --message "<what changed>"`. Phones pick it up on the next launch and apply it on the launch after.
+- **These need a new build and reinstall instead:** native changes (a new native module, a permission, the icon or splash, `app.json` native config, an Expo SDK upgrade) or a version bump. Install the new APK over the old one; data is kept because EAS reuses the same signing key.
+- Builds, updates and submissions each remain owner-approved actions (AGENTS.md).
+
 ## Manual acceptance (issue #4 remains open until evidence is recorded)
 
 - [ ] DEFERRED to Phase 13 #58, not passed: iOS cold launch, welcome screen, forward navigation, return, direct foundation link.
