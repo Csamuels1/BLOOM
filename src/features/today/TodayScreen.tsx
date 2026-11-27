@@ -11,6 +11,7 @@ import {
   PageTitle,
   SectionTitle,
 } from '@/components';
+import type { AppEnvironment } from '@/config/env';
 import { photosCopy } from '@/content/photos';
 import { progressCopy } from '@/content/progress';
 import { subscriptionCopy } from '@/content/subscription';
@@ -21,6 +22,15 @@ import { PostpartumContextCard } from '@/features/postpartum';
 import { hasCompletedOnboarding, useProfileStore } from '@/features/profile';
 import { ProAffordance } from '@/features/subscription';
 
+import {
+  criteriaForProfile,
+  DRAFT_GAP_HEADINGS,
+  loadDraftCatalog,
+  resolveAppEnv,
+  selectDraftMealsForDate,
+  toCardMeal,
+  type DraftDayPick,
+} from './draftMeals';
 import { FadeInView } from './FadeInView';
 import { dailyNoteFor, greetingFor } from './greeting';
 import { MealCard } from './MealCard';
@@ -69,6 +79,52 @@ function DailyNote({ note }: { note: string }) {
         <Body>{note}</Body>
       </View>
     </FadeInView>
+  );
+}
+
+/**
+ * Calm notice shown whenever Today is rotating unreviewed draft meals (#159).
+ * Test builds only — production never loads drafts.
+ */
+function DraftMealsLabel() {
+  return (
+    <View
+      testID="draft-meals-label"
+      style={{
+        backgroundColor: colors.ivory,
+        borderRadius: radii.card,
+        borderWidth: 1,
+        borderColor: colors.gold,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md,
+      }}
+    >
+      <Caption color="plum">{copy.draftMealsLabel}</Caption>
+    </View>
+  );
+}
+
+/**
+ * A slot the engine left open rather than fill it with something unsafe or
+ * unsuitable (#159). Shows the engine's own honest gap message.
+ */
+function DraftGap({ pick }: { pick: DraftDayPick }) {
+  return (
+    <View
+      testID={`draft-gap-${pick.slot}`}
+      accessible
+      style={{
+        borderRadius: radii.card,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        borderColor: colors.mutedSage,
+        padding: spacing.lg,
+        gap: spacing.xs,
+      }}
+    >
+      <Caption color="plum">{DRAFT_GAP_HEADINGS[pick.slot]}</Caption>
+      <Body>{pick.gap}</Body>
+    </View>
   );
 }
 
@@ -123,6 +179,12 @@ export interface TodayScreenProps {
    * clock; injectable so tests are deterministic. Never uses location.
    */
   now?: () => Date;
+  /**
+   * App environment. Defaults to `EXPO_PUBLIC_APP_ENV`. Outside production,
+   * Today rotates the unreviewed draft catalog daily for testers (#159);
+   * production keeps the reviewed path and never loads drafts.
+   */
+  appEnv?: AppEnvironment;
 }
 
 /**
@@ -142,20 +204,38 @@ export interface TodayScreenProps {
 export function TodayScreen({
   onRetryProfile,
   now = deviceNow,
+  appEnv = resolveAppEnv(),
 }: TodayScreenProps) {
   const profile = useProfileStore((state) => state.profile);
   const status = useProfileStore((state) => state.status);
   const region = regionForCountry(profile?.country_code);
   const meals = useMemo(() => mockMealsForRegion(region), [region]);
   // Read the clock once per mount so the header stays steady while reading.
-  const { dateLabel, greeting, dailyNote } = useMemo(() => {
-    const date = now();
-    return {
+  const date = useMemo(() => now(), [now]);
+  const { dateLabel, greeting, dailyNote } = useMemo(
+    () => ({
       dateLabel: todayLabel(date),
       greeting: greetingFor(date),
       dailyNote: dailyNoteFor(date),
-    };
-  }, [now]);
+    }),
+    [date],
+  );
+
+  // Test builds (#159): the draft catalog, rotated by local calendar date and
+  // filtered by the engine for this profile. Empty (and never loaded) in
+  // production, which keeps the reviewed meals above.
+  const draftCatalog = useMemo(() => loadDraftCatalog(appEnv), [appEnv]);
+  const draftPicks = useMemo(
+    () =>
+      draftCatalog.length > 0
+        ? selectDraftMealsForDate(
+            draftCatalog,
+            criteriaForProfile(profile),
+            date,
+          )
+        : null,
+    [draftCatalog, profile, date],
+  );
 
   // Honest placeholder: logging opens next phase. One shared, polite message.
   const [showLogNote, setShowLogNote] = useState(false);
@@ -278,11 +358,34 @@ export function TodayScreen({
           accessibilityLabel={isLoading ? copy.loadingLabel : undefined}
           accessibilityRole={isLoading ? 'progressbar' : undefined}
         >
-          {isLoading
-            ? [0, 1, 2].map((key) => <MealCardSkeleton key={key} />)
-            : meals.map((meal) => (
-                <MealCard key={meal.id} meal={meal} onLog={noteLogging} />
-              ))}
+          {isLoading ? (
+            [0, 1, 2].map((key) => <MealCardSkeleton key={key} />)
+          ) : draftPicks ? (
+            <>
+              <DraftMealsLabel />
+              {draftPicks.map((pick) =>
+                pick.meal ? (
+                  <MealCard
+                    key={pick.meal.id}
+                    meal={toCardMeal(pick.meal)}
+                    slot={pick.meal.slot}
+                    onLog={noteLogging}
+                  />
+                ) : (
+                  <DraftGap key={`gap-${pick.slot}`} pick={pick} />
+                ),
+              )}
+            </>
+          ) : (
+            meals.map((meal) => (
+              <MealCard
+                key={meal.id}
+                meal={meal}
+                slot={meal.slot}
+                onLog={noteLogging}
+              />
+            ))
+          )}
         </View>
 
         <Caption color="plum" style={{ opacity: 0.8 }}>
