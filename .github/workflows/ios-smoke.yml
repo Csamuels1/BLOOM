@@ -85,23 +85,65 @@ jobs:
           echo "BLOOM_IOS_DEVICE=$device" >> "$GITHUB_ENV"
           xcrun simctl boot "$device"
           xcrun simctl bootstatus "$device" -b
-      - name: Start Metro and install SDK-compatible Expo Go
+      # Metro runs WITHOUT `--ios` (#161). With `--ios`, the Expo CLI also runs
+      # `xcrun simctl openurl`, which sometimes times out on the hosted
+      # simulator (NSPOSIXErrorDomain code 60); the CLI then exits and takes
+      # Metro with it, so the run failed before any test. Installing and opening
+      # Expo Go are now separate steps that can never stop Metro.
+      - name: Start Metro
         timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p test-results/ios
-          npm run start -- --go --ios --localhost --port 8081 --max-workers 2 > test-results/ios/metro.log 2>&1 &
+          npm run start -- --go --localhost --port 8081 --max-workers 2 > test-results/ios/metro.log 2>&1 &
           echo "$!" > test-results/ios/metro.pid
           for attempt in {1..120}; do
-            if curl --fail --silent http://127.0.0.1:8081/status | grep -q 'packager-status:running' &&
-               xcrun simctl get_app_container "$BLOOM_IOS_DEVICE" host.exp.Exponent app >/dev/null 2>&1; then
+            if curl --fail --silent http://127.0.0.1:8081/status | grep -q 'packager-status:running'; then
               exit 0
             fi
             sleep 3
           done
           cat test-results/ios/metro.log
+          echo "::error::Infrastructure: Metro did not start on port 8081"
           exit 1
+      # This does what `expo start --ios` did internally (@expo/cli
+      # ExpoGoInstaller / downloadExpoGoAsync): look up the project SDK's
+      # `iosClientUrl` in Expo's versions API, extract the simulator build and
+      # install it. It keeps the SDK-compatible guarantee (the SDK comes from the
+      # installed `expo` package, exactly as the CLI derives it) without coupling
+      # the install to Metro's process, and curl retries cover transient network
+      # errors. Calling the CLI's internal build modules instead would break
+      # silently on a CLI upgrade, and running `expo start --ios` only to install
+      # would still hit the same openurl timeout and race Metro for port 8081.
+      - name: Install SDK-compatible Expo Go
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          fail() {
+            echo "::error::Infrastructure: Expo Go could not be installed on the simulator ($1)"
+            exit 1
+          }
+          sdk_version="$(node -p "require('expo/package.json').version.split('.')[0] + '.0.0'")"
+          curl --fail --silent --show-error --location --retry 3 --retry-all-errors \
+            https://api.expo.dev/v2/versions/latest --output "$RUNNER_TEMP/expo-versions.json" ||
+            fail "versions API unavailable"
+          read -r client_url client_version < <(node -e '
+            const sdk = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).data.sdkVersions[process.argv[2]];
+            if (!sdk || !sdk.iosClientUrl) process.exit(1);
+            console.log(sdk.iosClientUrl, sdk.iosClientVersion || "unknown");
+          ' "$RUNNER_TEMP/expo-versions.json" "$sdk_version") || fail "no Expo Go build listed for SDK $sdk_version"
+          echo "Installing Expo Go $client_version for SDK $sdk_version from $client_url"
+          curl --fail --silent --show-error --location --retry 3 --retry-all-errors \
+            "$client_url" --output "$RUNNER_TEMP/expo-go.tar.gz" || fail "download failed"
+          app_dir="$RUNNER_TEMP/Expo-Go.app"
+          mkdir -p "$app_dir"
+          tar -xzf "$RUNNER_TEMP/expo-go.tar.gz" -C "$app_dir" || fail "archive could not be extracted"
+          xcrun simctl install "$BLOOM_IOS_DEVICE" "$app_dir" || fail "simctl install failed"
+          xcrun simctl get_app_container "$BLOOM_IOS_DEVICE" host.exp.Exponent app >/dev/null ||
+            fail "app not found after install"
+          echo "Installed Expo Go $(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_dir/Info.plist" 2>/dev/null || echo unknown)."
       # The first iOS bundle takes minutes to build on a hosted runner (about
       # 200s for roughly 2,200 modules), longer than Expo Go waits for it, which
       # surfaces as "Could not connect to development server". Build it once
@@ -110,13 +152,60 @@ jobs:
         timeout-minutes: 15
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
           curl --fail --silent --show-error --max-time 840 --output /dev/null \
             'http://127.0.0.1:8081/node_modules/expo-router/entry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=src%2Fapp&unstable_transformProfile=hermes-stable'
-          echo "iOS bundle built and cached."
+          status=$?
+          if test "$status" -eq 0; then
+            echo "iOS bundle built and cached."
+            exit 0
+          fi
+          tail -n 80 test-results/ios/metro.log || true
+          if test "$status" -eq 22; then
+            echo "::error::Metro returned an error building the iOS bundle (an app bundling problem); see metro.log"
+          else
+            echo "::error::Infrastructure: Metro stopped or did not answer (curl exit $status); see metro.log"
+          fi
+          exit 1
+      # Open the project in Expo Go before Maestro, as `expo start --ios` used
+      # to, so the test starts from the same state. Each attempt is capped (perl
+      # alarm; macOS has no `timeout`) and retried with backoff. Metro is a
+      # separate process, so a failed open can no longer stop it. If the URL
+      # never opens but Expo Go launches, Maestro's own `openLink` still loads
+      # the project; if Expo Go never launches, fail as infrastructure.
+      - name: Open the project in Expo Go
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -uo pipefail
+          for attempt in 1 2 3; do
+            if perl -e 'alarm shift; exec @ARGV' 90 \
+              xcrun simctl openurl "$BLOOM_IOS_DEVICE" exp://127.0.0.1:8081; then
+              echo "Opened exp://127.0.0.1:8081 in Expo Go (attempt $attempt)."
+              exit 0
+            fi
+            echo "::warning::simctl openurl attempt $attempt failed; retrying"
+            sleep $((attempt * 15))
+          done
+          if perl -e 'alarm shift; exec @ARGV' 90 \
+            xcrun simctl launch "$BLOOM_IOS_DEVICE" host.exp.Exponent; then
+            echo "::warning::The URL did not open, but Expo Go launched; Maestro's openLink will load the project."
+            exit 0
+          fi
+          echo "::error::Infrastructure: Expo Go could not be opened on the simulator (the app never launched; not an app or test failure)"
+          exit 1
       - name: Run signed-out auth smoke test (sign-in, deep-link guard, 18+ gate)
         timeout-minutes: 10
         run: maestro --device "$BLOOM_IOS_DEVICE" test --debug-output test-results/ios/maestro --format junit --output test-results/ios/results.xml .maestro/ios-auth.yml
+      - name: Report whether Metro was still running
+        if: failure()
+        shell: bash
+        run: |
+          if curl --fail --silent --max-time 10 http://127.0.0.1:8081/status | grep -q 'packager-status:running'; then
+            echo "Metro is still running; a failure above is in the app, the test, or the simulator."
+          else
+            echo "::error::Infrastructure: Metro is not running; see test-results/ios/metro.log"
+          fi
       - name: Record simulator toolchain diagnostics
         if: always()
         run: |
