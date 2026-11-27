@@ -5,6 +5,19 @@
  */
 
 export {
+  CATALOG_ALLERGENS,
+  DIETARY_PREFERENCES,
+  PREFERENCE_AVOIDS,
+  PROFILE_ALLERGENS,
+  PROFILE_TO_CATALOG_ALLERGENS,
+  catalogAllergensFor,
+} from './allergens';
+export type {
+  CatalogAllergen,
+  DietaryPreference,
+  ProfileAllergen,
+} from './allergens';
+export {
   isAllergenSafe,
   matchesCriteria,
   matchesRegion,

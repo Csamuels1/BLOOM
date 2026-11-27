@@ -2,6 +2,7 @@ import { APP_ENVIRONMENTS, type AppEnvironment } from '@/config/env';
 import { todayCopy as copy } from '@/content/today';
 import {
   buildPlan,
+  catalogAllergensFor,
   matchesCriteria,
   type MealGoal,
   type MealSlot,
@@ -77,28 +78,6 @@ export function loadDraftCatalog(appEnv: AppEnvironment): readonly DraftMeal[] {
 }
 
 /**
- * Profile allergen values (onboarding vocabulary) mapped onto the catalog's
- * allergen vocabulary. SAFETY: the two differ (e.g. 'peanut' vs 'peanuts',
- * 'milk' vs 'dairy'), so passing raw profile values to the engine would miss
- * matches. Each profile value is kept as well as its catalog equivalents.
- */
-const CATALOG_ALLERGENS: Readonly<Record<string, readonly string[]>> = {
-  peanut: ['peanuts'],
-  tree_nut: ['tree_nuts'],
-  milk: ['dairy'],
-  wheat: ['gluten'],
-  egg: ['egg'],
-  soy: ['soy'],
-  fish: ['fish'],
-  shellfish: ['shellfish'],
-};
-
-/** Dietary preferences that imply avoiding a catalog allergen. */
-const PREFERENCE_AVOIDS: Readonly<Record<string, readonly string[]>> = {
-  low_dairy: ['dairy'],
-};
-
-/**
  * Preferences the catalog tags directly. 'pescatarian' and 'halal' are not
  * tagged in the draft catalog yet, so they cannot be filtered on here.
  */
@@ -114,17 +93,17 @@ export interface DraftProfileInput {
   readonly goal?: string | null;
 }
 
-/** Catalog allergens to avoid for a profile's allergens and preferences. */
+/**
+ * Catalog allergens to avoid for a profile's allergens and preferences.
+ * SAFETY: delegates to the canonical mapping (`catalogAllergensFor`, #160);
+ * each normalized profile value is also kept, as it was in #159.
+ */
 export function avoidAllergensFor(profile: DraftProfileInput | null): string[] {
-  const avoid = new Set<string>();
+  const avoid = new Set<string>(
+    catalogAllergensFor(profile?.allergens, profile?.dietary_preferences),
+  );
   for (const raw of profile?.allergens ?? []) {
-    const value = raw.trim().toLowerCase();
-    avoid.add(value);
-    for (const mapped of CATALOG_ALLERGENS[value] ?? []) avoid.add(mapped);
-  }
-  for (const raw of profile?.dietary_preferences ?? []) {
-    const value = raw.trim().toLowerCase();
-    for (const mapped of PREFERENCE_AVOIDS[value] ?? []) avoid.add(mapped);
+    avoid.add(raw.trim().toLowerCase());
   }
   return [...avoid].sort();
 }
