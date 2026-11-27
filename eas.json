@@ -6,7 +6,8 @@
       "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
-      "environment": "development"
+      "environment": "development",
+      "channel": "development"
     },
     "simulator": {
       "extends": "development",
@@ -16,12 +17,14 @@
       "extends": "base",
       "distribution": "internal",
       "environment": "preview",
+      "channel": "preview",
       "android": { "buildType": "apk" }
     },
     "production": {
       "extends": "base",
       "distribution": "store",
       "environment": "production",
+      "channel": "production",
       "android": { "buildType": "app-bundle" }
     }
   }
